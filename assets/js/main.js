@@ -7,6 +7,31 @@
   'use strict';
 
   // ─────────────────────────────────────────────────────────
+  // Theme Toggle — Light/Dark mode
+  // ─────────────────────────────────────────────────────────
+
+  const themeToggle = document.getElementById('theme-toggle');
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+
+    // Listen for system preference changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      // Only update if user hasn't manually set a preference
+      if (!localStorage.getItem('theme')) {
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+
+
+  // ─────────────────────────────────────────────────────────
   // Reading Progress (articles only)
   // ─────────────────────────────────────────────────────────
 
@@ -27,9 +52,9 @@
         left: 0;
         width: 0%;
         height: 2px;
-        background-color: var(--color-black);
+        background-color: var(--color-text);
         z-index: 1000;
-        transition: width 100ms ease-out;
+        transition: width 100ms ease-out, background-color 300ms ease-out;
       }
     `;
     document.head.appendChild(style);
