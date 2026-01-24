@@ -1088,13 +1088,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .footer__links {
   display: flex;
+  align-items: center;
   gap: var(--space-3);
 }
 
 .footer__links a {
-  font-size: var(--text-xs);
+  display: flex;
+  align-items: center;
   color: var(--color-text-tertiary);
   transition: color var(--duration-fast) var(--ease-out);
+}
+
+.footer__links a svg {
+  width: 18px;
+  height: 18px;
 }
 
 .footer__links a:hover {
