@@ -478,6 +478,118 @@ h1, h2, h3, h4, h5, h6 {
 
 
 /* ─────────────────────────────────────────────────────────────
+   07c. Demos — Interactive projects
+   ───────────────────────────────────────────────────────────── */
+
+.demos {
+  margin-top: var(--space-4);
+}
+
+.demo-card {
+  background-color: var(--color-pure-white);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+  transition: box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.demo-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.demo-card__image-link {
+  display: block;
+  overflow: hidden;
+}
+
+.demo-card__image-link img {
+  width: 100%;
+  height: auto;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.demo-card:hover .demo-card__image-link img {
+  transform: scale(1.02);
+}
+
+.demo-card__content {
+  padding: var(--space-4);
+}
+
+.demo-card__title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.demo-card__title a {
+  color: var(--color-text);
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.demo-card__title a:hover {
+  opacity: 0.6;
+}
+
+.demo-card__description {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.demo-card__features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: var(--space-3);
+}
+
+.demo-card__features li {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding-left: var(--space-3);
+  position: relative;
+  margin-bottom: var(--space-1);
+}
+
+.demo-card__features li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--color-text-tertiary);
+}
+
+.demo-card__tagline {
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-3);
+}
+
+.demo-card__link {
+  display: inline-block;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.demo-card__link:hover {
+  border-color: var(--color-text);
+}
+
+.demo-card__link .arrow {
+  display: inline-block;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.demo-card__link:hover .arrow {
+  transform: translateX(4px);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
    08. Article — The reading experience
    ───────────────────────────────────────────────────────────── */
 
