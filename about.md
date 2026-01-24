@@ -33,4 +33,4 @@ I operate somewhere between research and tinkering. Read the papers. Write the c
 
 ---
 
-Want to build something? Find me on [Twitter](https://twitter.com/koushikjaladi), [GitHub](https://github.com/Koushik1161), or email me at [koushikcruz@gmail.com](mailto:koushikcruz@gmail.com).
+Want to build something? Find me on [Twitter](https://twitter.com/koushikjaladi), [GitHub](https://github.com/Koushik1161), [Medium](https://medium.com/@koushikcruz), or email me at [koushikcruz@gmail.com](mailto:koushikcruz@gmail.com).
