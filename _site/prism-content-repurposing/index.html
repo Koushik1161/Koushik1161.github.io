@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Prism: From One Blog Post to Six Platform Posts in Five Minutes — Koushik Jaladi</title>
+  <meta name="description" content="Content creators face a familiar grind: you write a blog post, then spend hours adapting it for LinkedIn, Twitter, Reddit, email newsletters, Instagram, and ...">
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Prism: From One Blog Post to Six Platform Posts in Five Minutes | Koushik Jaladi</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Prism: From One Blog Post to Six Platform Posts in Five Minutes" />
+<meta name="author" content="Koushik Jaladi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Content creators face a familiar grind: you write a blog post, then spend hours adapting it for LinkedIn, Twitter, Reddit, email newsletters, Instagram, and TikTok. Each platform has different norms, lengths, and expectations. What if AI could handle that translation?" />
+<meta property="og:description" content="Content creators face a familiar grind: you write a blog post, then spend hours adapting it for LinkedIn, Twitter, Reddit, email newsletters, Instagram, and TikTok. Each platform has different norms, lengths, and expectations. What if AI could handle that translation?" />
+<link rel="canonical" href="http://localhost:4001/prism-content-repurposing/" />
+<meta property="og:url" content="http://localhost:4001/prism-content-repurposing/" />
+<meta property="og:site_name" content="Koushik Jaladi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-11-06T00:00:00+05:30" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Prism: From One Blog Post to Six Platform Posts in Five Minutes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Koushik Jaladi"},"dateModified":"2025-11-06T00:00:00+05:30","datePublished":"2025-11-06T00:00:00+05:30","description":"Content creators face a familiar grind: you write a blog post, then spend hours adapting it for LinkedIn, Twitter, Reddit, email newsletters, Instagram, and TikTok. Each platform has different norms, lengths, and expectations. What if AI could handle that translation?","headline":"Prism: From One Blog Post to Six Platform Posts in Five Minutes","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4001/prism-content-repurposing/"},"url":"http://localhost:4001/prism-content-repurposing/"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4001/feed.xml" title="Koushik Jaladi" />
+
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Preload critical font -->
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body>
+
+  <div class="frame">
+    <header class="header">
+  <a href="/" class="header__logo">
+    Koushik Jaladi
+  </a>
+
+  <nav class="header__nav">
+    <a href="/writing" >Writing</a>
+    <a href="/about" >About</a>
+    <a href="/now" >Now</a>
+  </nav>
+</header>
+
+
+    <main class="main" role="main">
+      <article class="article">
+  <header class="article__header">
+    <a href="/writing" class="article__back">← Writing</a>
+
+    <div class="article__meta">
+      <time datetime="2025-11-06T00:00:00+05:30">
+        November 06, 2025
+      </time>
+      <span class="article__reading-time">
+        6 min read
+      </span>
+    </div>
+
+    <h1 class="article__title">Prism: From One Blog Post to Six Platform Posts in Five Minutes</h1>
+
+    
+    <p class="article__subtitle">Building a multi-agent content repurposing engine</p>
+    
+  </header>
+
+  <div class="article__content prose">
+    <p>Content creators face a familiar grind: you write a blog post, then spend hours adapting it for LinkedIn, Twitter, Reddit, email newsletters, Instagram, and TikTok. Each platform has different norms, lengths, and expectations. What if AI could handle that translation?</p>
+
+<p>Prism transforms one piece of content into six platform-optimized posts using a multi-agent architecture. Five minutes instead of five hours.</p>
+
+<h2 id="the-three-agent-pipeline">The Three-Agent Pipeline</h2>
+
+<p>Instead of one prompt doing everything, Prism uses three specialized agents:</p>
+
+<h3 id="agent-1-the-strategist">Agent 1: The Strategist</h3>
+
+<p>Analyzes the input content and creates a strategic brief:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">strategistPrompt</span> <span class="o">=</span> <span class="s2">`
+Analyze this content and extract:
+- Core message (one sentence)
+- Target audience profile
+- Brand voice DNA (tone, style, key phrases)
+- Most compelling hook (categorize: curiosity gap, pattern interrupt,
+  FOMO, bold statement, vulnerability, or contrarian)
+- Key themes for adaptation
+`</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">strategy</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">claude</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nf">create</span><span class="p">({</span>
+    <span class="na">model</span><span class="p">:</span> <span class="dl">"</span><span class="s2">claude-haiku-4-5</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">temperature</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="na">messages</span><span class="p">:</span> <span class="p">[{</span> <span class="na">role</span><span class="p">:</span> <span class="dl">"</span><span class="s2">user</span><span class="dl">"</span><span class="p">,</span> <span class="na">content</span><span class="p">:</span> <span class="nx">strategistPrompt</span> <span class="o">+</span> <span class="nx">inputContent</span> <span class="p">}]</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The strategist doesn’t create content—it creates guidance for the creator.</p>
+
+<h3 id="agent-2-the-creator">Agent 2: The Creator</h3>
+
+<p>Takes the strategic brief and generates platform-specific content:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">platformSpecs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">linkedin</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">length</span><span class="p">:</span> <span class="dl">"</span><span class="s2">1200-1800 characters</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">style</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Professional but personal, first 2 lines crucial</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">hooks</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Pattern interrupt or vulnerability work well</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="na">twitter</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">length</span><span class="p">:</span> <span class="dl">"</span><span class="s2">5-8 tweet thread</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">style</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Punchy, no hashtags in hook, viral angles</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">hooks</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Curiosity gap or bold statement</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="na">reddit</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">length</span><span class="p">:</span> <span class="dl">"</span><span class="s2">300-500 words</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">style</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Authentic, anti-promotional, community-first</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">hooks</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Value-first, no marketing speak</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="c1">// ... email, instagram, tiktok</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Each platform gets content tailored to its specific norms and algorithm preferences.</p>
+
+<h3 id="agent-3-the-optimizer">Agent 3: The Optimizer</h3>
+
+<p>Evaluates and improves the generated content:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">optimizerPrompt</span> <span class="o">=</span> <span class="s2">`
+For each platform post:
+1. Predict engagement score (0-100)
+2. Generate 2-3 A/B variants with different hook types
+3. Explain what makes each variant likely to perform
+`</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>The optimizer doesn’t just generate—it helps users choose between options with predicted performance data.</p>
+
+<h2 id="the-anti-repetition-engine">The Anti-Repetition Engine</h2>
+
+<p>A subtle but crucial feature: the Creator agent tracks what it’s used before:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">RepetitionTracker</span> <span class="p">{</span>
+    <span class="nl">usedPhrases</span><span class="p">:</span> <span class="nb">Set</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Set</span><span class="p">();</span>
+    <span class="nl">usedHookTypes</span><span class="p">:</span> <span class="nb">Map</span><span class="o">&lt;</span><span class="kr">string</span><span class="p">,</span> <span class="kr">number</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Map</span><span class="p">();</span>
+    <span class="nl">usedQuestions</span><span class="p">:</span> <span class="nb">Set</span><span class="o">&lt;</span><span class="kr">string</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Set</span><span class="p">();</span>
+
+    <span class="nf">checkAndBlock</span><span class="p">(</span><span class="nx">content</span><span class="p">:</span> <span class="kr">string</span><span class="p">):</span> <span class="kr">string</span><span class="p">[]</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">issues</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">for </span><span class="p">(</span><span class="kd">const</span> <span class="nx">phrase</span> <span class="k">of</span> <span class="k">this</span><span class="p">.</span><span class="nx">usedPhrases</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if </span><span class="p">(</span><span class="nx">content</span><span class="p">.</span><span class="nf">includes</span><span class="p">(</span><span class="nx">phrase</span><span class="p">))</span> <span class="p">{</span>
+                <span class="nx">issues</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="s2">`Repeated phrase: "</span><span class="p">${</span><span class="nx">phrase</span><span class="p">}</span><span class="s2">"`</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">issues</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nf">register</span><span class="p">(</span><span class="nx">content</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">hookType</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nf">extractPhrases</span><span class="p">(</span><span class="nx">content</span><span class="p">).</span><span class="nf">forEach</span><span class="p">(</span><span class="nx">p</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">usedPhrases</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nx">p</span><span class="p">));</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">usedHookTypes</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="nx">hookType</span><span class="p">,</span>
+            <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">usedHookTypes</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="nx">hookType</span><span class="p">)</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Without this, AI tends to reuse favorite phrases and structures. The tracker ensures each platform post feels distinct.</p>
+
+<h2 id="three-design-philosophies">Three Design Philosophies</h2>
+
+<p>I built three versions of the UI, each reflecting different design values:</p>
+
+<p><strong>V1 (Original)</strong>: Functional single-column layout. Gets the job done, no frills.</p>
+
+<p><strong>V2 (Glassmorphism)</strong>: Modern 2025 aesthetic with split panels, Framer Motion animations, dark mode, real-time agent status visualization. Impressive for demos.</p>
+
+<p><strong>V3 (Jony Ive Edition)</strong>: Radical reduction. Monochrome palette, zero decoration, mathematical precision in spacing. 28% less code than V2 but feels more sophisticated.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// V3 Jony Ive Edition - Precision spacing</span>
+<span class="kd">const</span> <span class="nx">spacing</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">base</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="na">scale</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">96</span><span class="p">]</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">typography</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">tracking</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.022</span><span class="p">,</span>  <span class="c1">// Optical adjustment</span>
+    <span class="na">lineHeight</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+    <span class="na">fontStack</span><span class="p">:</span> <span class="dl">"</span><span class="s2">SF Pro Display, system-ui</span><span class="dl">"</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The Jony Ive version taught me that constraint breeds creativity. Limiting to black and white forced every pixel to earn its place.</p>
+
+<h2 id="platform-intelligence">Platform Intelligence</h2>
+
+<p>Each platform specification encodes current algorithm preferences:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">linkedinSpec</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">// First 2 lines show before "see more" - make them count</span>
+    <span class="na">hookPlacement</span><span class="p">:</span> <span class="dl">"</span><span class="s2">lines 1-2</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">optimalLength</span><span class="p">:</span> <span class="mi">1500</span><span class="p">,</span>
+    <span class="na">hashtagStrategy</span><span class="p">:</span> <span class="dl">"</span><span class="s2">3-5 max, end of post</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">postingTip</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Native content outperforms links</span><span class="dl">"</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">twitterSpec</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1">// Threads outperform singles for thought leadership</span>
+    <span class="na">format</span><span class="p">:</span> <span class="dl">"</span><span class="s2">thread</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">threadLength</span><span class="p">:</span> <span class="dl">"</span><span class="s2">5-8 tweets</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">hookPlacement</span><span class="p">:</span> <span class="dl">"</span><span class="s2">tweet 1, no hashtags</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">engagementTip</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Ask a question in final tweet</span><span class="dl">"</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>These specs evolve as platforms change. The architecture makes updates easy.</p>
+
+<h2 id="the-economics">The Economics</h2>
+
+<p>Running the three-agent pipeline costs $0.03-0.12 per generation with Claude Haiku. At a $29/month subscription with unlimited generations, margins exceed 90% for typical usage.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">unitEconomics</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">apiCostPerGeneration</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">,</span>  <span class="c1">// average</span>
+    <span class="na">monthlySubscription</span><span class="p">:</span> <span class="mi">29</span><span class="p">,</span>
+    <span class="na">breakEvenGenerations</span><span class="p">:</span> <span class="mi">362</span><span class="p">,</span>   <span class="c1">// way more than users typically do</span>
+    <span class="na">estimatedMargin</span><span class="p">:</span> <span class="mf">0.92</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Good economics mean the product can be priced accessibly while remaining sustainable.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Specialization beats generalization.</strong> Three focused agents outperform one trying to do everything. Each agent has clear inputs, outputs, and responsibilities.</p>
+
+<p><strong>Platform knowledge is valuable.</strong> Knowing that LinkedIn shows first 2 lines before “see more” or that Reddit hates promotional content—this domain knowledge makes the difference between generic and effective.</p>
+
+<p><strong>Constraints are features.</strong> The Jony Ive version succeeded by removing options, not adding them. Sometimes less really is more.</p>
+
+<hr />
+
+<p><em>Built with Next.js, Claude, and the conviction that content should meet audiences where they are.</em></p>
+
+  </div>
+
+  <footer class="article__footer">
+    <div class="article__author">
+      <p>Written by <strong>Koushik Jaladi</strong></p>
+      <p class="article__author-links">
+        <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+        <span>·</span>
+        <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+</article>
+
+
+
+<section class="related">
+  <p class="section__label">Continue Reading</p>
+  <div class="posts">
+    
+    <article class="post-item post-item--compact">
+      <a href="/isaac-groot/" class="post-item__link">
+        <h3 class="post-item__title">GR00T: One Foundation Model for All Robots</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mcp-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">Teaching MCP Through an RPG: Metacon2</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon-mcp-quest/" class="post-item__link">
+        <h3 class="post-item__title">MCP Quest: Teaching Protocols Through Pokemon-Style RPGs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/atlas-intelligence-dashboard/" class="post-item__link">
+        <h3 class="post-item__title">3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/1000-layer-networks-rl/" class="post-item__link">
+        <h3 class="post-item__title">1000 Layers Deep: Scaling Networks for Self-Supervised RL</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">When 100-Year-Old Math Beats Modern AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/bandit-ramanujan/" class="post-item__link">
+        <h3 class="post-item__title">Ramanujan's Math Meets the Multi-Armed Bandit</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gpt-researcher/" class="post-item__link">
+        <h3 class="post-item__title">GPT Researcher: Autonomous Multi-Agent Research at Scale</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid/" class="post-item__link">
+        <h3 class="post-item__title">Cloid: A Voice-First Interview Bot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/yolo-mask-conversion/" class="post-item__link">
+        <h3 class="post-item__title">From SAM2 to YOLO: Bridging Segmentation and Detection</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/glenna-clarity/" class="post-item__link">
+        <h3 class="post-item__title">Clarity: Making Academic Papers Actually Readable</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gps-denied-navigation/" class="post-item__link">
+        <h3 class="post-item__title">Navigating Without GPS: Visual Odometry from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/echo-sanctuary/" class="post-item__link">
+        <h3 class="post-item__title">Echo Sanctuary: Where AI Companions Have Real Conversations</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">CODEC Quest: Gamifying Prompt Engineering Education</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-design/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Supermemory: Design Philosophy in Practice</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-ai-education/" class="post-item__link">
+        <h3 class="post-item__title">CODEC QUEST: Teaching AI Literacy Through an 8-bit RPG</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/deepseek-ocr/" class="post-item__link">
+        <h3 class="post-item__title">DeepSeek-OCR: Compressing Documents for the Age of Context Windows</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/dew-breathing-app/" class="post-item__link">
+        <h3 class="post-item__title">Dew: Neo-Brutalist Breathing Meditation for iOS</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/chimera-ace-architecture/" class="post-item__link">
+        <h3 class="post-item__title">Chimera: Building Agents That Actually Think</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whitestellar-agents-sdk/" class="post-item__link">
+        <h3 class="post-item__title">WhiteStellar: Learning the OpenAI Agents SDK from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tiny-recursive-models/" class="post-item__link">
+        <h3 class="post-item__title">Less is More: Why Tiny Recursive Networks Beat Giant LLMs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maxion/" class="post-item__link">
+        <h3 class="post-item__title">Project Maxion: The Self-Healing Agentic Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Product Design: Supermemory Landing Pages</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whatsapp-copilot/" class="post-item__link">
+        <h3 class="post-item__title">Building a WhatsApp Sales Copilot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon3-neon-prompt-builder/" class="post-item__link">
+        <h3 class="post-item__title">NEON: A Gamified CLI for Prompt Engineering</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sakana-model-merging/" class="post-item__link">
+        <h3 class="post-item__title">Merging Intelligence: Combining Qwen and DeepSeek with SLERP</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-research-hub/" class="post-item__link">
+        <h3 class="post-item__title">Interactive Research Hub: Visualizing the AI Agent Landscape</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-2025-hub/" class="post-item__link">
+        <h3 class="post-item__title">Agentic AI 2025: An Interactive Research Visualization</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/geon-interview-ai/" class="post-item__link">
+        <h3 class="post-item__title">Geon: Building an AI Interviewer That Actually Cares</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/breezeblow-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Testio: Multi-Theme Landing Page Exploration</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/zorever-chatbot/" class="post-item__link">
+        <h3 class="post-item__title">Building a Real Estate Chatbot That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-enhanced-pdf-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Seriously Smart PDF Analyzer</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/repour-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Repour: Multi-Agent Content Repurposing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/awesome-claude-code-subagents/" class="post-item__link">
+        <h3 class="post-item__title">116 Specialized Agents for Claude Code</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/magentic-ui/" class="post-item__link">
+        <h3 class="post-item__title">Human-Centered Web Automation with Magentic-UI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/godfather-ai-news/" class="post-item__link">
+        <h3 class="post-item__title">Godfather: AI-Powered News Aggregation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vibe-decode/" class="post-item__link">
+        <h3 class="post-item__title">VibeDecode: Understanding Your Instagram Aesthetic with AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agent-zx/" class="post-item__link">
+        <h3 class="post-item__title">Agent ZX: Building an Autonomous Web Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maverick/" class="post-item__link">
+        <h3 class="post-item__title">Project Maverick: From Prompt to Production App in Days</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/pdf-intelligence/" class="post-item__link">
+        <h3 class="post-item__title">PDF Intelligence: Extracting Meaning from Documents</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doc-ai-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Production-Ready Document Analysis Platform</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr-demo/" class="post-item__link">
+        <h3 class="post-item__title">CompressChatOCR: 10x Token Reduction for Document AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-doc-pro/" class="post-item__link">
+        <h3 class="post-item__title">AI Doc Pro: Minimal Document Analysis</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr/" class="post-item__link">
+        <h3 class="post-item__title">10x Token Compression: Vision-Based Document Processing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/calorie-tracker-ios/" class="post-item__link">
+        <h3 class="post-item__title">Starting an iOS Project: CalorieTracker Foundation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-dis-document-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Two Paths to Document Analysis: Local vs Cloud</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-delta-landing-generator/" class="post-item__link">
+        <h3 class="post-item__title">AI Landing Page Generator: From Prompt to Preview</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/uniq-ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">Uniq: When Ramanujan's Math Meets Game AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/frijan-voice-assistant/" class="post-item__link">
+        <h3 class="post-item__title">FRIJAN: Voice-First AI Assistant Architecture</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vortex-deep-research/" class="post-item__link">
+        <h3 class="post-item__title">Vortex: Deep Research with Iterative Refinement</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/rl-adventure-learning/" class="post-item__link">
+        <h3 class="post-item__title">Learning Reinforcement Learning Through Play</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/research-swarm/" class="post-item__link">
+        <h3 class="post-item__title">Research Swarm: Multi-Agent Research That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-agents/" class="post-item__link">
+        <h3 class="post-item__title">DAMAC Finance AI: Enterprise Multi-Agent Automation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid-clean-voice-bot/" class="post-item__link">
+        <h3 class="post-item__title">The Siri-Style Voice Bot: Real-Time Conversations with OpenAI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-ai/" class="post-item__link">
+        <h3 class="post-item__title">Building Enterprise-Grade Multi-Agent Finance AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/seecal-ai/" class="post-item__link">
+        <h3 class="post-item__title">SeeCal AI: Point, Shoot, Know What You're Eating</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/lumina-ai-chat/" class="post-item__link">
+        <h3 class="post-item__title">Lumina: A Clean Slate for AI Chat Interfaces</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/phantomcore-shell/" class="post-item__link">
+        <h3 class="post-item__title">PhantomCore Shell: AI Meets the Desktop</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/personaforge/" class="post-item__link">
+        <h3 class="post-item__title">PersonaForge: A Backend for AI Characters</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/xelora/" class="post-item__link">
+        <h3 class="post-item__title">Xelora: A Local-First Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sentinel-ai/" class="post-item__link">
+        <h3 class="post-item__title">Sentinel AI: Building an Autonomous Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doppel-agent/" class="post-item__link">
+        <h3 class="post-item__title">DoppelAgent: When Two AIs Are Better Than One</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gemini-agentic-research-assistant/" class="post-item__link">
+        <h3 class="post-item__title">Building a Multi-Model Research Assistant</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/aetherdraft/" class="post-item__link">
+        <h3 class="post-item__title">Aetherdraft: Teaching AI to Write Better Emails</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/openai-agents-sdk-intro/" class="post-item__link">
+        <h3 class="post-item__title">Getting Started with OpenAI's Agents SDK</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/grid-world-agents/" class="post-item__link">
+        <h3 class="post-item__title">Grid World Agents: Multi-Agent Simulation Basics</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/less-but-better/" class="post-item__link">
+        <h3 class="post-item__title">Less, But Better</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/the-reliability-gap/" class="post-item__link">
+        <h3 class="post-item__title">The Reliability Gap</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/thinking-in-systems/" class="post-item__link">
+        <h3 class="post-item__title">Thinking in Systems</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/on-simplicity/" class="post-item__link">
+        <h3 class="post-item__title">On Simplicity</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tools-and-thought/" class="post-item__link">
+        <h3 class="post-item__title">Tools and Thought</h3>
+      </a>
+    </article>
+    
+  </div>
+</section>
+
+
+    </main>
+
+    <footer class="footer">
+  <div class="footer__content">
+    <p class="footer__colophon">
+      <span class="footer__year">2026</span>
+      <span class="footer__sep">·</span>
+      <span class="footer__name">Koushik Jaladi</span>
+    </p>
+    <div class="footer__links">
+      <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+      <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      <a href="/feed.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+---
+layout: default
+---
+
+<section class="hero">
+  <p class="hero__label">01</p>
+  <h1 class="hero__title">{{ site.description }}</h1>
+  <p class="hero__subtitle">
+    I'm <strong>Koushik Jaladi</strong>, an AI/ML engineer building autonomous agents
+    and pushing the boundaries of what machines can do.
+  </p>
+</section>
+
+<section class="section">
+  <p class="section__label">02 — Writing</p>
+
+  <div class="posts">
+    {% for post in site.posts limit:5 %}
+    <article class="post-item">
+      <a href="{{ post.url | relative_url }}" class="post-item__link">
+        <time class="post-item__date" datetime="{{ post.date | date_to_xmlschema }}">
+          {{ post.date | date: "%b %Y" }}
+        </time>
+        <h2 class="post-item__title">{{ post.title }}</h2>
+        <p class="post-item__excerpt">{{ post.excerpt | strip_html | truncate: 120 }}</p>
+      </a>
+    </article>
+    {% endfor %}
+  </div>
+
+  {% if site.posts.size > 5 %}
+  <a href="{{ '/writing' | relative_url }}" class="view-all">
+    All writing <span class="arrow">→</span>
+  </a>
+  {% endif %}
+</section>
+
+<section class="section">
+  <p class="section__label">03 — Connect</p>
+
+  <div class="connect">
+    <p>
+      Find me on
+      <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener">Twitter</a>
+      for thoughts in progress, or
+      <a href="https://github.com/{{ site.github_username }}" target="_blank" rel="noopener">GitHub</a>
+      for code.
+    </p>
+    <p style="margin-top: var(--space-3);">
+      <a href="{{ '/2025' | relative_url }}">My 2025 with ChatGPT <span class="arrow">→</span></a>
+    </p>
+  </div>
+</section>

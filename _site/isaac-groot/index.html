@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>GR00T: One Foundation Model for All Robots — Koushik Jaladi</title>
+  <meta name="description" content="What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but ...">
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>GR00T: One Foundation Model for All Robots | Koushik Jaladi</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="GR00T: One Foundation Model for All Robots" />
+<meta name="author" content="Koushik Jaladi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but a genuine foundation model that understands manipulation across embodiments." />
+<meta property="og:description" content="What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but a genuine foundation model that understands manipulation across embodiments." />
+<link rel="canonical" href="http://localhost:4001/isaac-groot/" />
+<meta property="og:url" content="http://localhost:4001/isaac-groot/" />
+<meta property="og:site_name" content="Koushik Jaladi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-01-22T00:00:00+05:30" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="GR00T: One Foundation Model for All Robots" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Koushik Jaladi"},"dateModified":"2026-01-22T00:00:00+05:30","datePublished":"2026-01-22T00:00:00+05:30","description":"What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but a genuine foundation model that understands manipulation across embodiments.","headline":"GR00T: One Foundation Model for All Robots","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4001/isaac-groot/"},"url":"http://localhost:4001/isaac-groot/"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4001/feed.xml" title="Koushik Jaladi" />
+
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Preload critical font -->
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body>
+
+  <div class="frame">
+    <header class="header">
+  <a href="/" class="header__logo">
+    Koushik Jaladi
+  </a>
+
+  <nav class="header__nav">
+    <a href="/writing" >Writing</a>
+    <a href="/about" >About</a>
+    <a href="/now" >Now</a>
+  </nav>
+</header>
+
+
+    <main class="main" role="main">
+      <article class="article">
+  <header class="article__header">
+    <a href="/writing" class="article__back">← Writing</a>
+
+    <div class="article__meta">
+      <time datetime="2026-01-22T00:00:00+05:30">
+        January 22, 2026
+      </time>
+      <span class="article__reading-time">
+        5 min read
+      </span>
+    </div>
+
+    <h1 class="article__title">GR00T: One Foundation Model for All Robots</h1>
+
+    
+    <p class="article__subtitle">Exploring NVIDIA's approach to cross-embodiment robot learning</p>
+    
+  </header>
+
+  <div class="article__content prose">
+    <p>What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but a genuine foundation model that understands manipulation across embodiments.</p>
+
+<p>That’s NVIDIA’s GR00T project, and I spent time exploring their N1.5 release to understand how it works.</p>
+
+<h2 id="the-problem-data-scarcity-in-robotics">The Problem: Data Scarcity in Robotics</h2>
+
+<p>Robots are expensive. Robot data is expensive. Training a model to fold laundry requires countless demonstrations on a specific robot, and that training doesn’t transfer when you change the gripper.</p>
+
+<p>Compare to language models: they benefit from essentially infinite internet text. Vision models train on billions of images. But robot demonstrations? You’re lucky to have thousands.</p>
+
+<p>GR00T’s insight: combine three data sources to overcome this scarcity.</p>
+
+<h2 id="the-data-strategy">The Data Strategy</h2>
+
+<p><strong>Real demonstrations</strong>: Human teleoperation on actual robots. High quality, low quantity.</p>
+
+<p><strong>Synthetic data</strong>: Simulated environments generating millions of trajectories. High quantity, sim-to-real gap.</p>
+
+<p><strong>Internet video</strong>: Human hands doing tasks, captured from countless YouTube videos. Massive scale, but the robot isn’t visible.</p>
+
+<p>The architecture must handle all three gracefully.</p>
+
+<h2 id="the-architecture-frozen-vlm--adaptive-heads">The Architecture: Frozen VLM + Adaptive Heads</h2>
+
+<p>GR00T uses a pre-trained vision-language model (Eagle 2.5) as its backbone. Critically, this backbone stays frozen during robot training:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">GR00TModel</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">vlm</span> <span class="o">=</span> <span class="n">Eagle2_5</span><span class="p">.</span><span class="nf">from_pretrained</span><span class="p">()</span>  <span class="c1"># Frozen
+</span>        <span class="n">self</span><span class="p">.</span><span class="n">vlm</span><span class="p">.</span><span class="nf">requires_grad_</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="n">self</span><span class="p">.</span><span class="n">projector</span> <span class="o">=</span> <span class="nc">AdaptiveProjector</span><span class="p">()</span>   <span class="c1"># Trained
+</span>        <span class="n">self</span><span class="p">.</span><span class="n">action_head</span> <span class="o">=</span> <span class="nc">DiffusionTransformer</span><span class="p">()</span>  <span class="c1"># Trained
+</span></code></pre></div></div>
+
+<p>Why frozen? The VLM already understands language and visual scenes. Fine-tuning it on limited robot data would destroy that knowledge. Instead, learned projectors bridge VLM features to robot-specific action spaces.</p>
+
+<h2 id="multi-embodiment-support">Multi-Embodiment Support</h2>
+
+<p>The clever part: handling different robot bodies with shared weights.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">EmbodimentTag</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">GR1</span> <span class="o">=</span> <span class="sh">"</span><span class="s">gr1_humanoid</span><span class="sh">"</span>           <span class="c1"># Humanoid with dexterous hands
+</span>    <span class="n">OXE_DROID</span> <span class="o">=</span> <span class="sh">"</span><span class="s">oxe_droid</span><span class="sh">"</span>        <span class="c1"># Single-arm robot
+</span>    <span class="n">AGIBOT_GENIE1</span> <span class="o">=</span> <span class="sh">"</span><span class="s">agibot</span><span class="sh">"</span>       <span class="c1"># Humanoid with grippers
+</span>    <span class="n">CUSTOM</span> <span class="o">=</span> <span class="sh">"</span><span class="s">custom</span><span class="sh">"</span>              <span class="c1"># Your robot here
+</span></code></pre></div></div>
+
+<p>Each embodiment gets a dedicated action head that projects shared backbone features to robot-specific control spaces. The backbone learns general manipulation concepts; the heads translate to specific bodies.</p>
+
+<h2 id="diffusion-for-actions">Diffusion for Actions</h2>
+
+<p>GR00T generates actions using a diffusion transformer—the same technology behind image generation models:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_action</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">observation</span><span class="p">,</span> <span class="n">instruction</span><span class="p">):</span>
+    <span class="c1"># Start with noise
+</span>    <span class="n">action</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">randn</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">action_dim</span><span class="p">)</span>
+
+    <span class="c1"># Iteratively denoise
+</span>    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nf">reversed</span><span class="p">(</span><span class="nf">range</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">diffusion_steps</span><span class="p">)):</span>
+        <span class="n">predicted_noise</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">action_head</span><span class="p">(</span>
+            <span class="n">observation</span><span class="p">,</span> <span class="n">instruction</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">t</span>
+        <span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">denoise_step</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">predicted_noise</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">action</span>
+</code></pre></div></div>
+
+<p>Why diffusion? Robot actions are continuous and multi-modal—there might be multiple valid ways to grasp an object. Diffusion handles this naturally, sampling from the distribution of valid actions.</p>
+
+<h2 id="the-numbers-that-matter">The Numbers That Matter</h2>
+
+<p>GR00T N1.5 with 7 million parameters achieves:</p>
+
+<ul>
+  <li><strong>87.4%</strong> on Sudoku-Extreme tasks (LLMs get 0%)</li>
+  <li><strong>85.3%</strong> on hard maze navigation</li>
+  <li><strong>44.6%</strong> on ARC-AGI benchmark</li>
+</ul>
+
+<p>For context, that ARC-AGI score beats Gemini 2.5 Pro (37%) with a tiny fraction of the parameters.</p>
+
+<p>But more impressive than benchmarks is the efficiency:</p>
+
+<ul>
+  <li><strong>Fine-tuning</strong>: Only 2-4% of parameters need updating for new tasks</li>
+  <li><strong>Inference</strong>: ~48ms on standard hardware</li>
+  <li><strong>Data</strong>: Works with hundreds of demonstrations, not millions</li>
+</ul>
+
+<h2 id="learning-from-video-flare">Learning from Video (FLARE)</h2>
+
+<p>The FLARE integration is particularly elegant. It learns from egocentric human videos—your hands manipulating objects—even though no robot is visible.</p>
+
+<p>The idea: if humans and robots both manipulate objects, there’s shared structure in how manipulation works. FLARE extracts that structure from cheap human video and transfers it to expensive robot learning.</p>
+
+<h2 id="what-i-took-away">What I Took Away</h2>
+
+<p><strong>Frozen backbones preserve knowledge.</strong> The temptation is to fine-tune everything. GR00T shows that preserving pre-trained capabilities while learning new skills produces better generalization.</p>
+
+<p><strong>Cross-embodiment is feasible.</strong> With the right architecture, a single model can control humanoids, arms, and grippers. The shared representation learns manipulation; embodiment-specific heads translate.</p>
+
+<p><strong>Synthetic data works.</strong> When combined with real data and proper training, simulation-generated trajectories contribute meaningfully. The sim-to-real gap isn’t insurmountable.</p>
+
+<h2 id="the-bigger-picture">The Bigger Picture</h2>
+
+<p>Foundation models changed language and vision by learning general capabilities that transfer across tasks. GR00T is attempting the same for robotics.</p>
+
+<p>We’re still early—44% on ARC-AGI isn’t human level, and real-world deployment has challenges benchmarks don’t capture. But the architecture demonstrates that general-purpose robot learning is possible, not just theoretically but practically.</p>
+
+<hr />
+
+<p><em>Explored from NVIDIA’s Isaac-GR00T codebase, with appreciation for what 7 million parameters can accomplish.</em></p>
+
+  </div>
+
+  <footer class="article__footer">
+    <div class="article__author">
+      <p>Written by <strong>Koushik Jaladi</strong></p>
+      <p class="article__author-links">
+        <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+        <span>·</span>
+        <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+</article>
+
+
+
+<section class="related">
+  <p class="section__label">Continue Reading</p>
+  <div class="posts">
+    
+    <article class="post-item post-item--compact">
+      <a href="/mcp-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">Teaching MCP Through an RPG: Metacon2</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon-mcp-quest/" class="post-item__link">
+        <h3 class="post-item__title">MCP Quest: Teaching Protocols Through Pokemon-Style RPGs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/atlas-intelligence-dashboard/" class="post-item__link">
+        <h3 class="post-item__title">3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/1000-layer-networks-rl/" class="post-item__link">
+        <h3 class="post-item__title">1000 Layers Deep: Scaling Networks for Self-Supervised RL</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">When 100-Year-Old Math Beats Modern AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/bandit-ramanujan/" class="post-item__link">
+        <h3 class="post-item__title">Ramanujan's Math Meets the Multi-Armed Bandit</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gpt-researcher/" class="post-item__link">
+        <h3 class="post-item__title">GPT Researcher: Autonomous Multi-Agent Research at Scale</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid/" class="post-item__link">
+        <h3 class="post-item__title">Cloid: A Voice-First Interview Bot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/yolo-mask-conversion/" class="post-item__link">
+        <h3 class="post-item__title">From SAM2 to YOLO: Bridging Segmentation and Detection</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/glenna-clarity/" class="post-item__link">
+        <h3 class="post-item__title">Clarity: Making Academic Papers Actually Readable</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gps-denied-navigation/" class="post-item__link">
+        <h3 class="post-item__title">Navigating Without GPS: Visual Odometry from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/echo-sanctuary/" class="post-item__link">
+        <h3 class="post-item__title">Echo Sanctuary: Where AI Companions Have Real Conversations</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/prism-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Prism: From One Blog Post to Six Platform Posts in Five Minutes</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">CODEC Quest: Gamifying Prompt Engineering Education</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-design/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Supermemory: Design Philosophy in Practice</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-ai-education/" class="post-item__link">
+        <h3 class="post-item__title">CODEC QUEST: Teaching AI Literacy Through an 8-bit RPG</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/deepseek-ocr/" class="post-item__link">
+        <h3 class="post-item__title">DeepSeek-OCR: Compressing Documents for the Age of Context Windows</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/dew-breathing-app/" class="post-item__link">
+        <h3 class="post-item__title">Dew: Neo-Brutalist Breathing Meditation for iOS</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/chimera-ace-architecture/" class="post-item__link">
+        <h3 class="post-item__title">Chimera: Building Agents That Actually Think</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whitestellar-agents-sdk/" class="post-item__link">
+        <h3 class="post-item__title">WhiteStellar: Learning the OpenAI Agents SDK from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tiny-recursive-models/" class="post-item__link">
+        <h3 class="post-item__title">Less is More: Why Tiny Recursive Networks Beat Giant LLMs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maxion/" class="post-item__link">
+        <h3 class="post-item__title">Project Maxion: The Self-Healing Agentic Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Product Design: Supermemory Landing Pages</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whatsapp-copilot/" class="post-item__link">
+        <h3 class="post-item__title">Building a WhatsApp Sales Copilot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon3-neon-prompt-builder/" class="post-item__link">
+        <h3 class="post-item__title">NEON: A Gamified CLI for Prompt Engineering</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sakana-model-merging/" class="post-item__link">
+        <h3 class="post-item__title">Merging Intelligence: Combining Qwen and DeepSeek with SLERP</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-research-hub/" class="post-item__link">
+        <h3 class="post-item__title">Interactive Research Hub: Visualizing the AI Agent Landscape</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-2025-hub/" class="post-item__link">
+        <h3 class="post-item__title">Agentic AI 2025: An Interactive Research Visualization</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/geon-interview-ai/" class="post-item__link">
+        <h3 class="post-item__title">Geon: Building an AI Interviewer That Actually Cares</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/breezeblow-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Testio: Multi-Theme Landing Page Exploration</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/zorever-chatbot/" class="post-item__link">
+        <h3 class="post-item__title">Building a Real Estate Chatbot That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-enhanced-pdf-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Seriously Smart PDF Analyzer</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/repour-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Repour: Multi-Agent Content Repurposing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/awesome-claude-code-subagents/" class="post-item__link">
+        <h3 class="post-item__title">116 Specialized Agents for Claude Code</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/magentic-ui/" class="post-item__link">
+        <h3 class="post-item__title">Human-Centered Web Automation with Magentic-UI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/godfather-ai-news/" class="post-item__link">
+        <h3 class="post-item__title">Godfather: AI-Powered News Aggregation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vibe-decode/" class="post-item__link">
+        <h3 class="post-item__title">VibeDecode: Understanding Your Instagram Aesthetic with AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agent-zx/" class="post-item__link">
+        <h3 class="post-item__title">Agent ZX: Building an Autonomous Web Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maverick/" class="post-item__link">
+        <h3 class="post-item__title">Project Maverick: From Prompt to Production App in Days</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/pdf-intelligence/" class="post-item__link">
+        <h3 class="post-item__title">PDF Intelligence: Extracting Meaning from Documents</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doc-ai-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Production-Ready Document Analysis Platform</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr-demo/" class="post-item__link">
+        <h3 class="post-item__title">CompressChatOCR: 10x Token Reduction for Document AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-doc-pro/" class="post-item__link">
+        <h3 class="post-item__title">AI Doc Pro: Minimal Document Analysis</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr/" class="post-item__link">
+        <h3 class="post-item__title">10x Token Compression: Vision-Based Document Processing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/calorie-tracker-ios/" class="post-item__link">
+        <h3 class="post-item__title">Starting an iOS Project: CalorieTracker Foundation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-dis-document-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Two Paths to Document Analysis: Local vs Cloud</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-delta-landing-generator/" class="post-item__link">
+        <h3 class="post-item__title">AI Landing Page Generator: From Prompt to Preview</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/uniq-ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">Uniq: When Ramanujan's Math Meets Game AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/frijan-voice-assistant/" class="post-item__link">
+        <h3 class="post-item__title">FRIJAN: Voice-First AI Assistant Architecture</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vortex-deep-research/" class="post-item__link">
+        <h3 class="post-item__title">Vortex: Deep Research with Iterative Refinement</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/rl-adventure-learning/" class="post-item__link">
+        <h3 class="post-item__title">Learning Reinforcement Learning Through Play</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/research-swarm/" class="post-item__link">
+        <h3 class="post-item__title">Research Swarm: Multi-Agent Research That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-agents/" class="post-item__link">
+        <h3 class="post-item__title">DAMAC Finance AI: Enterprise Multi-Agent Automation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid-clean-voice-bot/" class="post-item__link">
+        <h3 class="post-item__title">The Siri-Style Voice Bot: Real-Time Conversations with OpenAI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-ai/" class="post-item__link">
+        <h3 class="post-item__title">Building Enterprise-Grade Multi-Agent Finance AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/seecal-ai/" class="post-item__link">
+        <h3 class="post-item__title">SeeCal AI: Point, Shoot, Know What You're Eating</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/lumina-ai-chat/" class="post-item__link">
+        <h3 class="post-item__title">Lumina: A Clean Slate for AI Chat Interfaces</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/phantomcore-shell/" class="post-item__link">
+        <h3 class="post-item__title">PhantomCore Shell: AI Meets the Desktop</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/personaforge/" class="post-item__link">
+        <h3 class="post-item__title">PersonaForge: A Backend for AI Characters</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/xelora/" class="post-item__link">
+        <h3 class="post-item__title">Xelora: A Local-First Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sentinel-ai/" class="post-item__link">
+        <h3 class="post-item__title">Sentinel AI: Building an Autonomous Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doppel-agent/" class="post-item__link">
+        <h3 class="post-item__title">DoppelAgent: When Two AIs Are Better Than One</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gemini-agentic-research-assistant/" class="post-item__link">
+        <h3 class="post-item__title">Building a Multi-Model Research Assistant</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/aetherdraft/" class="post-item__link">
+        <h3 class="post-item__title">Aetherdraft: Teaching AI to Write Better Emails</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/openai-agents-sdk-intro/" class="post-item__link">
+        <h3 class="post-item__title">Getting Started with OpenAI's Agents SDK</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/grid-world-agents/" class="post-item__link">
+        <h3 class="post-item__title">Grid World Agents: Multi-Agent Simulation Basics</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/less-but-better/" class="post-item__link">
+        <h3 class="post-item__title">Less, But Better</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/the-reliability-gap/" class="post-item__link">
+        <h3 class="post-item__title">The Reliability Gap</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/thinking-in-systems/" class="post-item__link">
+        <h3 class="post-item__title">Thinking in Systems</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/on-simplicity/" class="post-item__link">
+        <h3 class="post-item__title">On Simplicity</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tools-and-thought/" class="post-item__link">
+        <h3 class="post-item__title">Tools and Thought</h3>
+      </a>
+    </article>
+    
+  </div>
+</section>
+
+
+    </main>
+
+    <footer class="footer">
+  <div class="footer__content">
+    <p class="footer__colophon">
+      <span class="footer__year">2026</span>
+      <span class="footer__sep">·</span>
+      <span class="footer__name">Koushik Jaladi</span>
+    </p>
+    <div class="footer__links">
+      <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+      <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      <a href="/feed.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<header class="header">
+  <a href="{{ '/' | relative_url }}" class="header__logo">
+    {{ site.title }}
+  </a>
+
+  <nav class="header__nav">
+    <a href="{{ '/writing' | relative_url }}" {% if page.url contains '/writing' %}class="is-active"{% endif %}>Writing</a>
+    <a href="{{ '/about' | relative_url }}" {% if page.url == '/about/' %}class="is-active"{% endif %}>About</a>
+    <a href="{{ '/now' | relative_url }}" {% if page.url == '/now/' %}class="is-active"{% endif %}>Now</a>
+  </nav>
+</header>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Aetherdraft: Teaching AI to Write Better Emails — Koushik Jaladi</title>
+  <meta name="description" content="We’ve all stared at a blank email draft, knowing what we want to say but struggling with how to say it. AI can help—but not all AI-generated text is good. Ho...">
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Aetherdraft: Teaching AI to Write Better Emails | Koushik Jaladi</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Aetherdraft: Teaching AI to Write Better Emails" />
+<meta name="author" content="Koushik Jaladi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="We’ve all stared at a blank email draft, knowing what we want to say but struggling with how to say it. AI can help—but not all AI-generated text is good. How do you build a system that knows the difference?" />
+<meta property="og:description" content="We’ve all stared at a blank email draft, knowing what we want to say but struggling with how to say it. AI can help—but not all AI-generated text is good. How do you build a system that knows the difference?" />
+<link rel="canonical" href="http://localhost:4001/aetherdraft/" />
+<meta property="og:url" content="http://localhost:4001/aetherdraft/" />
+<meta property="og:site_name" content="Koushik Jaladi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-04-13T00:00:00+05:30" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Aetherdraft: Teaching AI to Write Better Emails" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Koushik Jaladi"},"dateModified":"2025-04-13T00:00:00+05:30","datePublished":"2025-04-13T00:00:00+05:30","description":"We’ve all stared at a blank email draft, knowing what we want to say but struggling with how to say it. AI can help—but not all AI-generated text is good. How do you build a system that knows the difference?","headline":"Aetherdraft: Teaching AI to Write Better Emails","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4001/aetherdraft/"},"url":"http://localhost:4001/aetherdraft/"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4001/feed.xml" title="Koushik Jaladi" />
+
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Preload critical font -->
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body>
+
+  <div class="frame">
+    <header class="header">
+  <a href="/" class="header__logo">
+    Koushik Jaladi
+  </a>
+
+  <nav class="header__nav">
+    <a href="/writing" >Writing</a>
+    <a href="/about" >About</a>
+    <a href="/now" >Now</a>
+  </nav>
+</header>
+
+
+    <main class="main" role="main">
+      <article class="article">
+  <header class="article__header">
+    <a href="/writing" class="article__back">← Writing</a>
+
+    <div class="article__meta">
+      <time datetime="2025-04-13T00:00:00+05:30">
+        April 13, 2025
+      </time>
+      <span class="article__reading-time">
+        7 min read
+      </span>
+    </div>
+
+    <h1 class="article__title">Aetherdraft: Teaching AI to Write Better Emails</h1>
+
+    
+    <p class="article__subtitle">Building a self-improving email generation system with multi-model orchestration</p>
+    
+  </header>
+
+  <div class="article__content prose">
+    <p>We’ve all stared at a blank email draft, knowing what we want to say but struggling with how to say it. AI can help—but not all AI-generated text is good. How do you build a system that knows the difference?</p>
+
+<p>Aetherdraft is my experiment in email generation with built-in quality control.</p>
+
+<h2 id="the-core-loop-generate-evaluate-improve">The Core Loop: Generate, Evaluate, Improve</h2>
+
+<p>The system has three stages:</p>
+
+<ol>
+  <li><strong>Generate</strong>: Create an email draft based on a prompt and desired tone</li>
+  <li><strong>Evaluate</strong>: Score the draft on multiple quality dimensions</li>
+  <li><strong>Improve</strong>: If the score is low, regenerate with refined prompts</li>
+</ol>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_and_evaluate</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tone</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Draft</span><span class="p">:</span>
+    <span class="c1"># Generate
+</span>    <span class="n">draft</span> <span class="o">=</span> <span class="nf">generate_draft</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">tone</span><span class="p">)</span>
+
+    <span class="c1"># Evaluate
+</span>    <span class="n">scores</span> <span class="o">=</span> <span class="nf">evaluate_draft</span><span class="p">(</span><span class="n">draft</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+
+    <span class="c1"># Improve if needed
+</span>    <span class="k">if</span> <span class="n">scores</span><span class="p">[</span><span class="sh">'</span><span class="s">composite</span><span class="sh">'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">70</span><span class="p">:</span>
+        <span class="n">improved_prompt</span> <span class="o">=</span> <span class="nf">create_improvement_prompt</span><span class="p">(</span><span class="n">draft</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+        <span class="n">draft</span> <span class="o">=</span> <span class="nf">generate_draft</span><span class="p">(</span><span class="n">improved_prompt</span><span class="p">,</span> <span class="n">tone</span><span class="p">)</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="nf">evaluate_draft</span><span class="p">(</span><span class="n">draft</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nc">Draft</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">draft</span><span class="p">,</span> <span class="n">scores</span><span class="o">=</span><span class="n">scores</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>This feedback loop catches weak generations and tries again.</p>
+
+<h2 id="multi-model-strategy">Multi-Model Strategy</h2>
+
+<p>Different tones call for different models:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">select_model</span><span class="p">(</span><span class="n">tone</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">tone</span> <span class="ow">in</span> <span class="p">[</span><span class="sh">'</span><span class="s">formal</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">urgent</span><span class="sh">'</span><span class="p">]:</span>
+        <span class="nf">return </span><span class="p">(</span><span class="sh">'</span><span class="s">anthropic</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">claude-3.5-sonnet</span><span class="sh">'</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># casual, friendly
+</span>        <span class="nf">return </span><span class="p">(</span><span class="sh">'</span><span class="s">openai</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">gpt-4</span><span class="sh">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>In my testing, Claude excelled at formal business communication—precise, professional, structured. GPT-4 handled casual tones more naturally. Rather than forcing one model to do everything, I let each play to its strengths.</p>
+
+<h2 id="the-evaluation-engine">The Evaluation Engine</h2>
+
+<p>Quality isn’t one thing. I break it into four metrics:</p>
+
+<p><strong>Readability</strong>: Using Flesch Reading Ease scores. Business emails should be clear, not academic.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">score_readability</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="n">flesch_score</span> <span class="o">=</span> <span class="n">textstat</span><span class="p">.</span><span class="nf">flesch_reading_ease</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="c1"># Normalize to 0-100, penalize both too simple and too complex
+</span>    <span class="k">return</span> <span class="nf">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="nf">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">flesch_score</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p><strong>Tone Match</strong>: Does the email actually sound like the requested tone?</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TONE_MARKERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sh">'</span><span class="s">formal</span><span class="sh">'</span><span class="p">:</span> <span class="p">[</span><span class="sh">'</span><span class="s">please</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">regarding</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">kindly</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">sincerely</span><span class="sh">'</span><span class="p">],</span>
+    <span class="sh">'</span><span class="s">casual</span><span class="sh">'</span><span class="p">:</span> <span class="p">[</span><span class="sh">'</span><span class="s">hey</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">thanks</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">quick</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">cheers</span><span class="sh">'</span><span class="p">],</span>
+    <span class="sh">'</span><span class="s">urgent</span><span class="sh">'</span><span class="p">:</span> <span class="p">[</span><span class="sh">'</span><span class="s">immediately</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">asap</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">critical</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">priority</span><span class="sh">'</span><span class="p">],</span>
+    <span class="sh">'</span><span class="s">friendly</span><span class="sh">'</span><span class="p">:</span> <span class="p">[</span><span class="sh">'</span><span class="s">hope</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">excited</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">great</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">looking forward</span><span class="sh">'</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">score_tone</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_tone</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="n">markers</span> <span class="o">=</span> <span class="n">TONE_MARKERS</span><span class="p">[</span><span class="n">target_tone</span><span class="p">]</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">markers</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">text</span><span class="p">.</span><span class="nf">lower</span><span class="p">())</span>
+    <span class="k">return</span> <span class="nf">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">matches</span> <span class="o">*</span> <span class="mi">25</span><span class="p">)</span>  <span class="c1"># Each marker adds 25 points
+</span></code></pre></div></div>
+
+<p><strong>Constraint Compliance</strong>: Did the email include required elements?</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">score_constraints</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">constraints</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="k">if</span> <span class="n">constraints</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">'</span><span class="s">include_bullets</span><span class="sh">'</span><span class="p">)</span> <span class="ow">and</span> <span class="sh">'</span><span class="s">•</span><span class="sh">'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+        <span class="n">score</span> <span class="o">-=</span> <span class="mi">25</span>
+    <span class="k">if</span> <span class="n">constraints</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">'</span><span class="s">required_phrase</span><span class="sh">'</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">constraints</span><span class="p">[</span><span class="sh">'</span><span class="s">required_phrase</span><span class="sh">'</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">-=</span> <span class="mi">25</span>
+    <span class="c1"># ... more constraint checks
+</span>    <span class="k">return</span> <span class="n">score</span>
+</code></pre></div></div>
+
+<p><strong>Length Appropriateness</strong>: Too short feels curt, too long loses attention.</p>
+
+<h2 id="learning-from-failures">Learning from Failures</h2>
+
+<p>Every generation gets logged with its scores:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">log_generation</span><span class="p">(</span><span class="n">draft</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tone</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scores</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="p">.</span><span class="nf">connect</span><span class="p">(</span><span class="sh">'</span><span class="s">aetherdraft_log.db</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">conn</span><span class="p">.</span><span class="nf">execute</span><span class="p">(</span><span class="sh">"""</span><span class="s">
+        INSERT INTO drafts (content, prompt, tone, readability,
+                          tone_score, constraints, composite, timestamp)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    </span><span class="sh">"""</span><span class="p">,</span> <span class="p">(</span><span class="n">draft</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">tone</span><span class="p">,</span> <span class="n">scores</span><span class="p">[</span><span class="sh">'</span><span class="s">readability</span><span class="sh">'</span><span class="p">],</span>
+          <span class="n">scores</span><span class="p">[</span><span class="sh">'</span><span class="s">tone</span><span class="sh">'</span><span class="p">],</span> <span class="n">scores</span><span class="p">[</span><span class="sh">'</span><span class="s">constraints</span><span class="sh">'</span><span class="p">],</span>
+          <span class="n">scores</span><span class="p">[</span><span class="sh">'</span><span class="s">composite</span><span class="sh">'</span><span class="p">],</span> <span class="n">datetime</span><span class="p">.</span><span class="nf">now</span><span class="p">()))</span>
+    <span class="n">conn</span><span class="p">.</span><span class="nf">commit</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>This creates a dataset for analysis:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">analyze_performance</span><span class="p">():</span>
+    <span class="n">weak_drafts</span> <span class="o">=</span> <span class="nf">query</span><span class="p">(</span><span class="sh">"</span><span class="s">SELECT * FROM drafts WHERE composite &lt; 70</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="n">by_tone</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">draft</span> <span class="ow">in</span> <span class="n">weak_drafts</span><span class="p">:</span>
+        <span class="n">by_tone</span><span class="p">.</span><span class="nf">setdefault</span><span class="p">(</span><span class="n">draft</span><span class="p">.</span><span class="n">tone</span><span class="p">,</span> <span class="p">[]).</span><span class="nf">append</span><span class="p">(</span><span class="n">draft</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">tone</span><span class="p">,</span> <span class="n">drafts</span> <span class="ow">in</span> <span class="n">by_tone</span><span class="p">.</span><span class="nf">items</span><span class="p">():</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">tone</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="nf">len</span><span class="p">(</span><span class="n">drafts</span><span class="p">)</span><span class="si">}</span><span class="s"> weak generations</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">common_issues</span> <span class="o">=</span> <span class="nf">identify_common_failures</span><span class="p">(</span><span class="n">drafts</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">  Common issues: </span><span class="si">{</span><span class="n">common_issues</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Over time, I can see patterns: maybe “urgent” tone consistently scores poorly on readability, suggesting the prompt needs adjustment.</p>
+
+<h2 id="automated-self-testing">Automated Self-Testing</h2>
+
+<p>The system includes a test suite that exercises different tones and prompts:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TEST_CASES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="sh">"</span><span class="s">prompt</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Schedule a meeting</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">tone</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">formal</span><span class="sh">"</span><span class="p">},</span>
+    <span class="p">{</span><span class="sh">"</span><span class="s">prompt</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Thank someone for help</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">tone</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">friendly</span><span class="sh">"</span><span class="p">},</span>
+    <span class="p">{</span><span class="sh">"</span><span class="s">prompt</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Request urgent update</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">tone</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">urgent</span><span class="sh">"</span><span class="p">},</span>
+    <span class="p">{</span><span class="sh">"</span><span class="s">prompt</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Introduce yourself</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">tone</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">casual</span><span class="sh">"</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">run_self_test</span><span class="p">():</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="k">case</span> <span class="ow">in</span> <span class="n">TEST_CASES</span><span class="p">:</span>
+        <span class="n">draft</span> <span class="o">=</span> <span class="nf">generate_and_evaluate</span><span class="p">(</span><span class="k">case</span><span class="p">[</span><span class="sh">'</span><span class="s">prompt</span><span class="sh">'</span><span class="p">],</span> <span class="k">case</span><span class="p">[</span><span class="sh">'</span><span class="s">tone</span><span class="sh">'</span><span class="p">])</span>
+        <span class="n">results</span><span class="p">.</span><span class="nf">append</span><span class="p">({</span>
+            <span class="sh">'</span><span class="s">case</span><span class="sh">'</span><span class="p">:</span> <span class="n">case</span><span class="p">,</span>
+            <span class="sh">'</span><span class="s">scores</span><span class="sh">'</span><span class="p">:</span> <span class="n">draft</span><span class="p">.</span><span class="n">scores</span><span class="p">,</span>
+            <span class="sh">'</span><span class="s">pass</span><span class="sh">'</span><span class="p">:</span> <span class="n">draft</span><span class="p">.</span><span class="n">scores</span><span class="p">[</span><span class="sh">'</span><span class="s">composite</span><span class="sh">'</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">70</span>
+        <span class="p">})</span>
+
+    <span class="k">return</span> <span class="nc">TestReport</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Running this periodically catches regressions and validates that the system maintains quality.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Multi-metric evaluation beats single scores.</strong> A draft can be readable but wrong in tone, or perfectly toned but violating constraints. Breaking quality into dimensions makes issues actionable.</p>
+
+<p><strong>Model diversity is practical.</strong> Different models really do have different strengths. Matching models to tasks isn’t premature optimization—it’s good engineering.</p>
+
+<p><strong>Feedback loops work.</strong> The improvement cycle catches bad generations that would otherwise ship. Simple retry logic with better prompts solves many quality issues.</p>
+
+<hr />
+
+<p><em>Built with Claude, GPT-4, and the belief that AI should know when it’s done a good job.</em></p>
+
+  </div>
+
+  <footer class="article__footer">
+    <div class="article__author">
+      <p>Written by <strong>Koushik Jaladi</strong></p>
+      <p class="article__author-links">
+        <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+        <span>·</span>
+        <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+</article>
+
+
+
+<section class="related">
+  <p class="section__label">Continue Reading</p>
+  <div class="posts">
+    
+    <article class="post-item post-item--compact">
+      <a href="/isaac-groot/" class="post-item__link">
+        <h3 class="post-item__title">GR00T: One Foundation Model for All Robots</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mcp-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">Teaching MCP Through an RPG: Metacon2</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon-mcp-quest/" class="post-item__link">
+        <h3 class="post-item__title">MCP Quest: Teaching Protocols Through Pokemon-Style RPGs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/atlas-intelligence-dashboard/" class="post-item__link">
+        <h3 class="post-item__title">3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/1000-layer-networks-rl/" class="post-item__link">
+        <h3 class="post-item__title">1000 Layers Deep: Scaling Networks for Self-Supervised RL</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">When 100-Year-Old Math Beats Modern AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/bandit-ramanujan/" class="post-item__link">
+        <h3 class="post-item__title">Ramanujan's Math Meets the Multi-Armed Bandit</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gpt-researcher/" class="post-item__link">
+        <h3 class="post-item__title">GPT Researcher: Autonomous Multi-Agent Research at Scale</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid/" class="post-item__link">
+        <h3 class="post-item__title">Cloid: A Voice-First Interview Bot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/yolo-mask-conversion/" class="post-item__link">
+        <h3 class="post-item__title">From SAM2 to YOLO: Bridging Segmentation and Detection</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/glenna-clarity/" class="post-item__link">
+        <h3 class="post-item__title">Clarity: Making Academic Papers Actually Readable</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gps-denied-navigation/" class="post-item__link">
+        <h3 class="post-item__title">Navigating Without GPS: Visual Odometry from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/echo-sanctuary/" class="post-item__link">
+        <h3 class="post-item__title">Echo Sanctuary: Where AI Companions Have Real Conversations</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/prism-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Prism: From One Blog Post to Six Platform Posts in Five Minutes</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">CODEC Quest: Gamifying Prompt Engineering Education</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-design/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Supermemory: Design Philosophy in Practice</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-ai-education/" class="post-item__link">
+        <h3 class="post-item__title">CODEC QUEST: Teaching AI Literacy Through an 8-bit RPG</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/deepseek-ocr/" class="post-item__link">
+        <h3 class="post-item__title">DeepSeek-OCR: Compressing Documents for the Age of Context Windows</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/dew-breathing-app/" class="post-item__link">
+        <h3 class="post-item__title">Dew: Neo-Brutalist Breathing Meditation for iOS</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/chimera-ace-architecture/" class="post-item__link">
+        <h3 class="post-item__title">Chimera: Building Agents That Actually Think</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whitestellar-agents-sdk/" class="post-item__link">
+        <h3 class="post-item__title">WhiteStellar: Learning the OpenAI Agents SDK from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tiny-recursive-models/" class="post-item__link">
+        <h3 class="post-item__title">Less is More: Why Tiny Recursive Networks Beat Giant LLMs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maxion/" class="post-item__link">
+        <h3 class="post-item__title">Project Maxion: The Self-Healing Agentic Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Product Design: Supermemory Landing Pages</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whatsapp-copilot/" class="post-item__link">
+        <h3 class="post-item__title">Building a WhatsApp Sales Copilot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon3-neon-prompt-builder/" class="post-item__link">
+        <h3 class="post-item__title">NEON: A Gamified CLI for Prompt Engineering</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sakana-model-merging/" class="post-item__link">
+        <h3 class="post-item__title">Merging Intelligence: Combining Qwen and DeepSeek with SLERP</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-research-hub/" class="post-item__link">
+        <h3 class="post-item__title">Interactive Research Hub: Visualizing the AI Agent Landscape</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-2025-hub/" class="post-item__link">
+        <h3 class="post-item__title">Agentic AI 2025: An Interactive Research Visualization</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/geon-interview-ai/" class="post-item__link">
+        <h3 class="post-item__title">Geon: Building an AI Interviewer That Actually Cares</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/breezeblow-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Testio: Multi-Theme Landing Page Exploration</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/zorever-chatbot/" class="post-item__link">
+        <h3 class="post-item__title">Building a Real Estate Chatbot That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-enhanced-pdf-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Seriously Smart PDF Analyzer</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/repour-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Repour: Multi-Agent Content Repurposing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/awesome-claude-code-subagents/" class="post-item__link">
+        <h3 class="post-item__title">116 Specialized Agents for Claude Code</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/magentic-ui/" class="post-item__link">
+        <h3 class="post-item__title">Human-Centered Web Automation with Magentic-UI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/godfather-ai-news/" class="post-item__link">
+        <h3 class="post-item__title">Godfather: AI-Powered News Aggregation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vibe-decode/" class="post-item__link">
+        <h3 class="post-item__title">VibeDecode: Understanding Your Instagram Aesthetic with AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agent-zx/" class="post-item__link">
+        <h3 class="post-item__title">Agent ZX: Building an Autonomous Web Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maverick/" class="post-item__link">
+        <h3 class="post-item__title">Project Maverick: From Prompt to Production App in Days</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/pdf-intelligence/" class="post-item__link">
+        <h3 class="post-item__title">PDF Intelligence: Extracting Meaning from Documents</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doc-ai-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Production-Ready Document Analysis Platform</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr-demo/" class="post-item__link">
+        <h3 class="post-item__title">CompressChatOCR: 10x Token Reduction for Document AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-doc-pro/" class="post-item__link">
+        <h3 class="post-item__title">AI Doc Pro: Minimal Document Analysis</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr/" class="post-item__link">
+        <h3 class="post-item__title">10x Token Compression: Vision-Based Document Processing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/calorie-tracker-ios/" class="post-item__link">
+        <h3 class="post-item__title">Starting an iOS Project: CalorieTracker Foundation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-dis-document-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Two Paths to Document Analysis: Local vs Cloud</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-delta-landing-generator/" class="post-item__link">
+        <h3 class="post-item__title">AI Landing Page Generator: From Prompt to Preview</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/uniq-ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">Uniq: When Ramanujan's Math Meets Game AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/frijan-voice-assistant/" class="post-item__link">
+        <h3 class="post-item__title">FRIJAN: Voice-First AI Assistant Architecture</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vortex-deep-research/" class="post-item__link">
+        <h3 class="post-item__title">Vortex: Deep Research with Iterative Refinement</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/rl-adventure-learning/" class="post-item__link">
+        <h3 class="post-item__title">Learning Reinforcement Learning Through Play</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/research-swarm/" class="post-item__link">
+        <h3 class="post-item__title">Research Swarm: Multi-Agent Research That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-agents/" class="post-item__link">
+        <h3 class="post-item__title">DAMAC Finance AI: Enterprise Multi-Agent Automation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid-clean-voice-bot/" class="post-item__link">
+        <h3 class="post-item__title">The Siri-Style Voice Bot: Real-Time Conversations with OpenAI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-ai/" class="post-item__link">
+        <h3 class="post-item__title">Building Enterprise-Grade Multi-Agent Finance AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/seecal-ai/" class="post-item__link">
+        <h3 class="post-item__title">SeeCal AI: Point, Shoot, Know What You're Eating</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/lumina-ai-chat/" class="post-item__link">
+        <h3 class="post-item__title">Lumina: A Clean Slate for AI Chat Interfaces</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/phantomcore-shell/" class="post-item__link">
+        <h3 class="post-item__title">PhantomCore Shell: AI Meets the Desktop</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/personaforge/" class="post-item__link">
+        <h3 class="post-item__title">PersonaForge: A Backend for AI Characters</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/xelora/" class="post-item__link">
+        <h3 class="post-item__title">Xelora: A Local-First Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sentinel-ai/" class="post-item__link">
+        <h3 class="post-item__title">Sentinel AI: Building an Autonomous Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doppel-agent/" class="post-item__link">
+        <h3 class="post-item__title">DoppelAgent: When Two AIs Are Better Than One</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gemini-agentic-research-assistant/" class="post-item__link">
+        <h3 class="post-item__title">Building a Multi-Model Research Assistant</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/openai-agents-sdk-intro/" class="post-item__link">
+        <h3 class="post-item__title">Getting Started with OpenAI's Agents SDK</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/grid-world-agents/" class="post-item__link">
+        <h3 class="post-item__title">Grid World Agents: Multi-Agent Simulation Basics</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/less-but-better/" class="post-item__link">
+        <h3 class="post-item__title">Less, But Better</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/the-reliability-gap/" class="post-item__link">
+        <h3 class="post-item__title">The Reliability Gap</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/thinking-in-systems/" class="post-item__link">
+        <h3 class="post-item__title">Thinking in Systems</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/on-simplicity/" class="post-item__link">
+        <h3 class="post-item__title">On Simplicity</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tools-and-thought/" class="post-item__link">
+        <h3 class="post-item__title">Tools and Thought</h3>
+      </a>
+    </article>
+    
+  </div>
+</section>
+
+
+    </main>
+
+    <footer class="footer">
+  <div class="footer__content">
+    <p class="footer__colophon">
+      <span class="footer__year">2026</span>
+      <span class="footer__sep">·</span>
+      <span class="footer__name">Koushik Jaladi</span>
+    </p>
+    <div class="footer__links">
+      <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+      <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      <a href="/feed.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

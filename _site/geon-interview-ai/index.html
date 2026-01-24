@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Geon: Building an AI Interviewer That Actually Cares — Koushik Jaladi</title>
+  <meta name="description" content="Job interviews are stressful. Your palms sweat, your mind goes blank, you forget that brilliant answer you rehearsed. What if the interview itself could help...">
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Geon: Building an AI Interviewer That Actually Cares | Koushik Jaladi</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Geon: Building an AI Interviewer That Actually Cares" />
+<meta name="author" content="Koushik Jaladi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Job interviews are stressful. Your palms sweat, your mind goes blank, you forget that brilliant answer you rehearsed. What if the interview itself could help you perform better?" />
+<meta property="og:description" content="Job interviews are stressful. Your palms sweat, your mind goes blank, you forget that brilliant answer you rehearsed. What if the interview itself could help you perform better?" />
+<link rel="canonical" href="http://localhost:4001/geon-interview-ai/" />
+<meta property="og:url" content="http://localhost:4001/geon-interview-ai/" />
+<meta property="og:site_name" content="Koushik Jaladi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-09-02T00:00:00+05:30" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Geon: Building an AI Interviewer That Actually Cares" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Koushik Jaladi"},"dateModified":"2025-09-02T00:00:00+05:30","datePublished":"2025-09-02T00:00:00+05:30","description":"Job interviews are stressful. Your palms sweat, your mind goes blank, you forget that brilliant answer you rehearsed. What if the interview itself could help you perform better?","headline":"Geon: Building an AI Interviewer That Actually Cares","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4001/geon-interview-ai/"},"url":"http://localhost:4001/geon-interview-ai/"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4001/feed.xml" title="Koushik Jaladi" />
+
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Preload critical font -->
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body>
+
+  <div class="frame">
+    <header class="header">
+  <a href="/" class="header__logo">
+    Koushik Jaladi
+  </a>
+
+  <nav class="header__nav">
+    <a href="/writing" >Writing</a>
+    <a href="/about" >About</a>
+    <a href="/now" >Now</a>
+  </nav>
+</header>
+
+
+    <main class="main" role="main">
+      <article class="article">
+  <header class="article__header">
+    <a href="/writing" class="article__back">← Writing</a>
+
+    <div class="article__meta">
+      <time datetime="2025-09-02T00:00:00+05:30">
+        September 02, 2025
+      </time>
+      <span class="article__reading-time">
+        6 min read
+      </span>
+    </div>
+
+    <h1 class="article__title">Geon: Building an AI Interviewer That Actually Cares</h1>
+
+    
+    <p class="article__subtitle">Real-time voice AI with emotional intelligence for anxiety-free interviews</p>
+    
+  </header>
+
+  <div class="article__content prose">
+    <p>Job interviews are stressful. Your palms sweat, your mind goes blank, you forget that brilliant answer you rehearsed. What if the interview itself could help you perform better?</p>
+
+<p>Geon is an AI interviewer built with emotional intelligence at its core. Not just capable of evaluating candidates, but actually designed to reduce anxiety and bring out their best.</p>
+
+<h2 id="the-design-philosophy-anxiety-is-the-enemy">The Design Philosophy: Anxiety Is the Enemy</h2>
+
+<p>Traditional interview tools focus on evaluation. Geon focuses on the interview experience itself. The insight: anxious candidates underperform. If we can reduce anxiety, we get better signal on actual capability.</p>
+
+<p>This led to some unconventional design decisions:</p>
+
+<p><strong>Color psychology matters.</strong> We replaced stark whites and aggressive reds with calming blues and sage greens. Small change, meaningful impact on emotional state.</p>
+
+<p><strong>Progressive disclosure.</strong> Instead of one intimidating setup screen, we use a multi-step wizard. Each step is manageable. The full scope never overwhelms.</p>
+
+<p><strong>Status transparency.</strong> When the AI is “thinking,” users know it. When it’s listening, that’s visible too. Uncertainty breeds anxiety; transparency reduces it.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">enum</span> <span class="nx">InterviewStatus</span> <span class="p">{</span>
+    <span class="nx">CONNECTING</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Setting up your interview...</span><span class="dl">"</span><span class="p">,</span>
+    <span class="nx">LISTENING</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">I'm listening...</span><span class="dl">"</span><span class="p">,</span>
+    <span class="nx">THINKING</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Considering your response...</span><span class="dl">"</span><span class="p">,</span>
+    <span class="nx">RESPONDING</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Sharing thoughts...</span><span class="dl">"</span><span class="p">,</span>
+    <span class="nx">COMPLETE</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">Interview complete</span><span class="dl">"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="the-technical-stack-real-time-voice">The Technical Stack: Real-Time Voice</h2>
+
+<p>Geon uses OpenAI’s Realtime API over WebSockets for natural voice conversation:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">realtimeClient</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">OpenAIRealtimeClient</span><span class="p">({</span>
+    <span class="na">model</span><span class="p">:</span> <span class="dl">"</span><span class="s2">gpt-4o-realtime-preview</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">sessionConfig</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">turn_detection</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">server_vad</span><span class="dl">"</span> <span class="p">},</span>
+        <span class="na">voice</span><span class="p">:</span> <span class="dl">"</span><span class="s2">echo</span><span class="dl">"</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">realtimeClient</span><span class="p">.</span><span class="nf">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">response.audio.delta</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">chunk</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">audioPlayer</span><span class="p">.</span><span class="nf">queueChunk</span><span class="p">(</span><span class="nx">chunk</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">realtimeClient</span><span class="p">.</span><span class="nf">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">conversation.item.input_audio_transcription</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">transcript</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nf">updateTranscript</span><span class="p">(</span><span class="dl">"</span><span class="s2">user</span><span class="dl">"</span><span class="p">,</span> <span class="nx">transcript</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Server-side voice activity detection means the AI knows when you’re done speaking without awkward pauses or interruptions. The conversation flows naturally.</p>
+
+<h2 id="dual-mode-architecture">Dual Mode Architecture</h2>
+
+<p>Not everyone wants a formal interview. We built two modes:</p>
+
+<p><strong>Professional Mode</strong>: Structured evaluation for hiring purposes. Scores on multiple dimensions, generates detailed reports, maintains formality throughout.</p>
+
+<p><strong>Practice Mode</strong>: AI Coach persona. More supportive, offers tips mid-interview, celebrates good answers, provides constructive feedback on weak ones. Perfect for interview prep.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">personaConfig</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">professional</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">temperature</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+        <span class="na">systemPrompt</span><span class="p">:</span> <span class="s2">`You are a professional interviewer...`</span><span class="p">,</span>
+        <span class="na">evaluationMode</span><span class="p">:</span> <span class="dl">"</span><span class="s2">strict</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="na">practice</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">temperature</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+        <span class="na">systemPrompt</span><span class="p">:</span> <span class="s2">`You are a supportive interview coach...`</span><span class="p">,</span>
+        <span class="na">evaluationMode</span><span class="p">:</span> <span class="dl">"</span><span class="s2">developmental</span><span class="dl">"</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Same underlying technology, completely different experiences.</p>
+
+<h2 id="voice-analytics-beyond-words">Voice Analytics: Beyond Words</h2>
+
+<p>We track more than what candidates say:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">interface</span> <span class="nx">VoiceAnalytics</span> <span class="p">{</span>
+    <span class="nl">speakingPace</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>        <span class="c1">// words per minute</span>
+    <span class="nl">fillerWordCount</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>     <span class="c1">// ums, uhs, likes</span>
+    <span class="nl">volumeConsistency</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>   <span class="c1">// stability score</span>
+    <span class="nl">clarityScore</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>        <span class="c1">// pronunciation clarity</span>
+    <span class="nl">confidenceLevel</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>     <span class="c1">// derived from multiple factors</span>
+    <span class="nl">energyLevel</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>         <span class="c1">// engagement indicator</span>
+    <span class="nl">responseTime</span><span class="p">:</span> <span class="kr">number</span><span class="p">;</span>        <span class="c1">// think time before answering</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This data helps candidates understand not just what they said, but how they said it. Many people don’t realize they speak too fast when nervous or drop their volume at the end of sentences.</p>
+
+<h2 id="the-panic-button">The Panic Button</h2>
+
+<p>Sometimes anxiety wins anyway. We added a literal panic button:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">handlePanicButton</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Pause the interview</span>
+    <span class="nx">realtimeClient</span><span class="p">.</span><span class="nf">pauseSession</span><span class="p">();</span>
+
+    <span class="c1">// Show breathing exercise</span>
+    <span class="nf">setShowBreathingExercise</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+
+    <span class="c1">// After completion, offer options</span>
+    <span class="nf">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nf">setShowResumeOptions</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+        <span class="c1">// Can resume, restart, or exit gracefully</span>
+    <span class="p">},</span> <span class="mi">60000</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>A 60-second guided breathing exercise, then options to resume, restart, or exit without judgment. No interview tool I’ve seen has this, and it matters more than most features.</p>
+
+<h2 id="mock-mode-no-api-required">Mock Mode: No API Required</h2>
+
+<p>Development and testing shouldn’t require API costs. Mock mode provides realistic simulated interviews:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">MockRealtimeClient</span> <span class="p">{</span>
+    <span class="k">async</span> <span class="nf">simulateResponse</span><span class="p">(</span><span class="nx">userInput</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">mockResponses</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nf">getContextualResponses</span><span class="p">(</span><span class="nx">userInput</span><span class="p">);</span>
+        <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="nf">simulateTypingDelay</span><span class="p">();</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="na">transcript</span><span class="p">:</span> <span class="nx">mockResponses</span><span class="p">.</span><span class="nx">text</span><span class="p">,</span>
+            <span class="na">analysis</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nf">generateMockAnalysis</span><span class="p">(</span><span class="nx">userInput</span><span class="p">)</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The mock generates contextually appropriate responses, simulates realistic timing, and produces plausible analytics. Users can explore the full experience before connecting to live AI.</p>
+
+<h2 id="security-keeping-keys-safe">Security: Keeping Keys Safe</h2>
+
+<p>API keys never touch the browser:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Server endpoint</span>
+<span class="nx">app</span><span class="p">.</span><span class="nf">post</span><span class="p">(</span><span class="dl">"</span><span class="s2">/session/token</span><span class="dl">"</span><span class="p">,</span> <span class="nx">rateLimit</span><span class="p">,</span> <span class="k">async </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">ephemeralToken</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">openai</span><span class="p">.</span><span class="nf">createEphemeralToken</span><span class="p">({</span>
+        <span class="na">expiry</span><span class="p">:</span> <span class="dl">"</span><span class="s2">5m</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">scope</span><span class="p">:</span> <span class="dl">"</span><span class="s2">realtime</span><span class="dl">"</span>
+    <span class="p">});</span>
+
+    <span class="nx">res</span><span class="p">.</span><span class="nf">json</span><span class="p">({</span> <span class="na">token</span><span class="p">:</span> <span class="nx">ephemeralToken</span> <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Clients get short-lived tokens scoped to specific capabilities. Even if intercepted, they expire quickly and can’t access anything beyond the interview session.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Emotional design is technical design.</strong> The breathing exercises, color choices, and panic button aren’t separate from the “real” technical work. They’re essential features that required as much thought as the WebSocket implementation.</p>
+
+<p><strong>Voice analytics reveal hidden patterns.</strong> People are often surprised by their own metrics. “I didn’t realize I said ‘um’ that much” is common feedback. The data helps in ways subjective feedback can’t.</p>
+
+<p><strong>Mock modes are worth the investment.</strong> Building a realistic mock system took significant effort, but it pays off in development velocity, demo capability, and user onboarding.</p>
+
+<hr />
+
+<p><em>Built with Next.js, OpenAI Realtime, and the conviction that interviews should help people succeed, not just filter them out.</em></p>
+
+  </div>
+
+  <footer class="article__footer">
+    <div class="article__author">
+      <p>Written by <strong>Koushik Jaladi</strong></p>
+      <p class="article__author-links">
+        <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+        <span>·</span>
+        <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+</article>
+
+
+
+<section class="related">
+  <p class="section__label">Continue Reading</p>
+  <div class="posts">
+    
+    <article class="post-item post-item--compact">
+      <a href="/isaac-groot/" class="post-item__link">
+        <h3 class="post-item__title">GR00T: One Foundation Model for All Robots</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mcp-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">Teaching MCP Through an RPG: Metacon2</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon-mcp-quest/" class="post-item__link">
+        <h3 class="post-item__title">MCP Quest: Teaching Protocols Through Pokemon-Style RPGs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/atlas-intelligence-dashboard/" class="post-item__link">
+        <h3 class="post-item__title">3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/1000-layer-networks-rl/" class="post-item__link">
+        <h3 class="post-item__title">1000 Layers Deep: Scaling Networks for Self-Supervised RL</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">When 100-Year-Old Math Beats Modern AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/bandit-ramanujan/" class="post-item__link">
+        <h3 class="post-item__title">Ramanujan's Math Meets the Multi-Armed Bandit</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gpt-researcher/" class="post-item__link">
+        <h3 class="post-item__title">GPT Researcher: Autonomous Multi-Agent Research at Scale</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid/" class="post-item__link">
+        <h3 class="post-item__title">Cloid: A Voice-First Interview Bot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/yolo-mask-conversion/" class="post-item__link">
+        <h3 class="post-item__title">From SAM2 to YOLO: Bridging Segmentation and Detection</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/glenna-clarity/" class="post-item__link">
+        <h3 class="post-item__title">Clarity: Making Academic Papers Actually Readable</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gps-denied-navigation/" class="post-item__link">
+        <h3 class="post-item__title">Navigating Without GPS: Visual Odometry from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/echo-sanctuary/" class="post-item__link">
+        <h3 class="post-item__title">Echo Sanctuary: Where AI Companions Have Real Conversations</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/prism-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Prism: From One Blog Post to Six Platform Posts in Five Minutes</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">CODEC Quest: Gamifying Prompt Engineering Education</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-design/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Supermemory: Design Philosophy in Practice</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-ai-education/" class="post-item__link">
+        <h3 class="post-item__title">CODEC QUEST: Teaching AI Literacy Through an 8-bit RPG</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/deepseek-ocr/" class="post-item__link">
+        <h3 class="post-item__title">DeepSeek-OCR: Compressing Documents for the Age of Context Windows</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/dew-breathing-app/" class="post-item__link">
+        <h3 class="post-item__title">Dew: Neo-Brutalist Breathing Meditation for iOS</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/chimera-ace-architecture/" class="post-item__link">
+        <h3 class="post-item__title">Chimera: Building Agents That Actually Think</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whitestellar-agents-sdk/" class="post-item__link">
+        <h3 class="post-item__title">WhiteStellar: Learning the OpenAI Agents SDK from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tiny-recursive-models/" class="post-item__link">
+        <h3 class="post-item__title">Less is More: Why Tiny Recursive Networks Beat Giant LLMs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maxion/" class="post-item__link">
+        <h3 class="post-item__title">Project Maxion: The Self-Healing Agentic Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Product Design: Supermemory Landing Pages</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whatsapp-copilot/" class="post-item__link">
+        <h3 class="post-item__title">Building a WhatsApp Sales Copilot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon3-neon-prompt-builder/" class="post-item__link">
+        <h3 class="post-item__title">NEON: A Gamified CLI for Prompt Engineering</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sakana-model-merging/" class="post-item__link">
+        <h3 class="post-item__title">Merging Intelligence: Combining Qwen and DeepSeek with SLERP</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-research-hub/" class="post-item__link">
+        <h3 class="post-item__title">Interactive Research Hub: Visualizing the AI Agent Landscape</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-2025-hub/" class="post-item__link">
+        <h3 class="post-item__title">Agentic AI 2025: An Interactive Research Visualization</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/breezeblow-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Testio: Multi-Theme Landing Page Exploration</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/zorever-chatbot/" class="post-item__link">
+        <h3 class="post-item__title">Building a Real Estate Chatbot That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-enhanced-pdf-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Seriously Smart PDF Analyzer</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/repour-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Repour: Multi-Agent Content Repurposing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/awesome-claude-code-subagents/" class="post-item__link">
+        <h3 class="post-item__title">116 Specialized Agents for Claude Code</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/magentic-ui/" class="post-item__link">
+        <h3 class="post-item__title">Human-Centered Web Automation with Magentic-UI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/godfather-ai-news/" class="post-item__link">
+        <h3 class="post-item__title">Godfather: AI-Powered News Aggregation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vibe-decode/" class="post-item__link">
+        <h3 class="post-item__title">VibeDecode: Understanding Your Instagram Aesthetic with AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agent-zx/" class="post-item__link">
+        <h3 class="post-item__title">Agent ZX: Building an Autonomous Web Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maverick/" class="post-item__link">
+        <h3 class="post-item__title">Project Maverick: From Prompt to Production App in Days</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/pdf-intelligence/" class="post-item__link">
+        <h3 class="post-item__title">PDF Intelligence: Extracting Meaning from Documents</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doc-ai-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Production-Ready Document Analysis Platform</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr-demo/" class="post-item__link">
+        <h3 class="post-item__title">CompressChatOCR: 10x Token Reduction for Document AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-doc-pro/" class="post-item__link">
+        <h3 class="post-item__title">AI Doc Pro: Minimal Document Analysis</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr/" class="post-item__link">
+        <h3 class="post-item__title">10x Token Compression: Vision-Based Document Processing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/calorie-tracker-ios/" class="post-item__link">
+        <h3 class="post-item__title">Starting an iOS Project: CalorieTracker Foundation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-dis-document-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Two Paths to Document Analysis: Local vs Cloud</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-delta-landing-generator/" class="post-item__link">
+        <h3 class="post-item__title">AI Landing Page Generator: From Prompt to Preview</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/uniq-ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">Uniq: When Ramanujan's Math Meets Game AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/frijan-voice-assistant/" class="post-item__link">
+        <h3 class="post-item__title">FRIJAN: Voice-First AI Assistant Architecture</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vortex-deep-research/" class="post-item__link">
+        <h3 class="post-item__title">Vortex: Deep Research with Iterative Refinement</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/rl-adventure-learning/" class="post-item__link">
+        <h3 class="post-item__title">Learning Reinforcement Learning Through Play</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/research-swarm/" class="post-item__link">
+        <h3 class="post-item__title">Research Swarm: Multi-Agent Research That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-agents/" class="post-item__link">
+        <h3 class="post-item__title">DAMAC Finance AI: Enterprise Multi-Agent Automation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid-clean-voice-bot/" class="post-item__link">
+        <h3 class="post-item__title">The Siri-Style Voice Bot: Real-Time Conversations with OpenAI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-ai/" class="post-item__link">
+        <h3 class="post-item__title">Building Enterprise-Grade Multi-Agent Finance AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/seecal-ai/" class="post-item__link">
+        <h3 class="post-item__title">SeeCal AI: Point, Shoot, Know What You're Eating</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/lumina-ai-chat/" class="post-item__link">
+        <h3 class="post-item__title">Lumina: A Clean Slate for AI Chat Interfaces</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/phantomcore-shell/" class="post-item__link">
+        <h3 class="post-item__title">PhantomCore Shell: AI Meets the Desktop</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/personaforge/" class="post-item__link">
+        <h3 class="post-item__title">PersonaForge: A Backend for AI Characters</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/xelora/" class="post-item__link">
+        <h3 class="post-item__title">Xelora: A Local-First Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sentinel-ai/" class="post-item__link">
+        <h3 class="post-item__title">Sentinel AI: Building an Autonomous Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doppel-agent/" class="post-item__link">
+        <h3 class="post-item__title">DoppelAgent: When Two AIs Are Better Than One</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gemini-agentic-research-assistant/" class="post-item__link">
+        <h3 class="post-item__title">Building a Multi-Model Research Assistant</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/aetherdraft/" class="post-item__link">
+        <h3 class="post-item__title">Aetherdraft: Teaching AI to Write Better Emails</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/openai-agents-sdk-intro/" class="post-item__link">
+        <h3 class="post-item__title">Getting Started with OpenAI's Agents SDK</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/grid-world-agents/" class="post-item__link">
+        <h3 class="post-item__title">Grid World Agents: Multi-Agent Simulation Basics</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/less-but-better/" class="post-item__link">
+        <h3 class="post-item__title">Less, But Better</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/the-reliability-gap/" class="post-item__link">
+        <h3 class="post-item__title">The Reliability Gap</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/thinking-in-systems/" class="post-item__link">
+        <h3 class="post-item__title">Thinking in Systems</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/on-simplicity/" class="post-item__link">
+        <h3 class="post-item__title">On Simplicity</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tools-and-thought/" class="post-item__link">
+        <h3 class="post-item__title">Tools and Thought</h3>
+      </a>
+    </article>
+    
+  </div>
+</section>
+
+
+    </main>
+
+    <footer class="footer">
+  <div class="footer__content">
+    <p class="footer__colophon">
+      <span class="footer__year">2026</span>
+      <span class="footer__sep">·</span>
+      <span class="footer__name">Koushik Jaladi</span>
+    </p>
+    <div class="footer__links">
+      <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+      <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      <a href="/feed.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+
+  </div>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

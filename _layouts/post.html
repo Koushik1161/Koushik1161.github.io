@@ -1,0 +1,55 @@
+---
+layout: default
+---
+
+<article class="article">
+  <header class="article__header">
+    <a href="{{ '/writing' | relative_url }}" class="article__back">← Writing</a>
+
+    <div class="article__meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">
+        {{ page.date | date: "%B %d, %Y" }}
+      </time>
+      <span class="article__reading-time">
+        {{ content | number_of_words | divided_by: 200 | plus: 1 }} min read
+      </span>
+    </div>
+
+    <h1 class="article__title">{{ page.title }}</h1>
+
+    {% if page.subtitle %}
+    <p class="article__subtitle">{{ page.subtitle }}</p>
+    {% endif %}
+  </header>
+
+  <div class="article__content prose">
+    {{ content }}
+  </div>
+
+  <footer class="article__footer">
+    <div class="article__author">
+      <p>Written by <strong>{{ page.author | default: site.author }}</strong></p>
+      <p class="article__author-links">
+        <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener">Twitter</a>
+        <span>·</span>
+        <a href="https://github.com/{{ site.github_username }}" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+</article>
+
+{% assign related = site.posts | where_exp: "post", "post.url != page.url" | limit: 3 %}
+{% if related.size > 0 %}
+<section class="related">
+  <p class="section__label">Continue Reading</p>
+  <div class="posts">
+    {% for post in related %}
+    <article class="post-item post-item--compact">
+      <a href="{{ post.url | relative_url }}" class="post-item__link">
+        <h3 class="post-item__title">{{ post.title }}</h3>
+      </a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

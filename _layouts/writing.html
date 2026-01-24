@@ -1,0 +1,30 @@
+---
+layout: default
+---
+
+<section class="archive">
+  <header class="archive__header">
+    <h1 class="archive__title">Writing</h1>
+    <p class="archive__count">{{ site.posts | size }} articles</p>
+  </header>
+
+  <div class="posts posts--archive">
+    {% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+    {% for year in posts_by_year %}
+    <div class="archive__year-group">
+      <h2 class="archive__year">{{ year.name }}</h2>
+      {% for post in year.items %}
+      <article class="post-item">
+        <a href="{{ post.url | relative_url }}" class="post-item__link">
+          <time class="post-item__date" datetime="{{ post.date | date_to_xmlschema }}">
+            {{ post.date | date: "%b %d" }}
+          </time>
+          <h3 class="post-item__title">{{ post.title }}</h3>
+          <p class="post-item__excerpt">{{ post.excerpt | strip_html | truncate: 140 }}</p>
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</section>

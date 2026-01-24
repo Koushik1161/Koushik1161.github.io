@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────
+# ESSENCE — A Dieter Rams × Jony Ive inspired blog
+# Less, but better.
+# ─────────────────────────────────────────────────────────────
+
+title: "Koushik Jaladi"
+description: "Building machines that think"
+author: "Koushik Jaladi"
+email: ""
+
+baseurl: ""
+url: "https://koushik1161.github.io"
+
+# Social
+twitter_username: koushikjaladi
+github_username: Koushik1161
+linkedin_username: koushikjaladi
+
+# Build
+markdown: kramdown
+highlighter: rouge
+permalink: /:title/
+
+# Pagination
+paginate: 10
+paginate_path: "/writing/page/:num/"
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Koushik Jaladi"
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+
+# Exclude
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md
+
+# Plugins
+plugins:
+  - jekyll-paginate
+  - jekyll-seo-tag
+  - jekyll-feed
