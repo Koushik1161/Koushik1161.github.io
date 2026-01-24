@@ -4,30 +4,32 @@ title: About
 permalink: /about/
 ---
 
-I build AI systems that work in the real world.
+I build AI systems — driven by curiosity.
 
-Not demos. Not prototypes. Production systems that handle complexity, recover from failure, and deliver value at scale.
+Some projects ship to production. Some stay as prototypes. Some are half-finished experiments abandoned at 2 AM. Some are just ideas I had to see working, even if only once.
+
+That's the process. Follow the curiosity, build the thing, learn what happens.
 
 ## Philosophy
 
-The best AI isn't magic—it's engineering. Good engineering means understanding both the theory and the grit of making things work when everything goes wrong.
+The best way to understand AI is to build with it. Not just read about it — actually wire things together, watch them break, figure out why, and try again.
 
-I operate at the intersection of research and production. Read the papers. Write the code. Ship the system. Learn from what breaks.
+I operate somewhere between research and tinkering. Read the papers. Write the code. Sometimes ship it. Always learn from it.
 
 ## Focus
 
 - **Autonomous Agents** — Systems that reason, plan, and execute
-- **Production ML** — Infrastructure that scales and doesn't break at 3 AM
 - **Multimodal AI** — Combining vision, language, and reasoning
-- **Research to Deployment** — Bridging the gap from paper to product
+- **Research Experiments** — Testing ideas from papers and my own head
+- **Tools & Prototypes** — Quick builds to explore what's possible
 
 ## Principles
 
-**Ship fast. Learn faster.** Perfect is the enemy of useful.
+**Follow curiosity.** The interesting projects find you when you're exploring.
 
-**Build for failure.** Everything breaks. Design systems that recover.
+**Ship or learn.** Either it works and you ship it, or it doesn't and you learned something.
 
-**Simplify relentlessly.** The best code is the code you don't write.
+**Done is a spectrum.** Some things deserve polish. Some just need to exist.
 
 ---
 
