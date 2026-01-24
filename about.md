@@ -6,7 +6,7 @@ permalink: /about/
 
 I build AI systems — driven by curiosity.
 
-Some projects ship to production. Some stay as prototypes. Some are half-finished experiments abandoned at 2 AM. Some are just ideas I had to see working, even if only once.
+Some projects ship to production. Some stay as prototypes. Some are explorations paused mid-thought. Some are just ideas I had to see working, even if only once.
 
 That's the process. Follow the curiosity, build the thing, learn what happens.
 
