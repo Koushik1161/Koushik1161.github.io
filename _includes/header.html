@@ -8,9 +8,5 @@
     <a href="{{ '/writing' | relative_url }}" {% if page.url contains '/writing' %}class="is-active"{% endif %}>Writing</a>
     <a href="{{ '/about' | relative_url }}" {% if page.url == '/about/' %}class="is-active"{% endif %}>About</a>
     <a href="{{ '/now' | relative_url }}" {% if page.url == '/now/' %}class="is-active"{% endif %}>Now</a>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-      <span class="theme-toggle__icon theme-toggle__icon--moon">◐</span>
-      <span class="theme-toggle__icon theme-toggle__icon--sun">◑</span>
-    </button>
   </nav>
 </header>
