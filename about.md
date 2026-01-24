@@ -31,4 +31,4 @@ I operate at the intersection of research and production. Read the papers. Write
 
 ---
 
-Want to build something? Find me on [Twitter](https://twitter.com/koushikjaladi) or [GitHub](https://github.com/Koushik1161).
+Want to build something? Find me on [Twitter](https://twitter.com/koushikjaladi), [GitHub](https://github.com/Koushik1161), or email me at [koushikcruz@gmail.com](mailto:koushikcruz@gmail.com).
