@@ -16,6 +16,12 @@ twitter_username: koushikjaladi
 github_username: Koushik1161
 linkedin_username: koushikjaladi
 
+# Author (for E-E-A-T and Schema.org)
+author:
+  name: "Koushik Jaladi"
+  url: "https://koushik1161.github.io/about/"
+  twitter: "koushikjaladi"
+
 # Build
 markdown: kramdown
 highlighter: rouge
@@ -53,3 +59,4 @@ plugins:
   - jekyll-paginate
   - jekyll-seo-tag
   - jekyll-feed
+  - jekyll-sitemap

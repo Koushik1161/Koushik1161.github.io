@@ -1,0 +1,38 @@
+---
+layout: null
+permalink: /llms.txt
+---
+# {{ site.title }}
+
+> {{ site.description }}
+
+Personal blog of {{ site.author }} - AI/ML engineer exploring machine learning, deep learning, and software engineering.
+
+## Quick Links
+
+- Homepage: {{ site.url }}
+- Blog: {{ site.url }}/writing/
+- Projects: {{ site.url }}/projects/
+- About: {{ site.url }}/about/
+- RSS Feed: {{ site.url }}/feed.xml
+- Full Content: {{ site.url }}/llms-full.txt
+
+## Blog Posts ({{ site.posts | size }} articles)
+
+{% for post in site.posts %}- [{{ post.title }}]({{ post.url | absolute_url }}){% if post.subtitle %} - {{ post.subtitle }}{% endif %}
+{% endfor %}
+
+## Topics Covered
+
+- Machine Learning & Deep Learning
+- Natural Language Processing
+- Computer Vision
+- MLOps & Production ML
+- Software Engineering
+- AI Tools & Frameworks
+
+## Contact
+
+- Twitter: https://twitter.com/{{ site.twitter_username }}
+- GitHub: https://github.com/{{ site.github_username }}
+- LinkedIn: https://linkedin.com/in/{{ site.linkedin_username }}

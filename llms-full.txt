@@ -1,0 +1,39 @@
+---
+layout: null
+permalink: /llms-full.txt
+---
+# {{ site.title }} - Complete Content
+
+> {{ site.description }}
+
+This file contains the full text content of all blog posts for AI/LLM ingestion.
+Generated: {{ site.time | date: "%Y-%m-%d" }}
+Total Posts: {{ site.posts | size }}
+
+---
+
+{% for post in site.posts %}
+## {{ post.title }}
+
+{% if post.subtitle %}*{{ post.subtitle }}*{% endif %}
+
+- URL: {{ post.url | absolute_url }}
+- Date: {{ post.date | date: "%Y-%m-%d" }}
+- Author: {{ post.author | default: site.author }}
+
+{{ post.content | strip_html | strip_newlines | truncatewords: 2000 }}
+
+---
+
+{% endfor %}
+
+## About This Site
+
+{{ site.title }} is a personal blog by {{ site.author }}, focused on AI/ML engineering, deep learning, and software development. The site features technical articles, project write-ups, and insights from building production machine learning systems.
+
+## Contact & Links
+
+- Website: {{ site.url }}
+- Twitter: https://twitter.com/{{ site.twitter_username }}
+- GitHub: https://github.com/{{ site.github_username }}
+- LinkedIn: https://linkedin.com/in/{{ site.linkedin_username }}

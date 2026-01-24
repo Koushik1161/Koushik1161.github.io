@@ -1,0 +1,37 @@
+# Robots.txt for koushik1161.github.io
+# Allow all crawlers including AI agents
+
+User-agent: *
+Allow: /
+
+# AI Crawlers - Explicitly Allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# Sitemaps
+Sitemap: https://koushik1161.github.io/sitemap.xml
+
+# LLMs.txt for AI context
+# https://koushik1161.github.io/llms.txt
+# https://koushik1161.github.io/llms-full.txt
