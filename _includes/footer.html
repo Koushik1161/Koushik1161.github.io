@@ -3,7 +3,7 @@
     <p class="footer__colophon">
       <span class="footer__year">{{ site.time | date: '%Y' }}</span>
       <span class="footer__sep">·</span>
-      <span class="footer__name">{{ site.author }}</span>
+      <span class="footer__name">{{ site.author.name | default: site.author }}</span>
     </p>
     <div class="footer__links">
       <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener" aria-label="Twitter">

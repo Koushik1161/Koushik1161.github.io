@@ -13,12 +13,12 @@ layout: default
   "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
   "author": {
     "@type": "Person",
-    "name": "{{ page.author | default: site.author }}",
+    "name": "{{ page.author | default: site.author.name }}",
     "url": "{{ site.url }}/about/"
   },
   "publisher": {
     "@type": "Person",
-    "name": "{{ site.author }}",
+    "name": "{{ site.author.name }}",
     "url": "{{ site.url }}"
   },
   "mainEntityOfPage": {
@@ -85,7 +85,7 @@ layout: default
 
   <footer class="article__footer">
     <div class="article__author">
-      <p>Written by <strong>{{ page.author | default: site.author }}</strong></p>
+      <p>Written by <strong>{{ page.author | default: site.author.name }}</strong></p>
       <p class="article__author-links">
         <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener">Twitter</a>
         <span>·</span>
