@@ -9,6 +9,8 @@
  * 03. Every element earns its place
  * 04. Mathematical relationships
  * 05. Invisible until needed
+ *
+ * Theme: Light/Dark with toggle
  * ─────────────────────────────────────────────────────────────
  */
 
@@ -39,7 +41,11 @@
   --space-12: 6rem;        /* 96px */
   --space-16: 8rem;        /* 128px */
 
-  /* Colors — Intentionally minimal */
+  /* ═══════════════════════════════════════════════════════════
+     LIGHT THEME (Default)
+     ═══════════════════════════════════════════════════════════ */
+
+  /* Base Palette */
   --color-black: #000000;
   --color-gray-900: #111111;
   --color-gray-700: #333333;
@@ -51,14 +57,35 @@
   --color-white: #FAFAFA;
   --color-pure-white: #FFFFFF;
 
-  /* Semantic */
-  --color-bg: var(--color-white);
-  --color-text: var(--color-gray-900);
-  --color-text-secondary: var(--color-gray-500);
-  --color-text-tertiary: var(--color-gray-400);
-  --color-border: var(--color-gray-200);
-  --color-link: var(--color-black);
-  --color-link-hover: var(--color-gray-500);
+  /* Semantic Colors */
+  --color-bg: #FAFAFA;
+  --color-text: #111111;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #888888;
+  --color-border: #DDDDDD;
+  --color-link: #000000;
+  --color-link-hover: #666666;
+
+  /* Surfaces & Cards */
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F0F0F0;
+
+  /* Code */
+  --color-code-bg: #F0F0F0;
+  --color-code-text: #111111;
+  --color-pre-bg: #111111;
+  --color-pre-text: #FAFAFA;
+
+  /* Interactive */
+  --color-selection-bg: #000000;
+  --color-selection-text: #FAFAFA;
+  --color-focus: #000000;
+  --color-blockquote-border: #000000;
+  --color-link-underline: #AAAAAA;
+
+  /* Shadows */
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
 
   /* Layout */
   --content-width: 640px;
@@ -82,6 +109,78 @@
   --tracking-tight: -0.02em;
   --tracking-normal: -0.01em;
   --tracking-wide: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DARK THEME
+   Applied via data-theme="dark" attribute on <html>
+   ═══════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] {
+  /* Semantic Colors */
+  --color-bg: #0A0A0A;
+  --color-text: #E5E5E5;
+  --color-text-secondary: #999999;
+  --color-text-tertiary: #777777;
+  --color-border: #282828;
+  --color-link: #F5F5F5;
+  --color-link-hover: #999999;
+
+  /* Surfaces & Cards */
+  --color-surface: #161616;
+  --color-surface-elevated: #1C1C1C;
+
+  /* Code */
+  --color-code-bg: #1C1C1C;
+  --color-code-text: #BBBBBB;
+  --color-pre-bg: #000000;
+  --color-pre-text: #BBBBBB;
+
+  /* Interactive */
+  --color-selection-bg: #FFFFFF;
+  --color-selection-text: #000000;
+  --color-focus: #FFFFFF;
+  --color-blockquote-border: #777777;
+  --color-link-underline: #555555;
+
+  /* Shadows */
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* System preference: auto-apply dark theme if no manual choice */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Semantic Colors */
+    --color-bg: #0A0A0A;
+    --color-text: #E5E5E5;
+    --color-text-secondary: #999999;
+    --color-text-tertiary: #777777;
+    --color-border: #282828;
+    --color-link: #F5F5F5;
+    --color-link-hover: #999999;
+
+    /* Surfaces & Cards */
+    --color-surface: #161616;
+    --color-surface-elevated: #1C1C1C;
+
+    /* Code */
+    --color-code-bg: #1C1C1C;
+    --color-code-text: #BBBBBB;
+    --color-pre-bg: #000000;
+    --color-pre-text: #BBBBBB;
+
+    /* Interactive */
+    --color-selection-bg: #FFFFFF;
+    --color-selection-text: #000000;
+    --color-focus: #FFFFFF;
+    --color-blockquote-border: #777777;
+    --color-link-underline: #555555;
+
+    /* Shadows */
+    --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.6);
+  }
 }
 
 /* Inter font feature settings */
@@ -121,6 +220,9 @@ body {
   color: var(--color-text);
   background-color: var(--color-bg);
   min-height: 100vh;
+  /* Smooth theme transition */
+  transition: background-color var(--duration-slow) var(--ease-out),
+              color var(--duration-slow) var(--ease-out);
 }
 
 img, picture, video, canvas, svg {
@@ -188,6 +290,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   padding: var(--space-3) 0;
   border-bottom: 1px solid var(--color-border);
+  transition: border-color var(--duration-slow) var(--ease-out);
 }
 
 .header__logo {
@@ -226,6 +329,7 @@ h1, h2, h3, h4, h5, h6 {
 .hero {
   padding-bottom: var(--space-10);
   border-bottom: 1px solid var(--color-border);
+  transition: border-color var(--duration-slow) var(--ease-out);
 }
 
 .hero__label {
@@ -292,6 +396,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .post-item {
   border-bottom: 1px solid var(--color-border);
+  transition: border-color var(--duration-slow) var(--ease-out);
 }
 
 .post-item:last-child {
@@ -416,14 +521,16 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  background-color: var(--color-gray-100);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   transition: transform var(--duration-normal) var(--ease-out),
-              box-shadow var(--duration-normal) var(--ease-out);
+              box-shadow var(--duration-normal) var(--ease-out),
+              background-color var(--duration-slow) var(--ease-out);
 }
 
 .stats-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card);
 }
 
 .stats-card--featured {
@@ -486,16 +593,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .demo-card {
-  background-color: var(--color-pure-white);
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: var(--space-6);
-  transition: box-shadow var(--duration-normal) var(--ease-out);
+  transition: box-shadow var(--duration-normal) var(--ease-out),
+              background-color var(--duration-slow) var(--ease-out),
+              border-color var(--duration-slow) var(--ease-out);
 }
 
 .demo-card:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .demo-card__image-link {
@@ -717,7 +826,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .prose a {
   color: var(--color-text);
-  border-bottom: 1px solid var(--color-gray-300);
+  border-bottom: 1px solid var(--color-link-underline);
   transition: border-color var(--duration-fast) var(--ease-out);
 }
 
@@ -747,7 +856,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .prose blockquote {
-  border-left: 2px solid var(--color-black);
+  border-left: 2px solid var(--color-blockquote-border);
   padding-left: var(--space-3);
   margin-left: 0;
   font-style: italic;
@@ -761,19 +870,24 @@ h1, h2, h3, h4, h5, h6 {
 .prose code {
   font-family: var(--font-mono);
   font-size: 0.875em;
-  background-color: var(--color-gray-100);
+  background-color: var(--color-code-bg);
+  color: var(--color-code-text);
   padding: 0.125em 0.375em;
   border-radius: 3px;
+  transition: background-color var(--duration-slow) var(--ease-out);
 }
 
 .prose pre {
-  background-color: var(--color-gray-900);
-  color: var(--color-white);
+  background-color: var(--color-pre-bg);
+  color: var(--color-pre-text);
   padding: var(--space-3);
   border-radius: 4px;
   overflow-x: auto;
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
+  border: 1px solid var(--color-border);
+  transition: background-color var(--duration-slow) var(--ease-out),
+              border-color var(--duration-slow) var(--ease-out);
 }
 
 .prose pre code {
@@ -900,6 +1014,8 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   background-color: var(--color-bg);
   z-index: 10;
+  transition: background-color var(--duration-slow) var(--ease-out),
+              border-color var(--duration-slow) var(--ease-out);
 }
 
 .archive__year-group .post-item:last-child {
@@ -949,6 +1065,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: var(--space-6) 0;
   margin-top: auto;
   border-top: 1px solid var(--color-border);
+  transition: border-color var(--duration-slow) var(--ease-out);
 }
 
 .footer__content {
@@ -971,13 +1088,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .footer__links {
   display: flex;
+  align-items: center;
   gap: var(--space-3);
 }
 
 .footer__links a {
-  font-size: var(--text-xs);
+  display: flex;
+  align-items: center;
   color: var(--color-text-tertiary);
   transition: color var(--duration-fast) var(--ease-out);
+}
+
+.footer__links a svg {
+  width: 18px;
+  height: 18px;
 }
 
 .footer__links a:hover {
@@ -1042,8 +1166,8 @@ h1, h2, h3, h4, h5, h6 {
    ───────────────────────────────────────────────────────────── */
 
 ::selection {
-  background-color: var(--color-black);
-  color: var(--color-white);
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-text);
 }
 
 
@@ -1056,6 +1180,49 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-black);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   18. Theme Toggle — Light/Dark switch
+   ───────────────────────────────────────────────────────────── */
+
+.theme-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+  font-family: inherit;
+  transition: color var(--duration-fast) var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-toggle:hover {
+  color: var(--color-text);
+}
+
+.theme-toggle__icon {
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+/* Light mode: show moon (to switch to dark) */
+.theme-toggle__icon--moon {
+  display: inline;
+}
+.theme-toggle__icon--sun {
+  display: none;
+}
+
+/* Dark mode: show sun (to switch to light) */
+[data-theme="dark"] .theme-toggle__icon--moon {
+  display: none;
+}
+[data-theme="dark"] .theme-toggle__icon--sun {
+  display: inline;
 }

@@ -1,4 +1,656 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4001/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4001/" rel="alternate" type="text/html" /><updated>2026-01-24T22:10:02+05:30</updated><id>http://localhost:4001/feed.xml</id><title type="html">Koushik Jaladi</title><subtitle>Building machines that think</subtitle><author><name>Koushik Jaladi</name></author><entry><title type="html">GR00T: One Foundation Model for All Robots</title><link href="http://localhost:4001/isaac-groot/" rel="alternate" type="text/html" title="GR00T: One Foundation Model for All Robots" /><published>2026-01-22T00:00:00+05:30</published><updated>2026-01-22T00:00:00+05:30</updated><id>http://localhost:4001/isaac-groot</id><content type="html" xml:base="http://localhost:4001/isaac-groot/"><![CDATA[<p>What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but a genuine foundation model that understands manipulation across embodiments.</p>
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/feed.xslt"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator>
+  <link href="http://localhost:4003/feed.xml" rel="self" type="application/atom+xml"/>
+  <link href="http://localhost:4003/" rel="alternate" type="text/html"/>
+  <updated>2026-01-26T02:04:17+05:30</updated>
+  <id>http://localhost:4003/feed.xml</id>
+  <title type="html">Koushik Jaladi</title>
+  <subtitle>Building machines that think</subtitle>
+  <author>
+    <name>Koushik Jaladi</name>
+  </author>
+  
+  <entry>
+    <title type="html">Clanta: Building a Production-Ready Agentic RAG System</title>
+    <link href="http://localhost:4003/clanta-agentic-rag-system/" rel="alternate" type="text/html" title="Clanta: Building a Production-Ready Agentic RAG System"/>
+    <published>2026-01-25T00:00:00+05:30</published>
+    <updated>2026-01-25T00:00:00+05:30</updated>
+    <id>http://localhost:4003/clanta-agentic-rag-system/</id>
+    <content type="html" xml:base="http://localhost:4003/clanta-agentic-rag-system/">
+      <![CDATA[<p>RAG has become the default pattern for grounding LLMs in external knowledge. But vanilla RAG—retrieve, augment, generate—hits a ceiling quickly. Complex queries need smarter strategies. Ambiguous questions need reformulation. Low-quality retrievals need filtering. This realization led me to build Clanta, an Agentic RAG system that thinks before it retrieves.</p>
+
+<h2 id="the-limitation-of-linear-rag">The Limitation of Linear RAG</h2>
+
+<p>Traditional RAG follows a fixed pipeline. Query comes in, embeddings find similar documents, context gets stuffed into a prompt, LLM generates an answer. It works surprisingly well for straightforward factual questions. But it falls apart in predictable ways.</p>
+
+<p>Ask a complex analytical question, and it retrieves surface-level matches rather than the deep context you need. Use technical jargon that differs from your document vocabulary, and semantic search whiffs entirely. Get unlucky with your top-k retrievals, and even a capable LLM hallucinates confidently from thin context.</p>
+
+<p>Agentic RAG flips the paradigm. Instead of a pipeline, it’s a loop. Instead of fixed behavior, it’s adaptive. The system reasons about what kind of question you’re asking, transforms queries to bridge vocabulary gaps, grades retrieved documents for relevance, and self-corrects when its answers drift from the source material.</p>
+
+<h2 id="the-architecture-five-autonomous-agents">The Architecture: Five Autonomous Agents</h2>
+
+<p>Clanta orchestrates five specialized agents, each handling a distinct phase of the retrieval-generation cycle. Think of it as an assembly line where each station can call a halt and request do-overs.</p>
+
+<p><strong>Query Router</strong> examines incoming questions and classifies them into five categories: SIMPLE (general knowledge that might not need retrieval), FACTUAL (requires precise document lookup), ANALYTICAL (needs multi-step reasoning), COMPARISON (contrasting multiple items), and SUMMARY (condensing longer content). The routing decision shapes everything downstream—simple queries might skip retrieval entirely, while analytical ones trigger deeper search strategies.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">QueryRouter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">classify_query</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryType</span><span class="p">:</span>
+        <span class="n">classification_prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"""</span><span class="s">Classify the following query:
+- SIMPLE: General knowledge, no document lookup needed
+- FACTUAL: Requires specific facts from documents
+- ANALYTICAL: Requires reasoning over multiple facts
+- COMPARISON: Comparing two or more items
+- SUMMARY: Summarization requests
+
+Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s">
+Category:</span><span class="sh">"""</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">classification_prompt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">QueryType</span><span class="p">[</span><span class="n">response</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="nf">strip</span><span class="p">().</span><span class="nf">upper</span><span class="p">()]</span>
+</code></pre></div></div>
+
+<p><strong>Query Transformer</strong> bridges the vocabulary gap between how users ask questions and how documents express answers. The key technique here is HyDE—Hypothetical Document Embeddings. Instead of embedding the raw query, we ask the LLM to write a hypothetical paragraph that would answer the question, then embed that. The intuition: a made-up answer looks more like real answers than a question does.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_hyde</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"""</span><span class="s">Write a short paragraph from an authoritative source
+that would answer this question. Don</span><span class="sh">'</span><span class="s">t mention this is hypothetical.
+
+Question: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s">
+Document paragraph:</span><span class="sh">"""</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="nf">strip</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><strong>Hybrid Retriever</strong> combines dense semantic search with sparse BM25 matching. Dense retrieval excels at conceptual similarity—finding documents that mean the same thing in different words. Sparse retrieval excels at exact matches—finding that specific error code or product name. Fusing both through reciprocal rank merging captures the best of both worlds.</p>
+
+<p><strong>Document Grader</strong> evaluates each retrieved chunk for actual relevance, not just vector similarity. High cosine similarity doesn’t guarantee useful context. The grader uses the LLM to score each document 0-10 and filters out anything below threshold before generation begins.</p>
+
+<p><strong>Hallucination Detector</strong> verifies the final answer against source material using Vectara’s HHEM model. If the response contains claims unsupported by the retrieved context, the system triggers self-correction—regenerating with explicit instructions to only use stated facts.</p>
+
+<h2 id="m2-macbook-air-optimization">M2 MacBook Air Optimization</h2>
+
+<p>Running this stack locally required careful model selection. With 16GB unified RAM, I couldn’t afford the flagship models. But smaller variants still deliver impressive quality.</p>
+
+<p>The embedding model is BAAI/bge-base-en-v1.5—768 dimensions, ~500MB in memory, with strong MTEB benchmark scores. For reranking, BAAI/bge-reranker-base provides cross-encoder accuracy at half the size of larger variants. Hallucination detection uses HHEM-2.1-Open, a T5-based model that actually outperforms GPT-4 on factual consistency benchmarks.</p>
+
+<p>The total memory footprint stays around 2.2GB, leaving plenty of headroom for the operating system and the LlamaIndex orchestration layer:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Model</th>
+      <th>RAM Usage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Embeddings</td>
+      <td>bge-base-en-v1.5</td>
+      <td>~500 MB</td>
+    </tr>
+    <tr>
+      <td>Reranker</td>
+      <td>bge-reranker-base</td>
+      <td>~500 MB</td>
+    </tr>
+    <tr>
+      <td>Hallucination</td>
+      <td>HHEM-2.1-Open</td>
+      <td>~600 MB</td>
+    </tr>
+    <tr>
+      <td>BM25</td>
+      <td>bm25s</td>
+      <td>~100 MB</td>
+    </tr>
+    <tr>
+      <td>Vector Store</td>
+      <td>Qdrant (local)</td>
+      <td>~500 MB</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Metal Performance Shaders (MPS) acceleration means embeddings and reranking run on the M2’s GPU cores. The difference is dramatic—batch embedding 100 documents takes 5-10 seconds instead of minutes.</p>
+
+<h2 id="the-self-correction-loop">The Self-Correction Loop</h2>
+
+<p>The hallucination check isn’t just a yes/no gate. When it detects unsupported claims, Clanta regenerates with additional constraints:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_self_correct</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeWithScore</span><span class="p">],</span>
+                   <span class="n">original_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="sh">"</span><span class="se">\n\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">([</span><span class="n">n</span><span class="p">.</span><span class="n">node</span><span class="p">.</span><span class="nf">get_content</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">])</span>
+
+    <span class="n">correction_prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"""</span><span class="s">The following answer may contain information
+not supported by the sources. Rewrite to ONLY include information
+directly stated in the sources. If sources don</span><span class="sh">'</span><span class="s">t have enough
+information, acknowledge that.
+
+Sources:
+</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s">
+
+Original answer: </span><span class="si">{</span><span class="n">original_answer</span><span class="si">}</span><span class="s">
+Question: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s">
+
+Corrected answer (only use information from sources):</span><span class="sh">"""</span>
+
+    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">correction_prompt</span><span class="p">).</span><span class="n">text</span><span class="p">.</span><span class="nf">strip</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>The key phrase is “acknowledge that.” Rather than hallucinating plausible-sounding details, a well-corrected response admits uncertainty. In my testing, this dramatically improved user trust—people prefer honest “I don’t know” answers over confident fabrications.</p>
+
+<h2 id="the-zen-terminal-interface">The Zen Terminal Interface</h2>
+
+<p>I spent an unreasonable amount of time on the CLI aesthetics. Clanta uses Rich for terminal rendering, with a Japanese-inspired minimalist theme. The color palette draws from traditional colors—Aka red for accents, Kinari cream for backgrounds, Hai gray for secondary text.</p>
+
+<p>The confidence indicator uses three states: a filled circle (●) for high confidence above 70%, a half-moon (◐) for medium confidence 50-70%, and an empty circle (○) for low confidence. Users immediately understand the system’s certainty without reading numbers.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ZEN</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sh">"</span><span class="s">red</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">#C53D43</span><span class="sh">"</span><span class="p">,</span>      <span class="c1"># Aka (赤) - Traditional red
+</span>    <span class="sh">"</span><span class="s">white</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">#F5F5F5</span><span class="sh">"</span><span class="p">,</span>    <span class="c1"># Shiro (白)
+</span>    <span class="sh">"</span><span class="s">gold</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">#C9A86C</span><span class="sh">"</span><span class="p">,</span>     <span class="c1"># Kin (金)
+</span>    <span class="sh">"</span><span class="s">gray</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">#4A4A4A</span><span class="sh">"</span><span class="p">,</span>     <span class="c1"># Hai (灰)
+</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>The ASCII art banner, the spinners, the panel borders—everything follows this restrained palette. It sounds trivial, but a beautiful interface makes the tool a joy to use during long research sessions.</p>
+
+<h2 id="evaluation-against-research-papers">Evaluation Against Research Papers</h2>
+
+<p>I tested Clanta against three arXiv papers: the original RAG paper by Lewis et al., and two reinforcement learning papers. With 142 chunks indexed across 52 pages, here’s how the evaluation matrix looked:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Query</th>
+      <th>Type Detected</th>
+      <th>Confidence</th>
+      <th>Assessment</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“What is RAG?”</td>
+      <td>simple</td>
+      <td>67%</td>
+      <td>Excellent—DPR, BART, MIPS explained</td>
+    </tr>
+    <tr>
+      <td>“RAG-Sequence vs RAG-Token”</td>
+      <td>comparison</td>
+      <td>78%</td>
+      <td>Clear mathematical differences</td>
+    </tr>
+    <tr>
+      <td>“How does DPR work?”</td>
+      <td>simple</td>
+      <td>66%</td>
+      <td>Bi-encoder architecture described</td>
+    </tr>
+    <tr>
+      <td>“What datasets evaluated RAG?”</td>
+      <td>factual</td>
+      <td>73%</td>
+      <td>Listed NQ, TriviaQA, FEVER, MS-MARCO</td>
+    </tr>
+    <tr>
+      <td>“Limitations of RAG?”</td>
+      <td>simple</td>
+      <td>50%</td>
+      <td>Partial—retrieval collapse mentioned</td>
+    </tr>
+    <tr>
+      <td>“What is contrastive RL?”</td>
+      <td>simple</td>
+      <td>57%</td>
+      <td>Cross-paper retrieval worked</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The cross-paper retrieval result surprised me—Clanta correctly retrieved content from the RL papers when asked about reinforcement learning, despite the query being classified as “simple” and primarily associated with the RAG domain.</p>
+
+<h2 id="the-hard-won-lessons">The Hard-Won Lessons</h2>
+
+<p><strong>LlamaIndex wrappers can be brittle.</strong> I spent hours debugging version conflicts between LlamaIndex’s HuggingFaceEmbedding wrapper and sentence-transformers. The solution was writing a custom embedding class that bypasses the wrapper entirely, using Pydantic’s <code class="language-plaintext highlighter-rouge">Field()</code> and <code class="language-plaintext highlighter-rouge">PrivateAttr()</code> for proper attribute handling.</p>
+
+<p><strong>Package version alignment is critical.</strong> A single <code class="language-plaintext highlighter-rouge">pip install --force-reinstall</code> broke my torch/torchvision pairing and caused cryptic “operator does not exist” errors. Now I pin versions explicitly and test the full stack after any dependency change.</p>
+
+<p><strong>Feature toggles enable debugging.</strong> Every agentic component—routing, HyDE, reranking, grading, hallucination checking—can be individually disabled. This made isolating problems trivial. When confidence dropped unexpectedly, I could toggle features until I found the culprit.</p>
+
+<p><strong>Grading is expensive.</strong> LLM-based document grading adds a Claude call per retrieved chunk. For 20 chunks, that’s 20 API calls before generation even starts. I disabled it by default and only enable for high-stakes queries where false positives are costly.</p>
+
+<h2 id="whats-next">What’s Next</h2>
+
+<p>The obvious improvement is conversation memory. Right now, each query is independent. Adding chat history would enable follow-up questions and clarifications without re-stating context.</p>
+
+<p>Caching is another win. HyDE documents and embeddings for repeated queries should be memoized. The same question within a session shouldn’t trigger fresh API calls.</p>
+
+<p>Finally, streaming. The current implementation blocks until the full answer is ready. Progressive generation would improve perceived latency, especially for longer responses.</p>
+
+<p>Clanta started as a learning project to understand agentic patterns. It became a genuinely useful tool for researching papers and documentation. The core insight holds: LLMs are better when they reason about how to retrieve, not just what to retrieve. The extra API calls and latency pay dividends in answer quality.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[RAG has become the default pattern for grounding LLMs in external knowledge. But vanilla RAG—retrieve, augment, generate—hits a ceiling quickly. Complex queries need smarter strategies. Ambiguous q...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">PodScribe: Building a Local-First Podcast Notes Generator</title>
+    <link href="http://localhost:4003/podscribe-podcast-notes-generator/" rel="alternate" type="text/html" title="PodScribe: Building a Local-First Podcast Notes Generator"/>
+    <published>2026-01-24T00:00:00+05:30</published>
+    <updated>2026-01-24T00:00:00+05:30</updated>
+    <id>http://localhost:4003/podscribe-podcast-notes-generator/</id>
+    <content type="html" xml:base="http://localhost:4003/podscribe-podcast-notes-generator/">
+      <![CDATA[<p>There’s something deeply satisfying about building tools that keep your data local. When I set out to create PodScribe—an AI-powered podcast show notes generator—I made a deliberate choice: transcription would happen entirely on my machine, with only the final text leaving for AI processing. The result? A system that costs about $0.01-0.03 per episode while keeping audio files private.</p>
+
+<h2 id="the-problem-podcast-notes-are-tedious">The Problem: Podcast Notes Are Tedious</h2>
+
+<p>If you’ve ever tried to create comprehensive show notes for a podcast episode, you know the pain. Listen to an hour of content, timestamp key moments, write a summary, pull social-friendly quotes, suggest SEO-optimized titles. It’s easily 2-3 hours of work per episode.</p>
+
+<p>Cloud transcription services solve part of this—but they’re expensive, require uploading your audio to third-party servers, and still leave you with raw transcripts that need manual processing. I wanted something different: a pipeline where audio never leaves my machine, but I still get polished, publication-ready content.</p>
+
+<h2 id="the-architecture-two-layers-of-intelligence">The Architecture: Two Layers of Intelligence</h2>
+
+<p>PodScribe operates in two distinct phases. Think of it like a relay race—local transcription hands off to cloud generation.</p>
+
+<p><strong>Phase 1: Local Transcription (Parakeet MLX)</strong></p>
+
+<p>The first phase uses NVIDIA’s Parakeet TDT 0.6B model, optimized for Apple Silicon through MLX. This was a game-changer—transcription runs 30x faster than real-time on an M-series Mac. A 60-minute podcast transcribes in about 2 minutes.</p>
+
+<p>The key insight was handling long audio gracefully. Podcasts often run 1-2 hours, which can overwhelm memory if processed as a single chunk. My solution: intelligent chunking.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">CHUNK_DURATION_SECONDS</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes per chunk
+</span><span class="n">MAX_DURATION_WITHOUT_CHUNKING</span> <span class="o">=</span> <span class="mi">600</span>  <span class="c1"># 10 minutes threshold
+</span>
+<span class="k">def</span> <span class="nf">transcribe_audio</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="nf">get_audio_duration</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">duration</span> <span class="o">&lt;=</span> <span class="n">MAX_DURATION_WITHOUT_CHUNKING</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nf">transcribe_single_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+    <span class="c1"># Chunk processing for long files
+</span>    <span class="n">chunks</span> <span class="o">=</span> <span class="nf">split_audio_into_chunks</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">CHUNK_DURATION_SECONDS</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chunk_path</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">chunks</span><span class="p">):</span>
+        <span class="nf">print_status</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Transcribing chunk </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s">/</span><span class="si">{</span><span class="nf">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s">...</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nf">transcribe_single_file</span><span class="p">(</span><span class="n">chunk_path</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nf">merge_transcription_results</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Files under 10 minutes process directly. Longer files get split into 5-minute chunks, transcribed sequentially, then merged with proper timestamp alignment. This approach keeps memory usage constant regardless of podcast length.</p>
+
+<p><strong>Phase 2: AI Content Generation (GPT-4o-mini)</strong></p>
+
+<p>Once I have a transcript, GPT-4o-mini transforms it into structured content. The prompt engineering here was crucial—I needed consistent, parseable output across diverse podcast topics.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_content</span><span class="p">(</span><span class="n">transcript</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="n">chat</span><span class="p">.</span><span class="n">completions</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">gpt-4o-mini</span><span class="sh">"</span><span class="p">,</span>
+        <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">system</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">:</span> <span class="n">CONTENT_GENERATION_PROMPT</span><span class="p">},</span>
+            <span class="p">{</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">user</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="s">Generate content for:</span><span class="se">\n\n</span><span class="si">{</span><span class="n">transcript</span><span class="si">}</span><span class="sh">"</span><span class="p">}</span>
+        <span class="p">],</span>
+        <span class="n">response_format</span><span class="o">=</span><span class="p">{</span><span class="sh">"</span><span class="s">type</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">json_object</span><span class="sh">"</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">message</span><span class="p">.</span><span class="n">content</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">response_format={"type": "json_object"}</code> parameter ensures I always get valid JSON back—no regex parsing of prose responses. The AI returns a structured object with summary, show_notes, timestamps, blog_post, social_quotes, title_suggestions, and tags.</p>
+
+<h2 id="the-dual-model-fallback-pattern">The Dual-Model Fallback Pattern</h2>
+
+<p>Real-world systems need graceful degradation. Not everyone has Parakeet installed, and even when available, edge cases can cause failures. PodScribe implements a fallback chain:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="n">PARAKEET_AVAILABLE</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="nf">get_parakeet_model</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">transcribe</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="sh">"</span><span class="s">text</span><span class="sh">"</span><span class="p">:</span> <span class="n">result</span><span class="p">.</span><span class="n">text</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">segments</span><span class="sh">"</span><span class="p">:</span> <span class="n">segments</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">model</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">parakeet-tdt-0.6b-v2</span><span class="sh">"</span>
+        <span class="p">}</span>
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nf">print_status</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">⚠️ Parakeet failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s">, trying Whisper...</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">yellow</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">WHISPER_AVAILABLE</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mlx_whisper</span><span class="p">.</span><span class="nf">transcribe</span><span class="p">(</span>
+        <span class="n">file_path</span><span class="p">,</span>
+        <span class="n">path_or_hf_repo</span><span class="o">=</span><span class="sh">"</span><span class="s">mlx-community/whisper-large-v3-turbo</span><span class="sh">"</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="sh">"</span><span class="s">text</span><span class="sh">"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="sh">"</span><span class="s">text</span><span class="sh">"</span><span class="p">],</span> <span class="sh">"</span><span class="s">model</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">whisper-large-v3-turbo</span><span class="sh">"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>Parakeet is preferred for speed, but MLX-Whisper serves as a capable backup. The system tracks which model processed each file, useful for debugging quality issues.</p>
+
+<h2 id="two-interfaces-cli-and-web">Two Interfaces: CLI and Web</h2>
+
+<p>PodScribe ships with dual interfaces for different workflows.</p>
+
+<p><strong>The CLI Tool</strong> (<code class="language-plaintext highlighter-rouge">podscribe.py</code>) is perfect for batch processing or scripting. Drop it into a cron job or shell script:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python podscribe.py episode.mp3 <span class="nt">--output</span> ./notes/
+</code></pre></div></div>
+
+<p><strong>The Web Server</strong> (<code class="language-plaintext highlighter-rouge">server.py</code>) provides a drag-and-drop interface for occasional use. This was where I invested the most design effort—following Dieter Rams’ principle of “less, but better.”</p>
+
+<p>The entire UI lives in a single Python file. No separate HTML templates, no CSS files, no JavaScript bundles. Everything is inline, making deployment trivial:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">HTML_TEMPLATE</span> <span class="o">=</span> <span class="sh">"""</span><span class="s">
+&lt;!DOCTYPE html&gt;
+&lt;html lang=</span><span class="sh">"</span><span class="s">en</span><span class="sh">"</span><span class="s">&gt;
+&lt;head&gt;
+    &lt;style&gt;
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --accent: #6366f1;
+        }
+        /* Linear/Spotify-inspired dark theme */
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class=</span><span class="sh">"</span><span class="s">drop-zone</span><span class="sh">"</span><span class="s"> id=</span><span class="sh">"</span><span class="s">dropZone</span><span class="sh">"</span><span class="s">&gt;
+        &lt;p&gt;Drop your podcast here&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;script&gt;
+        // Drag-drop handling + progress UI
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</span><span class="sh">"""</span>
+</code></pre></div></div>
+
+<p>The aesthetic draws from Linear and Spotify—dark backgrounds, subtle gradients, indigo accents. The drop zone pulses gently while processing, and results render in collapsible sections for each content type.</p>
+
+<h2 id="lessons-from-the-trenches">Lessons from the Trenches</h2>
+
+<p><strong>Chunking granularity matters.</strong> My first implementation used 10-minute chunks, which occasionally caused memory pressure on longer models. Dropping to 5 minutes added minimal overhead while ensuring stability across all hardware configurations.</p>
+
+<p><strong>Inline everything for simple deployments.</strong> Separating HTML, CSS, and JavaScript feels “cleaner” but creates deployment complexity. For single-purpose tools, a monolithic server file is actually easier to maintain and share.</p>
+
+<p><strong>JSON mode is underrated.</strong> Before using <code class="language-plaintext highlighter-rouge">response_format={"type": "json_object"}</code>, I spent hours crafting prompts that would produce parseable output. The structured response mode eliminated an entire class of bugs.</p>
+
+<p><strong>Track your models.</strong> Including the transcription model in output metadata saved me hours of debugging. When a transcript seemed off, I could immediately check whether Parakeet or Whisper processed it.</p>
+
+<h2 id="the-economics">The Economics</h2>
+
+<p>At ~$0.01-0.03 per episode (just the GPT-4o-mini call for content generation), PodScribe costs less than a single cup of coffee to process a month’s worth of podcasts. The transcription is free—it runs locally on your hardware.</p>
+
+<p>Compare this to commercial podcast transcription services charging $0.10-0.25 per minute. A 60-minute episode at $0.15/minute costs $9. PodScribe does the same job—plus generates all the derivative content—for roughly $0.02.</p>
+
+<h2 id="what-id-do-differently">What I’d Do Differently</h2>
+
+<p>If I were starting over, I’d add speaker diarization. Knowing who said what transforms podcast notes from a wall of text into a readable conversation. Parakeet supports this, but I haven’t integrated it yet.</p>
+
+<p>I’d also consider streaming the transcription results. Currently, users wait for full transcription before seeing any output. Progressive display would improve perceived performance for longer files.</p>
+
+<p>Finally, a proper queue system would enable batch processing through the web interface. Right now, it’s one file at a time—fine for personal use, limiting for production workflows.</p>
+
+<p>PodScribe represents a pattern I keep returning to: local processing where privacy matters, cloud AI where intelligence is needed, and thoughtful interface design throughout. The podcast notes themselves are useful, but the architecture is the real product—a template for privacy-respecting AI tools.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[There’s something deeply satisfying about building tools that keep your data local. When I set out to create PodScribe—an AI-powered podcast show notes generator—I made a deliberate choice: transcr...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Research Swarm: A Production-Grade Multi-Agent Research System</title>
+    <link href="http://localhost:4003/research-swarm-multi-agent/" rel="alternate" type="text/html" title="Research Swarm: A Production-Grade Multi-Agent Research System"/>
+    <published>2026-01-23T00:00:00+05:30</published>
+    <updated>2026-01-23T00:00:00+05:30</updated>
+    <id>http://localhost:4003/research-swarm-multi-agent/</id>
+    <content type="html" xml:base="http://localhost:4003/research-swarm-multi-agent/">
+      <![CDATA[<p>What if you could automate the entire research process—not just search, but analysis, synthesis, writing, editing, and publishing? Research Swarm is my implementation of that vision: a multi-agent system where five specialized AI agents collaborate to produce comprehensive research reports from a single query.</p>
+
+<p>The result: professional reports with citations, cross-referenced findings, and even contrarian perspectives. And crucially, a complete evaluation framework that proves the system works.</p>
+
+<h2 id="the-five-agent-orchestra">The Five-Agent Orchestra</h2>
+
+<p>Think of it like a research team where each member has a specialized role:</p>
+
+<p><strong>Lead Agent (Orchestrator)</strong> receives the research query and decomposes it into subtasks. “What are the top AI trends for 2026?” becomes five specific research questions: agentic systems, multimodal integration, edge deployment, safety/alignment, and industry adoption. This decomposition uses Claude Opus 4.5 for reasoning quality.</p>
+
+<p><strong>Researcher Agents</strong> execute web searches for each subtask via Tavily API. Multiple researchers run sequentially (parallel execution hit rate limits), each gathering findings with source URLs. Claude Haiku 4.5 handles this—fast and cheap since the task is straightforward.</p>
+
+<p><strong>Analyst Agent</strong> synthesizes all findings into coherent themes. It identifies patterns across subtasks, resolves contradictions, and extracts key insights. Back to Opus 4.5 for the reasoning depth.</p>
+
+<p><strong>Writer Agent</strong> transforms the analysis into a structured report: executive summary, key findings with citations, analysis sections, and conclusion. Professional formatting, proper markdown structure.</p>
+
+<p><strong>Editor Agent</strong> fact-checks claims against sources, adds contrarian perspectives (what might be wrong with this analysis?), and improves clarity. The skeptical voice that prevents echo-chamber research.</p>
+
+<p><strong>Publisher Agent</strong> saves the final report to disk with metadata. No AI here—just file I/O.</p>
+
+<h2 id="the-evaluation-framework-that-proves-it-works">The Evaluation Framework That Proves It Works</h2>
+
+<p>Building a system isn’t enough—you need to prove it works. Research Swarm includes a complete evaluation framework with two grading approaches:</p>
+
+<p><strong>Rule-Based Checks (8 criteria):</strong></p>
+<ul>
+  <li>Word count within 500-5000 words</li>
+  <li>Required sections present (intro, findings, analysis, references)</li>
+  <li>Contains citations with URLs</li>
+  <li>Covers expected themes for the query</li>
+  <li>Uses appropriate source domains</li>
+  <li>Citations are consistent and sequential</li>
+  <li>URLs return valid responses</li>
+</ul>
+
+<p><strong>LLM-as-Judge (6 dimensions):</strong></p>
+<ul>
+  <li>Relevance: Does it address the query?</li>
+  <li>Accuracy: Are claims factually correct?</li>
+  <li>Completeness: Is coverage comprehensive?</li>
+  <li>Clarity: Is it well-organized and readable?</li>
+  <li>Insight: Does it go beyond summarization?</li>
+  <li>Citation Quality: Are sources credible?</li>
+</ul>
+
+<p>Each dimension scores 1-5, then normalizes to percentages. Final score: 50% rule-based + 50% LLM judge.</p>
+
+<h2 id="the-results">The Results</h2>
+
+<p>The evaluation suite produced concrete metrics:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Query</th>
+      <th>Overall</th>
+      <th>Rule-Based</th>
+      <th>LLM Judge</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AI Trends 2026</td>
+      <td>87.0%</td>
+      <td>87.5%</td>
+      <td>86.7%</td>
+    </tr>
+    <tr>
+      <td>What is RAG?</td>
+      <td>80.0%</td>
+      <td>75.0%</td>
+      <td>83.3%</td>
+    </tr>
+    <tr>
+      <td>AI Agent Risks</td>
+      <td>94.0%</td>
+      <td>100.0%</td>
+      <td>90.0%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Average: <strong>87.0%</strong> across all test cases. Not perfect, but solidly professional quality.</p>
+
+<p>The weakest dimension was citation quality—sometimes numbering gaps or missing references. The strongest was clarity and completeness—the reports are well-organized and thorough.</p>
+
+<h2 id="technical-architecture-decisions">Technical Architecture Decisions</h2>
+
+<p><strong>Model tiering</strong>: Opus 4.5 for reasoning (orchestration, analysis, writing, editing), Haiku 4.5 for execution (research). This balances quality with cost—roughly 165,000 tokens per research query.</p>
+
+<p><strong>Sequential over parallel</strong>: Initial parallel researcher execution hit API rate limits. Sequential processing with proper delays is slower but reliable. Future work: add rate limiting and restore parallelism.</p>
+
+<p><strong>Tavily for search</strong>: Free tier sufficient for development. Advanced search depth, up to 10 results per query, with domain filtering for source quality.</p>
+
+<p><strong>Async throughout</strong>: <code class="language-plaintext highlighter-rouge">AsyncAnthropic</code> client, async agent execution, async file I/O. The entire pipeline is non-blocking.</p>
+
+<p><strong>Workflow state tracking</strong>: Every agent execution is logged with input/output tokens. Status callbacks enable real-time progress UI.</p>
+
+<h2 id="the-fallback-pattern">The Fallback Pattern</h2>
+
+<p>Real-world systems need graceful degradation. When JSON parsing fails (researcher returns prose instead of structured findings), the system falls back to text extraction:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_extract_findings_from_text</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">Fallback extraction when JSON parsing fails.</span><span class="sh">"""</span>
+    <span class="n">findings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Parse text content into structured data
+</span>    <span class="k">return</span> <span class="p">{</span><span class="sh">"</span><span class="s">key_findings</span><span class="sh">"</span><span class="p">:</span> <span class="n">findings</span><span class="p">,</span> <span class="sh">"</span><span class="s">sources</span><span class="sh">"</span><span class="p">:</span> <span class="n">sources</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>Similarly, query decomposition has fallback logic—if the lead agent returns unparseable output, create a single subtask from the original query.</p>
+
+<h2 id="report-structure">Report Structure</h2>
+
+<p>Generated reports follow a consistent structure:</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh"># [Research Topic]</span>
+
+<span class="gu">## Executive Summary</span>
+[2-3 paragraph overview]
+
+<span class="gu">## Key Findings</span>
+
+<span class="gu">### Finding 1: [Title]</span>
+<span class="p">[</span><span class="nv">Detailed explanation with citations [1</span><span class="p">][</span><span class="ss">2</span><span class="p">]</span>]
+
+<span class="gu">### Finding 2: [Title]</span>
+<span class="p">[</span><span class="nv">Detailed explanation with citations [3</span><span class="p">][</span><span class="ss">4</span><span class="p">]</span>]
+
+<span class="gu">## Analysis</span>
+
+<span class="gu">### Themes</span>
+[Cross-cutting patterns]
+
+<span class="gu">### Implications</span>
+[What this means]
+
+<span class="gu">### Contrarian Perspectives</span>
+[Alternative viewpoints]
+
+<span class="gu">## Conclusion</span>
+[Summary and recommendations]
+
+<span class="gu">## References</span>
+<span class="p">1.</span> <span class="p">[</span><span class="nv">Source 1</span><span class="p">](</span><span class="sx">url</span><span class="p">)</span>
+<span class="p">2.</span> <span class="p">[</span><span class="nv">Source 2</span><span class="p">](</span><span class="sx">url</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The editor explicitly adds contrarian perspectives—a rare feature that makes reports more balanced than typical AI-generated content.</p>
+
+<h2 id="evaluation-cli">Evaluation CLI</h2>
+
+<p>The system includes comprehensive evaluation commands:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Run quick evaluation suite (3 cases)</span>
+research-swarm <span class="nb">eval </span>run <span class="nt">--suite</span> quick
+
+<span class="c"># Run with multiple trials</span>
+research-swarm <span class="nb">eval </span>run <span class="nt">--suite</span> quick <span class="nt">--trials</span> 3
+
+<span class="c"># Evaluate existing report</span>
+research-swarm <span class="nb">eval </span>report ./output/report.md <span class="nt">--query</span> <span class="s2">"Original query"</span>
+
+<span class="c"># List available eval cases</span>
+research-swarm <span class="nb">eval </span>list
+</code></pre></div></div>
+
+<p>Results export as both markdown reports and JSON for further analysis.</p>
+
+<h2 id="resource-usage">Resource Usage</h2>
+
+<p>Real numbers from evaluation runs:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Average</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Execution Time</td>
+      <td>8.2 minutes</td>
+    </tr>
+    <tr>
+      <td>Tokens Used</td>
+      <td>165,000</td>
+    </tr>
+    <tr>
+      <td>Report Length</td>
+      <td>1,500-2,500 words</td>
+    </tr>
+    <tr>
+      <td>Sources Cited</td>
+      <td>15-25</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>At current Claude pricing, that’s roughly $2-3 per comprehensive research report. Expensive for casual use, reasonable for professional research automation.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Orchestration is the hard part</strong>. Individual agents are straightforward. Coordinating them, handling failures, maintaining state across the pipeline—that’s where complexity lives.</p>
+
+<p><strong>Evaluation frameworks are essential</strong>. Without metrics, “it seems to work” is the best you can say. With metrics, you can iterate systematically.</p>
+
+<p><strong>LLM-as-judge correlates with human judgment</strong>. GPT-4.1’s scores on the six dimensions matched my own assessment of report quality. The approach is valid for automated evaluation.</p>
+
+<p><strong>Sequential execution beats broken parallelism</strong>. Rate limits are real. A slower, reliable system is better than a fast, flaky one.</p>
+
+<p><strong>The editor agent adds genuine value</strong>. Contrarian perspectives, fact-checking against sources, clarity improvements—these aren’t cosmetic. They measurably improve report quality.</p>
+
+<p><strong>Token costs add up</strong>. 165,000 tokens per query constrains use cases. Caching, shorter context windows, or cheaper models for some agents would help.</p>
+
+<p>Research Swarm demonstrates that multi-agent systems can produce professional-quality work—when properly orchestrated and rigorously evaluated. The architecture patterns generalize beyond research: any complex knowledge task can benefit from specialized agents coordinating through a structured workflow.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[What if you could automate the entire research process—not just search, but analysis, synthesis, writing, editing, and publishing? Research Swarm is my implementation of that vision: a multi-agent ...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">GR00T: One Foundation Model for All Robots</title>
+    <link href="http://localhost:4003/isaac-groot/" rel="alternate" type="text/html" title="GR00T: One Foundation Model for All Robots"/>
+    <published>2026-01-22T00:00:00+05:30</published>
+    <updated>2026-01-22T00:00:00+05:30</updated>
+    <id>http://localhost:4003/isaac-groot/</id>
+    <content type="html" xml:base="http://localhost:4003/isaac-groot/">
+      <![CDATA[<p>What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but a genuine foundation model that understands manipulation across embodiments.</p>
 
 <p>That’s NVIDIA’s GR00T project, and I spent time exploring their N1.5 release to understand how it works.</p>
 
@@ -110,7 +762,941 @@
 
 <hr />
 
-<p><em>Explored from NVIDIA’s Isaac-GR00T codebase, with appreciation for what 7 million parameters can accomplish.</em></p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but a genuine foundation model that understands manipulation across embodiments.]]></summary></entry><entry><title type="html">Teaching MCP Through an RPG: Metacon2</title><link href="http://localhost:4001/mcp-quest-v2/" rel="alternate" type="text/html" title="Teaching MCP Through an RPG: Metacon2" /><published>2026-01-10T00:00:00+05:30</published><updated>2026-01-10T00:00:00+05:30</updated><id>http://localhost:4001/mcp-quest-v2</id><content type="html" xml:base="http://localhost:4001/mcp-quest-v2/"><![CDATA[<p>How do you teach something as abstract as the Model Context Protocol? Documentation helps, but understanding really clicks through experience. MCP Quest (Metacon2) turns protocol concepts into a Pokémon-style RPG where you learn by exploring, talking to NPCs, and completing challenges.</p>
+<p><em>Explored from NVIDIA’s Isaac-GR00T codebase, with appreciation for what 7 million parameters can accomplish.</em></p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[What if you could train one AI model that works on every robot? Not task-specific controllers that need retraining for each arm, each gripper, each body—but a genuine foundation model that understa...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">The Anthropic Skills Framework: Extending Claude with Domain Expertise</title>
+    <link href="http://localhost:4003/anthropic-skills-framework/" rel="alternate" type="text/html" title="The Anthropic Skills Framework: Extending Claude with Domain Expertise"/>
+    <published>2026-01-20T00:00:00+05:30</published>
+    <updated>2026-01-20T00:00:00+05:30</updated>
+    <id>http://localhost:4003/anthropic-skills-framework/</id>
+    <content type="html" xml:base="http://localhost:4003/anthropic-skills-framework/">
+      <![CDATA[<p>How do you give an AI assistant domain expertise without bloating its context window? The Anthropic Skills Framework answers this with progressive disclosure: metadata always available, detailed documentation loaded on-demand, executable scripts invoked when needed.</p>
+
+<p>This project contains seven production-ready skills that transform Claude from a general-purpose assistant into a specialist for document processing, spreadsheet operations, and technical tasks.</p>
+
+<h2 id="the-progressive-disclosure-pattern">The Progressive Disclosure Pattern</h2>
+
+<p>Every skill follows a three-tier structure:</p>
+
+<p><strong>Tier 1 - Metadata</strong> (always loaded): Name and description in YAML frontmatter. This triggers skill activation based on user requests.</p>
+
+<p><strong>Tier 2 - SKILL.md</strong> (loaded when triggered): Detailed instructions, workflows, and examples. Provides the knowledge Claude needs to use the skill effectively.</p>
+
+<p><strong>Tier 3 - Bundled resources</strong> (loaded on-demand): Executable scripts, reference documentation, templates. Used during actual task execution.</p>
+
+<p>This hierarchy means Claude doesn’t carry the weight of every skill’s documentation in every conversation. A user working on spreadsheets loads the XLSX skill; PDF capabilities stay dormant until needed.</p>
+
+<h2 id="document-processing-suite">Document Processing Suite</h2>
+
+<p>Three skills handle Microsoft Office formats:</p>
+
+<p><strong>PDF Skill</strong>: Extract text and tables, create new PDFs, merge and split documents, fill forms, OCR scanned pages. Uses pypdf, pdfplumber, and reportlab under the hood.</p>
+
+<p><strong>DOCX Skill</strong>: Create and edit Word documents with tracked changes, comments, and formatting preservation. Handles the complexity of Office Open XML through python-docx and pandoc.</p>
+
+<p><strong>PPTX Skill</strong>: Create and edit PowerPoint presentations with precise layout control. Uniquely uses an HTML-to-PowerPoint workflow—design slides as HTML, convert with accurate positioning.</p>
+
+<p>Each skill understands that .docx, .xlsx, and .pptx files are ZIP archives containing XML. Complex operations become: unpack → modify XML → repack. The framework handles secure XML parsing with defusedxml to prevent XXE attacks.</p>
+
+<h2 id="the-xlsx-skill-deep-dive">The XLSX Skill Deep Dive</h2>
+
+<p>Spreadsheet handling deserves special attention. The skill emphasizes a formula-first philosophy:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❌ Wrong: Hardcode calculated values
+✅ Right: Use formulas that recalculate when inputs change
+</code></pre></div></div>
+
+<p>Professional financial modeling conventions are documented:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Color</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Blue</td>
+      <td>Input values (user-editable)</td>
+    </tr>
+    <tr>
+      <td>Black</td>
+      <td>Formulas (calculated)</td>
+    </tr>
+    <tr>
+      <td>Green</td>
+      <td>Links to other sheets</td>
+    </tr>
+    <tr>
+      <td>Red</td>
+      <td>External file references</td>
+    </tr>
+    <tr>
+      <td>Yellow</td>
+      <td>Assumptions</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Formula recalculation requires LibreOffice automation. Excel formulas are stored as text; LibreOffice’s macro engine actually computes values. The skill includes scripts that auto-configure this on first run, handling macOS and Linux path differences.</p>
+
+<p>Quality assurance validates outputs: check for #REF!, #DIV/0!, and other formula errors; detect overflow; convert to PDF and JPEG for visual verification.</p>
+
+<h2 id="deepseek-ocr-skills">DeepSeek-OCR Skills</h2>
+
+<p>Two specialized skills handle optical text compression using vision-language models:</p>
+
+<p><strong>DeepSeek-OCR Windows</strong>: Setup and usage guide for NVIDIA GPU systems. Covers CUDA 11.8 configuration, Flash Attention 2 installation, and troubleshooting common issues.</p>
+
+<p><strong>DeepSeek-OCR Batch Processing</strong>: Large-scale document processing pipelines. Compression benchmarks, memory system integration, and batch workflow orchestration.</p>
+
+<p>The compression results are significant:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Approach</th>
+      <th>Tokens</th>
+      <th>Accuracy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Traditional OCR</td>
+      <td>6,000+</td>
+      <td>~95%</td>
+    </tr>
+    <tr>
+      <td>DeepSeek (10x compression)</td>
+      <td>600</td>
+      <td>97%</td>
+    </tr>
+    <tr>
+      <td>DeepSeek (20x compression)</td>
+      <td>300</td>
+      <td>60%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For long-context LLM applications, reducing token count by 90% while maintaining accuracy transforms economics.</p>
+
+<h2 id="the-skill-creator-meta-skill">The Skill Creator Meta-Skill</h2>
+
+<p>The framework includes a skill for creating new skills. It documents:</p>
+
+<ul>
+  <li>Directory structure conventions</li>
+  <li>YAML frontmatter requirements</li>
+  <li>SKILL.md content guidelines</li>
+  <li>How to bundle scripts and references</li>
+  <li>Testing and validation procedures</li>
+</ul>
+
+<p>This enables the framework to extend itself. Users with domain expertise can encode it as skills, making Claude more capable for their specific workflows.</p>
+
+<h2 id="architecture-insights">Architecture Insights</h2>
+
+<p><strong>Skill metadata is the triggering mechanism</strong>. The description field drives when Claude activates the skill. Writing good descriptions is as important as writing good documentation.</p>
+
+<p><strong>Office files are XML transformations</strong>. Understanding this unlocks manipulation capabilities. The framework abstracts the complexity but doesn’t hide the underlying model.</p>
+
+<p><strong>LibreOffice bridges capability gaps</strong>. Native Python libraries can’t recalculate Excel formulas. LibreOffice’s macro integration fills this gap, enabling true spreadsheet operations rather than just data manipulation.</p>
+
+<p><strong>Security requires active defense</strong>. XML parsing vulnerabilities (XXE) are real. Using defusedxml instead of standard libraries prevents an entire class of attacks.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Progressive disclosure scales expertise</strong>. Loading everything upfront wastes context. Loading nothing requires users to specify what they need. Progressive disclosure finds the balance—metadata triggers detailed loading automatically.</p>
+
+<p><strong>Format expertise is valuable</strong>. Office file formats are complex. Skills that handle this complexity reliably save hours of manual work and debugging.</p>
+
+<p><strong>Bundled scripts enable actions</strong>. Knowledge alone isn’t enough; Claude needs executable capabilities. Scripts bridge the gap between understanding and doing.</p>
+
+<p><strong>Quality assurance must be automated</strong>. Formula errors, formatting issues, and structural problems are easy to introduce and hard to spot. Validation scripts catch issues before users do.</p>
+
+<p><strong>Meta-skills accelerate growth</strong>. A skill for creating skills means the framework improves through use. Each new skill becomes available for future conversations.</p>
+
+<p>The Anthropic Skills Framework demonstrates that AI capability isn’t just about model size or training data. It’s about modular expertise—domain knowledge packaged for efficient loading and reliable execution. Skills transform Claude from knowing about things to doing things.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[How do you give an AI assistant domain expertise without bloating its context window? The Anthropic Skills Framework answers this with progressive disclosure: metadata always available, detailed do...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Learning MCP: The Protocol That&apos;s Becoming AI&apos;s USB-C</title>
+    <link href="http://localhost:4003/mcp-learning-journey/" rel="alternate" type="text/html" title="Learning MCP: The Protocol That&apos;s Becoming AI&apos;s USB-C"/>
+    <published>2026-01-19T00:00:00+05:30</published>
+    <updated>2026-01-19T00:00:00+05:30</updated>
+    <id>http://localhost:4003/mcp-learning-journey/</id>
+    <content type="html" xml:base="http://localhost:4003/mcp-learning-journey/">
+      <![CDATA[<p>Model Context Protocol started as Anthropic’s solution for connecting Claude to external tools. By January 2026, it’s become the industry standard—adopted by OpenAI, Google, Microsoft, and AWS. Understanding MCP is now essential for anyone building AI systems.</p>
+
+<p>This project documents my learning journey: from a simple “hello world” server to understanding why MCP won the standards war.</p>
+
+<h2 id="the-core-abstraction">The Core Abstraction</h2>
+
+<p>Before MCP, connecting an AI to N tools required N custom integrations. Each tool had its own API format, authentication scheme, and error handling. Connecting M AI systems to N tools meant M×N integration work.</p>
+
+<p>MCP introduces a standard interface. Any AI system speaking MCP can connect to any MCP server. The complexity drops from M×N to M+N. It’s the same transformation USB brought to hardware peripherals.</p>
+
+<h2 id="module-1-hello-world">Module 1: Hello World</h2>
+
+<p>The simplest possible MCP server:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">mcp.server.fastmcp</span> <span class="kn">import</span> <span class="n">FastMCP</span>
+
+<span class="n">mcp</span> <span class="o">=</span> <span class="nc">FastMCP</span><span class="p">(</span><span class="sh">"</span><span class="s">my-first-server</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="nd">@mcp.tool</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">Says hello to someone</span><span class="sh">"""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="sh">"</span><span class="s">Hello, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s">!</span><span class="sh">"</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="n">mcp</span><span class="p">.</span><span class="nf">run</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Ten lines. The <code class="language-plaintext highlighter-rouge">FastMCP</code> class handles protocol negotiation, message parsing, and transport. The <code class="language-plaintext highlighter-rouge">@mcp.tool()</code> decorator registers functions. Type hints become JSON schema automatically. Docstrings describe functionality to the AI.</p>
+
+<p>Configure Claude Desktop to connect:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"mcpServers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"greeter"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/python"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"/path/to/server.py"</span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Restart Claude, and the tool is available. Ask “say hello to Alice,” and Claude invokes the function.</p>
+
+<h2 id="module-2-error-handling">Module 2: Error Handling</h2>
+
+<p>Real tools need error handling:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@mcp.tool</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">division</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">Divides two numbers</span><span class="sh">"""</span>
+    <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nc">ValueError</span><span class="p">(</span><span class="sh">"</span><span class="s">Cannot divide by zero</span><span class="sh">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
+</code></pre></div></div>
+
+<p>Key insight: use exceptions, not error strings. MCP handles exceptions gracefully, presenting them to the AI as tool failures rather than successful responses containing error messages. The type system ensures return types match declarations.</p>
+
+<h2 id="the-three-primitives">The Three Primitives</h2>
+
+<p>MCP defines three server-side primitives:</p>
+
+<p><strong>Tools</strong>: Executable functions. The AI decides when to call them based on user requests. Tools perform actions—searching, calculating, modifying state.</p>
+
+<p><strong>Resources</strong>: Data exposed via URIs. The application (not the model) decides when to access them. Resources provide context—documents, database records, configuration.</p>
+
+<p><strong>Prompts</strong>: Reusable message templates. Users trigger them via slash commands. Prompts standardize common interactions—”summarize this,” “explain that.”</p>
+
+<p>The distinction matters: tools are model-driven (AI chooses), resources are application-driven (code chooses), prompts are user-driven (human chooses).</p>
+
+<h2 id="the-2026-landscape">The 2026 Landscape</h2>
+
+<p>My research documented the broader ecosystem:</p>
+
+<p><strong>Adoption metrics</strong> (January 2026):</p>
+<ul>
+  <li>97+ million SDK monthly downloads</li>
+  <li>5,800+ available MCP servers</li>
+  <li>10,000+ active deployments</li>
+  <li>Growth: 100K → 8M downloads in 5 months</li>
+</ul>
+
+<p><strong>Industry consensus</strong>: MCP was donated to the Linux Foundation’s Agentic AI Foundation in December 2025. Co-founders include Anthropic, Block, and OpenAI. Competitors endorsing the same standard is rare and significant.</p>
+
+<p><strong>The production gap</strong>: 65% of organizations are experimenting with AI agents, but only 11% have agents in production. Security and governance lag behind deployment enthusiasm.</p>
+
+<h2 id="protocol-evolution">Protocol Evolution</h2>
+
+<p>MCP has evolved rapidly:</p>
+
+<p><strong>November 2024</strong>: Initial release with stdio transport
+<strong>March 2025</strong>: Added Streamable HTTP transport
+<strong>June 2025</strong>: OAuth 2.1 security updates, RFC 8707 compliance
+<strong>November 2025</strong>: MCP Apps extension for rich HTML UIs</p>
+
+<p>The deprecation of SSE in favor of Streamable HTTP within 5 months shows active standardization. The protocol isn’t frozen; it’s maturing.</p>
+
+<h2 id="security-considerations">Security Considerations</h2>
+
+<p>Enterprise adoption requires security. MCP’s June 2025 update addressed this:</p>
+
+<ul>
+  <li>Servers treated as OAuth Resource Servers</li>
+  <li>RFC 8707 (Resource Indicators) prevents confused deputy attacks</li>
+  <li>Human-in-the-loop approval flows for sensitive operations</li>
+  <li>Registry-based allowlisting for governance</li>
+</ul>
+
+<p>The research identifies a gap: fast deployment without adequate security guardrails. An “MCP Agent Guardian” (security proxy) would address this.</p>
+
+<h2 id="common-implementation-pitfalls">Common Implementation Pitfalls</h2>
+
+<p>My modules documented issues I encountered:</p>
+
+<p><strong>Indentation sensitivity</strong>: Python whitespace matters. Copy-pasted code often has invisible tab/space mismatches.</p>
+
+<p><strong>Permission restrictions</strong>: macOS security limits which directories virtual environments can access. Downloads folder often works when others don’t.</p>
+
+<p><strong>Missing decorators</strong>: Functions without <code class="language-plaintext highlighter-rouge">@mcp.tool()</code> are invisible to Claude. Easy to forget, hard to debug.</p>
+
+<p><strong>Type mismatches</strong>: Return type violations cause validation errors. If you declare <code class="language-plaintext highlighter-rouge">-&gt; float</code>, don’t return a string.</p>
+
+<h2 id="why-mcp-won">Why MCP Won</h2>
+
+<p>Several factors drove MCP’s dominance:</p>
+
+<p><strong>Simplicity</strong>: A working server in 10 lines. Low barrier to entry encourages experimentation.</p>
+
+<p><strong>Vendor neutrality</strong>: Not tied to any single AI provider. Works with Claude, ChatGPT, Gemini.</p>
+
+<p><strong>Composability</strong>: Servers can be combined. Run multiple MCP servers simultaneously; the AI accesses all their tools.</p>
+
+<p><strong>Progressive complexity</strong>: Start simple, add features (resources, prompts, OAuth) as needed. No upfront complexity tax.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Standards beat features</strong>. MCP isn’t technically superior to alternatives—it’s adequately good and widely adopted. Network effects compound.</p>
+
+<p><strong>Type hints are the contract</strong>. Python’s type system automatically generates API schemas. This reduces documentation burden and catches errors early.</p>
+
+<p><strong>The protocol is the product</strong>. FastMCP abstracts the complexity; developers focus on business logic. Good abstractions enable rapid adoption.</p>
+
+<p><strong>Security is a trailing indicator</strong>. Deployment runs ahead of governance. The enterprise opportunity is in security tooling, not more MCP servers.</p>
+
+<p><strong>2026 is the year of agentic AI</strong>. The infrastructure is mature. The question shifts from “can we build agents?” to “should we deploy this agent?” Governance, not capability, becomes the bottleneck.</p>
+
+<p>MCP learning is an investment in the future of AI development. As agents become central to software systems, understanding how they connect to the world becomes essential knowledge.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[Model Context Protocol started as Anthropic’s solution for connecting Claude to external tools. By January 2026, it’s become the industry standard—adopted by OpenAI, Google, Microsoft, and AWS. Und...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Bently: Local-First Audio AI for Podcasters and Meeting Teams</title>
+    <link href="http://localhost:4003/bently-audio-ai/" rel="alternate" type="text/html" title="Bently: Local-First Audio AI for Podcasters and Meeting Teams"/>
+    <published>2026-01-18T00:00:00+05:30</published>
+    <updated>2026-01-18T00:00:00+05:30</updated>
+    <id>http://localhost:4003/bently-audio-ai/</id>
+    <content type="html" xml:base="http://localhost:4003/bently-audio-ai/">
+      <![CDATA[<p>Cloud transcription services have a problem: they’re slow, they’re expensive, and they see everything you say. For podcasters discussing upcoming product launches or legal teams recording sensitive depositions, uploading audio to external servers isn’t acceptable.</p>
+
+<p>Bently is my exploration of local-first audio AI—two products (PodScribe for podcasters, darkbee for meeting teams) that keep audio on your Mac while delivering professional-quality transcription and AI-powered content generation.</p>
+
+<h2 id="the-speed-breakthrough">The Speed Breakthrough</h2>
+
+<p>The secret is Parakeet MLX, a speech-to-text model optimized for Apple Silicon. Benchmarks tell the story:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Audio Length</th>
+      <th>Parakeet MLX</th>
+      <th>Whisper Large V3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>10 minutes</td>
+      <td>~15 seconds</td>
+      <td>~2 minutes</td>
+    </tr>
+    <tr>
+      <td>30 minutes</td>
+      <td>~40 seconds</td>
+      <td>~6 minutes</td>
+    </tr>
+    <tr>
+      <td>60 minutes</td>
+      <td>~80 seconds</td>
+      <td>~12 minutes</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>That’s 30x faster. A one-hour podcast episode transcribed while you grab coffee, not while you attend another meeting.</p>
+
+<p>The speed comes from MLX, Apple’s framework for machine learning on Metal. Parakeet’s 600MB model (versus Whisper’s 3GB+) loads faster and processes efficiently through the Neural Engine. Real-time factor of 3380x means it processes audio thousands of times faster than playback speed.</p>
+
+<h2 id="podscribe-complete-podcast-content-suite">PodScribe: Complete Podcast Content Suite</h2>
+
+<p>Transcription is just the beginning. PodScribe generates everything a podcast episode needs:</p>
+
+<p><strong>Show Notes</strong>: Bullet-pointed summaries with timestamps, ready for your podcast host.</p>
+
+<p><strong>Blog Post Draft</strong>: 300-400 word SEO-ready article, suitable for embedding on your website.</p>
+
+<p><strong>Social Media Quotes</strong>: Five tweetable extracts under 280 characters, pulled from the episode’s most compelling moments.</p>
+
+<p><strong>Episode Summary</strong>: 2-3 sentence hook for podcast directories.</p>
+
+<p><strong>Title Suggestions</strong>: Three alternatives for A/B testing.</p>
+
+<p><strong>SEO Tags</strong>: 8-10 keywords for discoverability.</p>
+
+<p>All generated by GPT-4o-mini after analyzing the transcript. The AI focuses on the first 15,000 characters to manage token costs while capturing the episode’s key content.</p>
+
+<h2 id="the-chunking-algorithm">The Chunking Algorithm</h2>
+
+<p>Long podcasts require careful memory management. PodScribe automatically chunks audio files longer than 10 minutes into 5-minute segments:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">CHUNK_DURATION_SECONDS</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes
+# Process each chunk separately
+# Merge results with adjusted timestamps
+# Clean up temp files
+</span></code></pre></div></div>
+
+<p>The sophisticated part: timestamps are recalculated so a phrase at 15:30 in the merged output reflects its actual position, not its position within its chunk. Users never see the chunking; they just see a coherent transcript.</p>
+
+<h2 id="darkbee-meeting-intelligence">darkbee: Meeting Intelligence</h2>
+
+<p>While PodScribe targets podcasters, darkbee targets the Fireflies.ai market—meeting transcription with action item extraction.</p>
+
+<p>The architecture splits real-time and post-processing:</p>
+
+<p><strong>During meetings</strong>: Recall.ai provides meeting bots for Zoom, Teams, Meet, and Webex. Deepgram Nova-3 powers live captions streamed via WebSocket.</p>
+
+<p><strong>After meetings</strong>: WhisperX with Pyannote handles speaker diarization—identifying who said what. Claude or GPT-4o generates summaries, extracts action items, and identifies key decisions.</p>
+
+<p>The two-phase approach optimizes for different needs. Real-time captions prioritize speed. Post-processing prioritizes accuracy and insight.</p>
+
+<h2 id="the-business-model-gap">The Business Model Gap</h2>
+
+<p>Cloud services charge $8-40/month indefinitely. PodScribe offers $49 one-time pricing. The math is simple: buy once, own forever.</p>
+
+<p>This works because local processing has near-zero marginal cost. After the initial purchase, users run the software on their own hardware. No server costs scale with usage.</p>
+
+<p>For darkbee, the model shifts to $10-19/month SaaS—necessary because meeting bots and real-time APIs have ongoing costs. But unit economics still favor local processing: estimated $0.40-0.60 per meeting versus $2-5 for fully cloud-based competitors.</p>
+
+<h2 id="privacy-as-feature">Privacy as Feature</h2>
+
+<p>Neither product sends audio to external transcription APIs during processing. The flow:</p>
+
+<ol>
+  <li>Audio stays on your Mac</li>
+  <li>Parakeet MLX transcribes locally</li>
+  <li>Only the transcript text (optionally) goes to OpenAI for content generation</li>
+</ol>
+
+<p>For users who want complete privacy, the AI features are optional. You can transcribe without any cloud calls.</p>
+
+<p>This isn’t paranoia—it’s compliance. HIPAA for healthcare, legal privilege for attorneys, NDA protection for business development. Local processing makes the products usable where cloud services can’t go.</p>
+
+<h2 id="dual-model-fallback">Dual Model Fallback</h2>
+
+<p>Robustness matters for production software. If Parakeet isn’t installed:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="nf">parakeet_load</span><span class="p">(</span><span class="sh">"</span><span class="s">mlx-community/parakeet-tdt-0.6b-v2</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">transcribe</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+<span class="k">except</span> <span class="nb">ImportError</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mlx_whisper</span><span class="p">.</span><span class="nf">transcribe</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Users don’t see error messages; they see slightly slower transcription. Graceful degradation over failure.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Local AI is genuinely competitive</strong>. The quality gap between cloud and local has closed dramatically. Apple Silicon with MLX-optimized models delivers professional-grade results.</p>
+
+<p><strong>Speed is a feature</strong>. The difference between 80 seconds and 12 minutes isn’t just convenience—it changes how people work. Fast enough for iterative workflows versus too slow to integrate.</p>
+
+<p><strong>Privacy sells itself</strong>. In regulated industries, local processing isn’t a nice-to-have; it’s a requirement. Products that respect this unlock markets that cloud-only competitors can’t enter.</p>
+
+<p><strong>One-time pricing works for local software</strong>. Without ongoing server costs, perpetual licenses become viable. This positioning undercuts subscription competitors while delivering sustainable margins.</p>
+
+<p><strong>The content generation bundle adds value</strong>. Transcription is table stakes. Show notes, social quotes, and blog drafts are the features that save hours of manual work. The bundle justifies the price.</p>
+
+<p>Bently proves that the future of audio AI isn’t necessarily in the cloud. For users who care about speed, privacy, or economics, local-first processing offers compelling advantages.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[Cloud transcription services have a problem: they’re slow, they’re expensive, and they see everything you say. For podcasters discussing upcoming product launches or legal teams recording sensitive...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Mosley: A Minimal Recursive Language Model Runner</title>
+    <link href="http://localhost:4003/mosley-rlm-runner/" rel="alternate" type="text/html" title="Mosley: A Minimal Recursive Language Model Runner"/>
+    <published>2026-01-17T00:00:00+05:30</published>
+    <updated>2026-01-17T00:00:00+05:30</updated>
+    <id>http://localhost:4003/mosley-rlm-runner/</id>
+    <content type="html" xml:base="http://localhost:4003/mosley-rlm-runner/">
+      <![CDATA[<p>What’s the simplest possible implementation of an agentic LLM? Not a framework with thousands of lines. Not a system with external dependencies. Just the core loop: reason, execute code, observe results, repeat.</p>
+
+<p>Mosley is that implementation. 272 lines of Python, zero external dependencies beyond the standard library, and it enables LLMs to solve complex problems through iterative reasoning with code execution.</p>
+
+<h2 id="the-core-insight">The Core Insight</h2>
+
+<p>The key innovation in Recursive Language Models (RLMs) is keeping the full context outside the model. Traditional LLMs are limited by context windows—feed in too much text, and you hit token limits. RLMs sidestep this by storing context in memory and letting the model query it through code execution.</p>
+
+<p>The model doesn’t need to “remember” a 100-page document. It has access to <code class="language-plaintext highlighter-rouge">context</code> (the full text as a string) and <code class="language-plaintext highlighter-rouge">context_lines</code> (split by newlines). When it needs information, it writes Python code to search, filter, and extract.</p>
+
+<h2 id="the-execution-loop">The Execution Loop</h2>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">run_rlm</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">root_client</span><span class="p">,</span> <span class="n">sub_client</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="c1"># Initialize environment with context access
+</span>    <span class="n">env</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="sh">'</span><span class="s">context</span><span class="sh">'</span><span class="p">:</span> <span class="n">context</span><span class="p">,</span>
+        <span class="sh">'</span><span class="s">context_lines</span><span class="sh">'</span><span class="p">:</span> <span class="n">context</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="sh">'</span><span class="se">\n</span><span class="sh">'</span><span class="p">),</span>
+        <span class="sh">'</span><span class="s">llm_query</span><span class="sh">'</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">prompt</span><span class="p">:</span> <span class="n">sub_client</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span><span class="n">system_prompt</span><span class="p">,</span> <span class="n">user_query</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">max_steps</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">root_client</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+
+        <span class="c1"># Check for completion
+</span>        <span class="k">if</span> <span class="sh">'</span><span class="s">FINAL(</span><span class="sh">'</span> <span class="ow">in</span> <span class="n">response</span> <span class="ow">or</span> <span class="sh">'</span><span class="s">FINAL_VAR(</span><span class="sh">'</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nf">extract_answer</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+
+        <span class="c1"># Extract and execute code
+</span>        <span class="n">code</span> <span class="o">=</span> <span class="nf">extract_repl_blocks</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="nf">execute_safely</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+
+        <span class="c1"># Feed results back
+</span>        <span class="n">messages</span><span class="p">.</span><span class="nf">append</span><span class="p">({</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">assistant</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">:</span> <span class="n">response</span><span class="p">})</span>
+        <span class="n">messages</span><span class="p">.</span><span class="nf">append</span><span class="p">({</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">user</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="s">REPL output:</span><span class="se">\n</span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="sh">"</span><span class="p">})</span>
+
+    <span class="k">raise</span> <span class="nc">Exception</span><span class="p">(</span><span class="sh">"</span><span class="s">Max steps exceeded</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The model generates Python code in markdown REPL blocks. The code executes in a restricted environment. Output feeds back as the next user message. The loop continues until the model signals completion with <code class="language-plaintext highlighter-rouge">FINAL(answer)</code> or <code class="language-plaintext highlighter-rouge">FINAL_VAR(variable_name)</code>.</p>
+
+<h2 id="two-tier-model-architecture">Two-Tier Model Architecture</h2>
+
+<p>Cost optimization through model tiering:</p>
+
+<p><strong>Root model</strong>: The orchestrator. More capable, higher cost. Handles reasoning, planning, and code generation. Suggested: GPT-4o or Qwen2.5-Coder:14B.</p>
+
+<p><strong>Sub model</strong>: The assistant. Faster, cheaper. Handles delegated queries via <code class="language-plaintext highlighter-rouge">llm_query()</code>. Suggested: GPT-4o-mini or Qwen2.5-Coder:7B.</p>
+
+<p>When the root model needs a quick factual lookup, it calls <code class="language-plaintext highlighter-rouge">llm_query("What is X?")</code> instead of reasoning through it. The sub model responds, and the answer is available in the execution environment.</p>
+
+<p>Query caching prevents redundant API calls:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">def</span> <span class="nf">llm_query</span><span class="p">(</span><span class="n">prompt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">prompt</span><span class="p">]</span>
+    <span class="n">answer</span> <span class="o">=</span> <span class="n">sub_client</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+    <span class="n">cache</span><span class="p">[</span><span class="n">prompt</span><span class="p">]</span> <span class="o">=</span> <span class="n">answer</span>
+    <span class="k">return</span> <span class="n">answer</span>
+</code></pre></div></div>
+
+<h2 id="safety-through-restriction">Safety Through Restriction</h2>
+
+<p>The execution environment restricts available builtins:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">safe_builtins</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sh">'</span><span class="s">len</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">range</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">min</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">max</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">sum</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">sorted</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">enumerate</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">list</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">dict</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">set</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">tuple</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">str</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">int</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">float</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">bool</span><span class="sh">'</span><span class="p">,</span>
+    <span class="sh">'</span><span class="s">print</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">True</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">False</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">None</span><span class="sh">'</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>No <code class="language-plaintext highlighter-rouge">open()</code>, no <code class="language-plaintext highlighter-rouge">import</code>, no <code class="language-plaintext highlighter-rouge">exec()</code>, no <code class="language-plaintext highlighter-rouge">eval()</code>. The model can process data but can’t access the filesystem or load arbitrary code.</p>
+
+<p>This isn’t a secure sandbox—determined attacks could probably escape. But it’s sufficient for trusted prompts and prevents accidental damage from model mistakes.</p>
+
+<h2 id="zero-external-dependencies">Zero External Dependencies</h2>
+
+<p>The LLM client uses only <code class="language-plaintext highlighter-rouge">urllib.request</code>:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">({</span>
+        <span class="sh">"</span><span class="s">model</span><span class="sh">"</span><span class="p">:</span> <span class="n">self</span><span class="p">.</span><span class="n">model</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">messages</span><span class="sh">"</span><span class="p">:</span> <span class="n">messages</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">temperature</span><span class="sh">"</span><span class="p">:</span> <span class="n">self</span><span class="p">.</span><span class="n">temperature</span>
+    <span class="p">}).</span><span class="nf">encode</span><span class="p">(</span><span class="sh">'</span><span class="s">utf-8</span><span class="sh">'</span><span class="p">)</span>
+
+    <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="nc">Request</span><span class="p">(</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">base_url</span> <span class="o">+</span> <span class="sh">"</span><span class="s">/chat/completions</span><span class="sh">"</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="sh">"</span><span class="s">Authorization</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="s">Bearer </span><span class="si">{</span><span class="n">self</span><span class="p">.</span><span class="n">api_key</span><span class="si">}</span><span class="sh">"</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">urllib</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="nf">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="nf">read</span><span class="p">())[</span><span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="sh">"</span><span class="s">message</span><span class="sh">"</span><span class="p">][</span><span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>No <code class="language-plaintext highlighter-rouge">requests</code>, no <code class="language-plaintext highlighter-rouge">httpx</code>, no <code class="language-plaintext highlighter-rouge">openai</code> package. Just the standard library. This makes Mosley trivially portable—copy the file, and it runs anywhere Python does.</p>
+
+<h2 id="provider-flexibility">Provider Flexibility</h2>
+
+<p>The same client interface works for both OpenAI and Ollama:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># OpenAI
+</span><span class="n">client</span> <span class="o">=</span> <span class="nc">LLMClient</span><span class="p">(</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="sh">"</span><span class="s">https://api.openai.com/v1</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">[</span><span class="sh">"</span><span class="s">OPENAI_API_KEY</span><span class="sh">"</span><span class="p">],</span>
+    <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">gpt-4o</span><span class="sh">"</span>
+<span class="p">)</span>
+
+<span class="c1"># Ollama (local)
+</span><span class="n">client</span> <span class="o">=</span> <span class="nc">LLMClient</span><span class="p">(</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="sh">"</span><span class="s">http://localhost:11434/v1</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="sh">"</span><span class="s">ollama</span><span class="sh">"</span><span class="p">,</span>  <span class="c1"># Ollama doesn't need real keys
+</span>    <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">qwen2.5-coder:14b</span><span class="sh">"</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Switch between cloud and local by changing the base URL. No code changes required.</p>
+
+<h2 id="document-analysis-workflow">Document Analysis Workflow</h2>
+
+<p>The included shell script demonstrates the primary use case:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Extract text from PDF</span>
+python3 <span class="nt">-c</span> <span class="s2">"import fitz; print(fitz.open('</span><span class="nv">$PDF</span><span class="s2">').get_page_text(0))"</span> <span class="o">&gt;</span> context.txt
+
+<span class="c"># Run RLM with the context</span>
+python3 rlm.py <span class="se">\</span>
+  <span class="nt">--context-path</span> context.txt <span class="se">\</span>
+  <span class="nt">--query</span> <span class="s2">"Summarize the key findings"</span> <span class="se">\</span>
+  <span class="nt">--provider</span> ollama <span class="se">\</span>
+  <span class="nt">--root-model</span> qwen2.5-coder:14b
+</code></pre></div></div>
+
+<p>PDF → text → context → RLM analysis. The model can search the document, extract specific sections, cross-reference claims, and synthesize findings—all through iterative code execution.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Minimalism enables understanding</strong>. With 272 lines, every part of the system is comprehensible. No framework magic, no hidden complexity. If something breaks, you can trace through the entire flow.</p>
+
+<p><strong>The REPL pattern is powerful</strong>. Giving LLMs code execution capabilities transforms them from text generators into problem solvers. The ability to verify, calculate, and explore changes what’s possible.</p>
+
+<p><strong>Context-as-variable bypasses token limits</strong>. Instead of stuffing documents into prompts, make them accessible through code. The model queries what it needs, when it needs it.</p>
+
+<p><strong>Two-tier models optimize costs</strong>. Expensive reasoning, cheap lookups. The pattern applies broadly to agentic systems.</p>
+
+<p><strong>Standard library is enough</strong>. Python’s <code class="language-plaintext highlighter-rouge">urllib</code> handles HTTP fine. JSON parsing is built in. File I/O is trivial. External dependencies add convenience but also complexity and fragility.</p>
+
+<p>Mosley isn’t a production framework. It’s a demonstration that agentic AI doesn’t require massive infrastructure. The core pattern—reason, execute, observe, repeat—is simple enough to implement in an afternoon and powerful enough to solve real problems.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[What’s the simplest possible implementation of an agentic LLM? Not a framework with thousands of lines. Not a system with external dependencies. Just the core loop: reason, execute code, observe re...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Mently: YouTube Video Summarization That Actually Works</title>
+    <link href="http://localhost:4003/mently-pulsenote/" rel="alternate" type="text/html" title="Mently: YouTube Video Summarization That Actually Works"/>
+    <published>2026-01-16T00:00:00+05:30</published>
+    <updated>2026-01-16T00:00:00+05:30</updated>
+    <id>http://localhost:4003/mently-pulsenote/</id>
+    <content type="html" xml:base="http://localhost:4003/mently-pulsenote/">
+      <![CDATA[<p>A 45-minute YouTube video contains maybe 10 minutes of insight. The rest is intro, outro, tangents, and filler. PulseNote extracts what matters: structured summaries, key points, timestamped chapters, and notable quotes—all in under a minute.</p>
+
+<h2 id="dual-transcript-strategy">Dual Transcript Strategy</h2>
+
+<p>The clever part is handling videos both with and without captions.</p>
+
+<p><strong>Primary path</strong>: Most YouTube videos have auto-generated or manual captions. PulseNote fetches these directly—fast, free, no API costs. Parse the caption JSON, extract timed segments, combine into full text.</p>
+
+<p><strong>Fallback path</strong>: Some videos disable captions. For these, PulseNote downloads the lowest-quality audio stream and transcribes via OpenAI’s Whisper API. Slower and costs money, but works for everything.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+  <span class="nx">transcriptData</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">fetchTranscript</span><span class="p">(</span><span class="nx">videoId</span><span class="p">,</span> <span class="nx">language</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">transcriptData</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">transcribeFromAudio</span><span class="p">(</span><span class="nx">videoId</span><span class="p">,</span> <span class="nx">language</span><span class="p">);</span>
+  <span class="nx">notice</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Captions unavailable. Transcript generated from audio.</span><span class="dl">'</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Users see a small notice when using the fallback, but the experience is seamless. The system adapts without requiring user intervention.</p>
+
+<h2 id="structured-ai-output">Structured AI Output</h2>
+
+<p>GPT-4o-mini receives the transcript (truncated to 12KB for cost management) and returns structured JSON:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nl">overview</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2-3 sentence summary</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">key_points</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">point 1</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">point 2</span><span class="dl">"</span><span class="p">,</span> <span class="p">...],</span>
+  <span class="nx">chapters</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span> <span class="na">time</span><span class="p">:</span> <span class="dl">"</span><span class="s2">00:00</span><span class="dl">"</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Introduction</span><span class="dl">"</span><span class="p">,</span> <span class="na">summary</span><span class="p">:</span> <span class="dl">"</span><span class="s2">...</span><span class="dl">"</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="na">time</span><span class="p">:</span> <span class="dl">"</span><span class="s2">05:30</span><span class="dl">"</span><span class="p">,</span> <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Main Argument</span><span class="dl">"</span><span class="p">,</span> <span class="na">summary</span><span class="p">:</span> <span class="dl">"</span><span class="s2">...</span><span class="dl">"</span> <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nx">quotes</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">Notable quote 1</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">Notable quote 2</span><span class="dl">"</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>OpenAI’s <code class="language-plaintext highlighter-rouge">response_format: { type: 'json_object' }</code> ensures valid JSON every time. No regex parsing of prose, no hoping the model follows the format. Structured output is the feature that makes this reliable.</p>
+
+<h2 id="cost-optimization">Cost Optimization</h2>
+
+<p>AI APIs charge by token. A full transcript might be 50,000 characters—expensive and often unnecessary. PulseNote truncates:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">trimTranscript</span><span class="p">(</span><span class="nx">text</span><span class="p">,</span> <span class="nx">maxChars</span> <span class="o">=</span> <span class="mi">12000</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">cleaned</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="nx">maxChars</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">cleaned</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">cleaned</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">maxChars</span><span class="p">)}</span><span class="s2">...`</span><span class="p">;</span>
+    <span class="nx">truncated</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="p">{</span> <span class="na">text</span><span class="p">:</span> <span class="nx">cleaned</span><span class="p">,</span> <span class="nx">truncated</span> <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Twelve thousand characters captures most key content while keeping API costs under a cent per video. When truncation happens, the UI flags it—users know they’re getting a partial analysis.</p>
+
+<p>For a free-to-use tool, this constraint is essential. Unbounded API costs would make the project unsustainable.</p>
+
+<h2 id="youtube-cookie-handling">YouTube Cookie Handling</h2>
+
+<p>YouTube aggressively rate-limits API access. The solution: authenticated requests using browser cookies.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">getYouTubeAgent</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">cookies</span><span class="p">,</span> <span class="nx">source</span> <span class="p">}</span> <span class="o">=</span> <span class="nf">loadYouTubeCookies</span><span class="p">();</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">cookies</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">cachedAgent</span> <span class="o">=</span> <span class="nx">ytdl</span><span class="p">.</span><span class="nf">createAgent</span><span class="p">(</span><span class="nx">cookies</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">cachedAgent</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="nx">cachedAgent</span> <span class="o">=</span> <span class="nx">ytdl</span><span class="p">.</span><span class="nf">createAgent</span><span class="p">();</span>
+  <span class="k">return</span> <span class="nx">cachedAgent</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Users can provide their YouTube cookies via environment variable or file path. Authenticated requests bypass most rate limiting. The system works without cookies but becomes more reliable with them.</p>
+
+<p>Error messages guide users when 403 errors occur: “YouTube is blocking requests. Add your cookies to .env to continue.” Actionable guidance reduces support burden.</p>
+
+<h2 id="the-tab-interface">The Tab Interface</h2>
+
+<p>Results display across four tabs: Overview, Key Points, Chapters, Quotes. Tab switching is pure DOM manipulation:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">tabs</span><span class="p">.</span><span class="nf">forEach</span><span class="p">((</span><span class="nx">tab</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">tab</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// Toggle active states, show corresponding panel</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>No React state management, no framework overhead. The entire frontend is vanilla JavaScript—readable, portable, fast.</p>
+
+<h2 id="transcript-search">Transcript Search</h2>
+
+<p>The full transcript is searchable in the browser:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">filtered</span> <span class="o">=</span> <span class="nx">fullTranscriptLines</span><span class="p">.</span><span class="nf">filter</span><span class="p">(</span>
+  <span class="nx">line</span> <span class="o">=&gt;</span> <span class="nx">line</span><span class="p">.</span><span class="nx">text</span><span class="p">.</span><span class="nf">toLowerCase</span><span class="p">().</span><span class="nf">includes</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>Client-side filtering means instant results without network calls. Users can find specific moments by keyword, then click timestamps to jump directly to that point in the video.</p>
+
+<h2 id="export-functionality">Export Functionality</h2>
+
+<p>Everything combines into a single exportable document:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">currentSummaryText</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="s2">`Title: </span><span class="p">${</span><span class="nx">videoTitle</span><span class="p">.</span><span class="nx">textContent</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+  <span class="s2">`Overview: </span><span class="p">${</span><span class="nx">summary</span><span class="p">.</span><span class="nx">overview</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">Key Points:</span><span class="dl">'</span><span class="p">,</span> <span class="p">...</span><span class="nx">keyPoints</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">Chapters:</span><span class="dl">'</span><span class="p">,</span> <span class="p">...</span><span class="nx">chapters</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">Quotes:</span><span class="dl">'</span><span class="p">,</span> <span class="p">...</span><span class="nx">quotes</span>
+<span class="p">].</span><span class="nf">filter</span><span class="p">(</span><span class="nb">Boolean</span><span class="p">).</span><span class="nf">join</span><span class="p">(</span><span class="dl">'</span><span class="se">\n</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Copy to clipboard or download as text file. The export includes everything—useful for saving research, sharing with colleagues, or archiving for later reference.</p>
+
+<h2 id="design-philosophy">Design Philosophy</h2>
+
+<p>The visual design follows a warm, organic aesthetic: cream backgrounds, teal interactives, orange accents, soft shadows. Typography uses Fraunces (display), Space Grotesk (sans), and IBM Plex Mono (monospace)—a distinctive combination that feels premium without being corporate.</p>
+
+<p>Skeleton loaders maintain perceived performance during API calls. Processing time displays after completion, setting expectations for future use.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Fallback strategies are essential</strong>. The caption-first, audio-fallback approach handles edge cases gracefully. Users don’t need to know which path was taken; they just get results.</p>
+
+<p><strong>Token truncation is a feature, not a bug</strong>. Explicitly limiting input size controls costs and keeps response times fast. Flagging truncation maintains transparency.</p>
+
+<p><strong>Structured output eliminates parsing headaches</strong>. JSON mode guarantees valid structure. No more debugging why the model decided to use a different format this time.</p>
+
+<p><strong>Vanilla JavaScript is underrated</strong>. For applications this size, frameworks add complexity without proportional benefit. Direct DOM manipulation is readable and fast.</p>
+
+<p><strong>Cookie authentication unlocks reliability</strong>. YouTube’s anti-bot measures are aggressive. Providing an authentication path transforms “sometimes works” into “reliably works.”</p>
+
+<p>PulseNote solves a real problem—video content overload—with appropriate technology. Not every feature needs cutting-edge AI. Sometimes the innovation is in the integration: combining captions, transcription APIs, and structured LLM output into a seamless experience.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[A 45-minute YouTube video contains maybe 10 minutes of insight. The rest is intro, outro, tangents, and filler. PulseNote extracts what matters: structured summaries, key points, timestamped chapte...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Askly: Turn Any Website Into an AI Chatbot</title>
+    <link href="http://localhost:4003/askly-zappybot/" rel="alternate" type="text/html" title="Askly: Turn Any Website Into an AI Chatbot"/>
+    <published>2026-01-15T00:00:00+05:30</published>
+    <updated>2026-01-15T00:00:00+05:30</updated>
+    <id>http://localhost:4003/askly-zappybot/</id>
+    <content type="html" xml:base="http://localhost:4003/askly-zappybot/">
+      <![CDATA[<p>What if you could point at any website and instantly have an AI that knows everything on it? That’s Askly (internally called ZappyBot)—a platform that crawls websites, builds vector embeddings, and provides intelligent chat powered by the crawled content.</p>
+
+<p>No manual training. No content copying. Just paste a URL and start chatting.</p>
+
+<h2 id="the-rag-pipeline">The RAG Pipeline</h2>
+
+<p>The system implements Retrieval-Augmented Generation from scratch:</p>
+
+<p><strong>Crawling</strong>: A breadth-first crawler traverses the target website, respecting robots.txt with 100ms delays between requests. Smart URL filtering skips login pages, admin panels, checkout flows, and binary files. Mozilla Readability extracts clean article content from messy HTML.</p>
+
+<p><strong>Chunking</strong>: LangChain’s RecursiveCharacterTextSplitter breaks content into 512-byte chunks with 64-byte overlap. Multiple separator levels (paragraphs → lines → sentences → words → characters) ensure coherent chunks. Fragments under 20 characters are filtered as noise.</p>
+
+<p><strong>Embedding</strong>: OpenAI’s text-embedding-3-small generates 1536-dimensional vectors for each chunk. These embeddings capture semantic meaning, enabling similarity search beyond keyword matching.</p>
+
+<p><strong>Storage</strong>: An in-memory vector store holds everything—no Pinecone, no Chroma, just JavaScript Maps with O(1) lookups. Perfect for serverless deployments where simplicity beats scalability.</p>
+
+<p><strong>Query</strong>: User questions get embedded, compared against all chunks via cosine similarity, and the top 5 matches become context for GPT-4o-mini. The LLM generates answers grounded in actual website content.</p>
+
+<h2 id="the-cosine-similarity-implementation">The Cosine Similarity Implementation</h2>
+
+<p>No external libraries for the core similarity search:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">cosineSimilarity</span><span class="p">(</span><span class="nx">a</span><span class="p">:</span> <span class="kr">number</span><span class="p">[],</span> <span class="nx">b</span><span class="p">:</span> <span class="kr">number</span><span class="p">[]):</span> <span class="kr">number</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">dotProduct</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">normA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">normB</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for </span><span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">dotProduct</span> <span class="o">+=</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">*</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+    <span class="nx">normA</span> <span class="o">+=</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">*</span> <span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+    <span class="nx">normB</span> <span class="o">+=</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">*</span> <span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">dotProduct</span> <span class="o">/</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="nx">normA</span><span class="p">)</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="nx">normB</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This runs on every query, comparing against every stored chunk. For typical knowledge bases (under 100K chunks), the O(n) scan completes in milliseconds. External vector databases would add complexity without meaningful benefit at this scale.</p>
+
+<h2 id="the-neubrutalist-design-system">The Neubrutalist Design System</h2>
+
+<p>The UI makes a statement. Neubrutalism—bold geometric shapes, thick 3px borders, 6px drop shadows, high-contrast colors—creates visual energy that stands out in a sea of minimalist SaaS designs.</p>
+
+<p>The color palette is deliberately playful: yellow, pink, blue, green, purple, orange as accents against off-white backgrounds. Every color combination passes WCAG 2.1 AA accessibility standards.</p>
+
+<p>CSS custom properties define the design tokens:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">:root</span> <span class="p">{</span>
+  <span class="py">--border-width</span><span class="p">:</span> <span class="m">3px</span><span class="p">;</span>
+  <span class="py">--shadow-offset</span><span class="p">:</span> <span class="m">6px</span><span class="p">;</span>
+  <span class="py">--radius-sm</span><span class="p">:</span> <span class="m">8px</span><span class="p">;</span>
+  <span class="py">--color-accent-yellow</span><span class="p">:</span> <span class="nx">#FFE566</span><span class="p">;</span>
+  <span class="py">--color-accent-pink</span><span class="p">:</span> <span class="nx">#FF99CC</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This isn’t just aesthetic preference—it’s positioning. In a market of look-alike products, visual distinctiveness is a competitive advantage.</p>
+
+<h2 id="rate-limiting-without-a-database">Rate Limiting Without a Database</h2>
+
+<p>API protection uses in-memory rate limiting:</p>
+
+<ul>
+  <li>Bot creation: 5 per hour per IP (computationally expensive)</li>
+  <li>Chat messages: 50 per minute per IP</li>
+  <li>Read operations: 100 per minute per IP</li>
+</ul>
+
+<p>A cleanup job runs every 5 minutes, pruning expired entries. The simplicity is intentional—no Redis dependency, no connection management, just works on Vercel’s serverless platform.</p>
+
+<h2 id="the-mcp-server">The MCP Server</h2>
+
+<p>A separate Node.js server implements Model Context Protocol, enabling Claude to programmatically create and manage chatbots. This separates concerns: the web app serves humans; the MCP server serves AI agents.</p>
+
+<p>The integration means Claude can build a chatbot for a user’s website without the user touching the UI. Agent-to-tool communication through standardized protocols—this is where the industry is heading.</p>
+
+<h2 id="source-attribution">Source Attribution</h2>
+
+<p>Every answer includes source links with relevance scores. Users see not just what the AI says, but where it learned it. This transparency builds trust and enables verification.</p>
+
+<p>The citations also provide legal cover. The chatbot isn’t hallucinating or plagiarizing—it’s explicitly referencing its sources.</p>
+
+<h2 id="progress-simulation">Progress Simulation</h2>
+
+<p>While the backend crawls and processes, the frontend simulates progress:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">progressInterval</span> <span class="o">=</span> <span class="nf">setInterval</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nf">setProgress</span><span class="p">(</span><span class="nx">prev</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">prev</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">)</span> <span class="p">{</span> <span class="nf">setStep</span><span class="p">(</span><span class="dl">"</span><span class="s2">crawling</span><span class="dl">"</span><span class="p">);</span> <span class="k">return</span> <span class="nx">prev</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if </span><span class="p">(</span><span class="nx">prev</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">)</span> <span class="p">{</span> <span class="nf">setStep</span><span class="p">(</span><span class="dl">"</span><span class="s2">chunking</span><span class="dl">"</span><span class="p">);</span> <span class="k">return</span> <span class="nx">prev</span> <span class="o">+</span> <span class="mi">3</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if </span><span class="p">(</span><span class="nx">prev</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">)</span> <span class="p">{</span> <span class="nf">setStep</span><span class="p">(</span><span class="dl">"</span><span class="s2">embedding</span><span class="dl">"</span><span class="p">);</span> <span class="k">return</span> <span class="nx">prev</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">prev</span><span class="p">;</span>
+  <span class="p">});</span>
+<span class="p">},</span> <span class="mi">500</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The progress bar moves smoothly even though the backend processes in batches. This perceived performance matters—users feel the system is working, not stuck.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Zero-dependency RAG is practical</strong>. You don’t need LangChain’s full ecosystem or a managed vector database. For moderate-scale applications, implementing cosine similarity yourself and storing vectors in memory works fine.</p>
+
+<p><strong>Neubrutalism differentiates</strong>. Design trends come in waves. Swimming against the minimalist current makes a product memorable, even if the functionality is similar to competitors.</p>
+
+<p><strong>Rate limiting on serverless requires thought</strong>. Without persistent state, in-memory limits reset on cold starts. For serious abuse prevention, you’d need distributed storage. For MVP-level protection, in-memory is enough.</p>
+
+<p><strong>MCP integration is the future</strong>. Building tools that AI agents can use programmatically opens new distribution channels. When Claude can recommend and use your product, that’s a new kind of marketing.</p>
+
+<p><strong>Source attribution builds trust</strong>. Showing where answers come from transforms a chatbot from “magic black box” to “intelligent librarian.” Users trust what they can verify.</p>
+
+<p>Askly demonstrates that sophisticated AI features—vector search, RAG, multi-model pipelines—can be built with surprisingly little infrastructure. The hard part isn’t the technology; it’s making it useful and delightful for real users.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[What if you could point at any website and instantly have an AI that knows everything on it? That’s Askly (internally called ZappyBot)—a platform that crawls websites, builds vector embeddings, and...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Teaching MCP Through an RPG: Metacon2</title>
+    <link href="http://localhost:4003/mcp-quest-v2/" rel="alternate" type="text/html" title="Teaching MCP Through an RPG: Metacon2"/>
+    <published>2026-01-10T00:00:00+05:30</published>
+    <updated>2026-01-10T00:00:00+05:30</updated>
+    <id>http://localhost:4003/mcp-quest-v2/</id>
+    <content type="html" xml:base="http://localhost:4003/mcp-quest-v2/">
+      <![CDATA[<p>How do you teach something as abstract as the Model Context Protocol? Documentation helps, but understanding really clicks through experience. MCP Quest (Metacon2) turns protocol concepts into a Pokémon-style RPG where you learn by exploring, talking to NPCs, and completing challenges.</p>
 
 <h2 id="the-educational-design">The Educational Design</h2>
 
@@ -177,7 +1763,25 @@
 
 <p>Is it the most efficient way to learn MCP? Probably not. But efficiency isn’t everything. Engagement matters, and games are engaging in ways that documentation isn’t.</p>
 
-<p>This project sits at an intersection I find compelling: technical education that respects how people actually learn. Not everyone wants to read specs. Some people want to explore a village and talk to an NPC who explains, in character, why servers and clients need a common protocol. That’s valid too.</p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[How do you teach something as abstract as the Model Context Protocol? Documentation helps, but understanding really clicks through experience. MCP Quest (Metacon2) turns protocol concepts into a Pokémon-style RPG where you learn by exploring, talking to NPCs, and completing challenges.]]></summary></entry><entry><title type="html">MCP Quest: Teaching Protocols Through Pokemon-Style RPGs</title><link href="http://localhost:4001/metacon-mcp-quest/" rel="alternate" type="text/html" title="MCP Quest: Teaching Protocols Through Pokemon-Style RPGs" /><published>2026-01-01T00:00:00+05:30</published><updated>2026-01-01T00:00:00+05:30</updated><id>http://localhost:4001/metacon-mcp-quest</id><content type="html" xml:base="http://localhost:4001/metacon-mcp-quest/"><![CDATA[<p>Technical documentation is boring. I don’t say this to be provocative—it’s just true. Even well-written docs struggle to hold attention. So when I needed to teach people about the Model Context Protocol (MCP), I decided to try something different.</p>
+<p>This project sits at an intersection I find compelling: technical education that respects how people actually learn. Not everyone wants to read specs. Some people want to explore a village and talk to an NPC who explains, in character, why servers and clients need a common protocol. That’s valid too.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[How do you teach something as abstract as the Model Context Protocol? Documentation helps, but understanding really clicks through experience. MCP Quest (Metacon2) turns protocol concepts into a Po...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">MCP Quest: Teaching Protocols Through Pokemon-Style RPGs</title>
+    <link href="http://localhost:4003/metacon-mcp-quest/" rel="alternate" type="text/html" title="MCP Quest: Teaching Protocols Through Pokemon-Style RPGs"/>
+    <published>2026-01-01T00:00:00+05:30</published>
+    <updated>2026-01-01T00:00:00+05:30</updated>
+    <id>http://localhost:4003/metacon-mcp-quest/</id>
+    <content type="html" xml:base="http://localhost:4003/metacon-mcp-quest/">
+      <![CDATA[<p>Technical documentation is boring. I don’t say this to be provocative—it’s just true. Even well-written docs struggle to hold attention. So when I needed to teach people about the Model Context Protocol (MCP), I decided to try something different.</p>
 
 <p>I built an RPG.</p>
 
@@ -301,7 +1905,25 @@
 
 <hr />
 
-<p><em>Built with RPG-JS, TypeScript, and the conviction that learning should be fun.</em></p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[Technical documentation is boring. I don’t say this to be provocative—it’s just true. Even well-written docs struggle to hold attention. So when I needed to teach people about the Model Context Protocol (MCP), I decided to try something different.]]></summary></entry><entry><title type="html">3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring</title><link href="http://localhost:4001/atlas-intelligence-dashboard/" rel="alternate" type="text/html" title="3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring" /><published>2025-12-20T00:00:00+05:30</published><updated>2025-12-20T00:00:00+05:30</updated><id>http://localhost:4001/atlas-intelligence-dashboard</id><content type="html" xml:base="http://localhost:4001/atlas-intelligence-dashboard/"><![CDATA[<p>When comet 3I/ATLAS appeared—the third confirmed interstellar object to visit our solar system—I wanted more than news alerts. I wanted intelligence: synthesized analysis from multiple sources, tracking of scientific debates, executive-grade briefs with actionable insights. So I built it.</p>
+<p><em>Built with RPG-JS, TypeScript, and the conviction that learning should be fun.</em></p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[Technical documentation is boring. I don’t say this to be provocative—it’s just true. Even well-written docs struggle to hold attention. So when I needed to teach people about the Model Context Pro...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring</title>
+    <link href="http://localhost:4003/atlas-intelligence-dashboard/" rel="alternate" type="text/html" title="3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring"/>
+    <published>2025-12-20T00:00:00+05:30</published>
+    <updated>2025-12-20T00:00:00+05:30</updated>
+    <id>http://localhost:4003/atlas-intelligence-dashboard/</id>
+    <content type="html" xml:base="http://localhost:4003/atlas-intelligence-dashboard/">
+      <![CDATA[<p>When comet 3I/ATLAS appeared—the third confirmed interstellar object to visit our solar system—I wanted more than news alerts. I wanted intelligence: synthesized analysis from multiple sources, tracking of scientific debates, executive-grade briefs with actionable insights. So I built it.</p>
 
 <h2 id="the-multi-agent-architecture">The Multi-Agent Architecture</h2>
 
@@ -387,7 +2009,25 @@
 
 <p>Multi-agent architectures genuinely help with complex analysis. Separating data acquisition from fact extraction from debate tracking from synthesis makes each piece tractable.</p>
 
-<p>The comet will pass. The patterns remain: how to monitor, analyze, synthesize, and present intelligence about evolving situations. That’s reusable infrastructure.</p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[When comet 3I/ATLAS appeared—the third confirmed interstellar object to visit our solar system—I wanted more than news alerts. I wanted intelligence: synthesized analysis from multiple sources, tracking of scientific debates, executive-grade briefs with actionable insights. So I built it.]]></summary></entry><entry><title type="html">1000 Layers Deep: Scaling Networks for Self-Supervised RL</title><link href="http://localhost:4001/1000-layer-networks-rl/" rel="alternate" type="text/html" title="1000 Layers Deep: Scaling Networks for Self-Supervised RL" /><published>2025-12-15T00:00:00+05:30</published><updated>2025-12-15T00:00:00+05:30</updated><id>http://localhost:4001/1000-layer-networks-rl</id><content type="html" xml:base="http://localhost:4001/1000-layer-networks-rl/"><![CDATA[<p>In NLP and vision, scaling model depth has driven breakthrough after breakthrough. GPT and BERT have dozens to hundreds of layers. Vision transformers stack attention blocks deep. Yet reinforcement learning has remained stubbornly shallow—most RL systems use 2-5 layer networks.</p>
+<p>The comet will pass. The patterns remain: how to monitor, analyze, synthesize, and present intelligence about evolving situations. That’s reusable infrastructure.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[When comet 3I/ATLAS appeared—the third confirmed interstellar object to visit our solar system—I wanted more than news alerts. I wanted intelligence: synthesized analysis from multiple sources, tra...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">1000 Layers Deep: Scaling Networks for Self-Supervised RL</title>
+    <link href="http://localhost:4003/1000-layer-networks-rl/" rel="alternate" type="text/html" title="1000 Layers Deep: Scaling Networks for Self-Supervised RL"/>
+    <published>2025-12-15T00:00:00+05:30</published>
+    <updated>2025-12-15T00:00:00+05:30</updated>
+    <id>http://localhost:4003/1000-layer-networks-rl/</id>
+    <content type="html" xml:base="http://localhost:4003/1000-layer-networks-rl/">
+      <![CDATA[<p>In NLP and vision, scaling model depth has driven breakthrough after breakthrough. GPT and BERT have dozens to hundreds of layers. Vision transformers stack attention blocks deep. Yet reinforcement learning has remained stubbornly shallow—most RL systems use 2-5 layer networks.</p>
 
 <p>This research explores what happens when you push RL to 1000 layers. The answer: emergent capabilities appear at critical depth thresholds, with 2-50x performance improvements on locomotion and navigation tasks.</p>
 
@@ -475,7 +2115,25 @@
 
 <p>The emergent capabilities are particularly intriguing. If shallow networks literally cannot represent certain behaviors, no amount of training or data will help. Depth might be a prerequisite for the kind of complex, flexible behaviors we ultimately want from RL systems.</p>
 
-<p>One hundred layers. One thousand layers. At some point, capabilities emerge that simply don’t exist in smaller models. Understanding where those thresholds are—and why they exist—is fundamental to building more capable AI systems.</p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[In NLP and vision, scaling model depth has driven breakthrough after breakthrough. GPT and BERT have dozens to hundreds of layers. Vision transformers stack attention blocks deep. Yet reinforcement learning has remained stubbornly shallow—most RL systems use 2-5 layer networks.]]></summary></entry><entry><title type="html">When 100-Year-Old Math Beats Modern AI</title><link href="http://localhost:4001/ramanujan-ucb/" rel="alternate" type="text/html" title="When 100-Year-Old Math Beats Modern AI" /><published>2025-12-12T00:00:00+05:30</published><updated>2025-12-12T00:00:00+05:30</updated><id>http://localhost:4001/ramanujan-ucb</id><content type="html" xml:base="http://localhost:4001/ramanujan-ucb/"><![CDATA[<p>Here’s an unlikely connection: Srinivasa Ramanujan’s early 20th century work on q-series—exotic mathematical objects from partition theory—can dramatically improve how AI agents explore game trees. The project started as a curiosity and ended with an 82% win rate in Connect Four.</p>
+<p>One hundred layers. One thousand layers. At some point, capabilities emerge that simply don’t exist in smaller models. Understanding where those thresholds are—and why they exist—is fundamental to building more capable AI systems.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[In NLP and vision, scaling model depth has driven breakthrough after breakthrough. GPT and BERT have dozens to hundreds of layers. Vision transformers stack attention blocks deep. Yet reinforcement...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">When 100-Year-Old Math Beats Modern AI</title>
+    <link href="http://localhost:4003/ramanujan-ucb/" rel="alternate" type="text/html" title="When 100-Year-Old Math Beats Modern AI"/>
+    <published>2025-12-12T00:00:00+05:30</published>
+    <updated>2025-12-12T00:00:00+05:30</updated>
+    <id>http://localhost:4003/ramanujan-ucb/</id>
+    <content type="html" xml:base="http://localhost:4003/ramanujan-ucb/">
+      <![CDATA[<p>Here’s an unlikely connection: Srinivasa Ramanujan’s early 20th century work on q-series—exotic mathematical objects from partition theory—can dramatically improve how AI agents explore game trees. The project started as a curiosity and ended with an 82% win rate in Connect Four.</p>
 
 <h2 id="the-exploration-problem">The Exploration Problem</h2>
 
@@ -530,7 +2188,25 @@
 
 <p>The project has obvious limitations. Single-seed experiments need statistical validation. The games are relatively simple. There’s no theoretical regret analysis. But as a proof of concept, it demonstrates that looking outside your domain—way outside, to 100-year-old pure mathematics—can yield practical improvements.</p>
 
-<p>Sometimes the best ideas are very old ones, waiting for new applications.</p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[Here’s an unlikely connection: Srinivasa Ramanujan’s early 20th century work on q-series—exotic mathematical objects from partition theory—can dramatically improve how AI agents explore game trees. The project started as a curiosity and ended with an 82% win rate in Connect Four.]]></summary></entry><entry><title type="html">Ramanujan’s Math Meets the Multi-Armed Bandit</title><link href="http://localhost:4001/bandit-ramanujan/" rel="alternate" type="text/html" title="Ramanujan’s Math Meets the Multi-Armed Bandit" /><published>2025-12-11T00:00:00+05:30</published><updated>2025-12-11T00:00:00+05:30</updated><id>http://localhost:4001/bandit-ramanujan</id><content type="html" xml:base="http://localhost:4001/bandit-ramanujan/"><![CDATA[<p>Sometimes the best ideas come from unexpected places. What does Srinivasa Ramanujan’s number theory have to do with game-playing AI? More than you’d think.</p>
+<p>Sometimes the best ideas are very old ones, waiting for new applications.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[Here’s an unlikely connection: Srinivasa Ramanujan’s early 20th century work on q-series—exotic mathematical objects from partition theory—can dramatically improve how AI agents explore game trees....]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Ramanujan&apos;s Math Meets the Multi-Armed Bandit</title>
+    <link href="http://localhost:4003/bandit-ramanujan/" rel="alternate" type="text/html" title="Ramanujan&apos;s Math Meets the Multi-Armed Bandit"/>
+    <published>2025-12-11T00:00:00+05:30</published>
+    <updated>2025-12-11T00:00:00+05:30</updated>
+    <id>http://localhost:4003/bandit-ramanujan/</id>
+    <content type="html" xml:base="http://localhost:4003/bandit-ramanujan/">
+      <![CDATA[<p>Sometimes the best ideas come from unexpected places. What does Srinivasa Ramanujan’s number theory have to do with game-playing AI? More than you’d think.</p>
 
 <p>This project explores whether mathematical structures from Ramanujan’s q-series can improve exploration strategies in multi-armed bandits and Monte Carlo Tree Search.</p>
 
@@ -665,7 +2341,26 @@ Try every machine equally? You waste pulls on bad machines.</p>
 
 <hr />
 
-<p><em>Built with Python, NumPy, and a fascination with what a self-taught mathematician from a century ago can still teach us.</em></p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[Sometimes the best ideas come from unexpected places. What does Srinivasa Ramanujan’s number theory have to do with game-playing AI? More than you’d think.]]></summary></entry><entry><title type="html">GPT Researcher: Autonomous Multi-Agent Research at Scale</title><link href="http://localhost:4001/gpt-researcher/" rel="alternate" type="text/html" title="GPT Researcher: Autonomous Multi-Agent Research at Scale" /><published>2025-12-01T00:00:00+05:30</published><updated>2025-12-01T00:00:00+05:30</updated><id>http://localhost:4001/gpt-researcher</id><content type="html" xml:base="http://localhost:4001/gpt-researcher/"><![CDATA[<p>I keep coming back to the question: what would truly autonomous research look like? Not summarizing a few web pages, but the real thing—deep investigation, multi-source synthesis, cited conclusions. GPT Researcher is one of the most complete attempts I’ve seen.</p>
+<p><em>Built with Python, NumPy, and a fascination with what a self-taught mathematician from a century ago can still teach us.</em></p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[Sometimes the best ideas come from unexpected places. What does Srinivasa Ramanujan’s number theory have to do with game-playing AI? More than you’d think.
+]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">GPT Researcher: Autonomous Multi-Agent Research at Scale</title>
+    <link href="http://localhost:4003/gpt-researcher/" rel="alternate" type="text/html" title="GPT Researcher: Autonomous Multi-Agent Research at Scale"/>
+    <published>2025-12-01T00:00:00+05:30</published>
+    <updated>2025-12-01T00:00:00+05:30</updated>
+    <id>http://localhost:4003/gpt-researcher/</id>
+    <content type="html" xml:base="http://localhost:4003/gpt-researcher/">
+      <![CDATA[<p>I keep coming back to the question: what would truly autonomous research look like? Not summarizing a few web pages, but the real thing—deep investigation, multi-source synthesis, cited conclusions. GPT Researcher is one of the most complete attempts I’ve seen.</p>
 
 <h2 id="the-core-architecture">The Core Architecture</h2>
 
@@ -743,7 +2438,25 @@ Try every machine equally? You waste pulls on bad machines.</p>
 
 <p>I don’t think it replaces human researchers—deep judgment, novel connections, and creative leaps remain human strengths. But for the grinding work of gathering and synthesizing information, systems like this represent a step change in what’s possible.</p>
 
-<p>The future of research isn’t AI or humans. It’s humans augmented by AI teams that do the comprehensive groundwork, freeing humans for the creative work that only they can do.</p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[I keep coming back to the question: what would truly autonomous research look like? Not summarizing a few web pages, but the real thing—deep investigation, multi-source synthesis, cited conclusions. GPT Researcher is one of the most complete attempts I’ve seen.]]></summary></entry><entry><title type="html">Cloid: A Voice-First Interview Bot</title><link href="http://localhost:4001/cloid/" rel="alternate" type="text/html" title="Cloid: A Voice-First Interview Bot" /><published>2025-11-25T00:00:00+05:30</published><updated>2025-11-25T00:00:00+05:30</updated><id>http://localhost:4001/cloid</id><content type="html" xml:base="http://localhost:4001/cloid/"><![CDATA[<p>There’s something text interfaces miss: the way someone pauses before answering, the enthusiasm in their voice, the natural flow of conversation. When I set out to build an AI assessment tool, I knew it had to be voice-first.</p>
+<p>The future of research isn’t AI or humans. It’s humans augmented by AI teams that do the comprehensive groundwork, freeing humans for the creative work that only they can do.</p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[I keep coming back to the question: what would truly autonomous research look like? Not summarizing a few web pages, but the real thing—deep investigation, multi-source synthesis, cited conclusions...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Cloid: A Voice-First Interview Bot</title>
+    <link href="http://localhost:4003/cloid/" rel="alternate" type="text/html" title="Cloid: A Voice-First Interview Bot"/>
+    <published>2025-11-25T00:00:00+05:30</published>
+    <updated>2025-11-25T00:00:00+05:30</updated>
+    <id>http://localhost:4003/cloid/</id>
+    <content type="html" xml:base="http://localhost:4003/cloid/">
+      <![CDATA[<p>There’s something text interfaces miss: the way someone pauses before answering, the enthusiasm in their voice, the natural flow of conversation. When I set out to build an AI assessment tool, I knew it had to be voice-first.</p>
 
 <p>Cloid is a real-time voice interview bot that lets candidates respond to questions in their own voice, capturing authenticity that typed responses can’t match.</p>
 
@@ -910,7 +2623,25 @@ What would you like to know about my experience?"
 
 <hr />
 
-<p><em>Built with WebRTC, OpenAI’s Realtime API, and a conviction that the best interfaces disappear into the experience.</em></p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[There’s something text interfaces miss: the way someone pauses before answering, the enthusiasm in their voice, the natural flow of conversation. When I set out to build an AI assessment tool, I knew it had to be voice-first.]]></summary></entry><entry><title type="html">From SAM2 to YOLO: Bridging Segmentation and Detection</title><link href="http://localhost:4001/yolo-mask-conversion/" rel="alternate" type="text/html" title="From SAM2 to YOLO: Bridging Segmentation and Detection" /><published>2025-11-18T00:00:00+05:30</published><updated>2025-11-18T00:00:00+05:30</updated><id>http://localhost:4001/yolo-mask-conversion</id><content type="html" xml:base="http://localhost:4001/yolo-mask-conversion/"><![CDATA[<p>Object detection and instance segmentation solve related but different problems. Detection draws boxes; segmentation draws precise outlines. But what if you want to train YOLO using masks generated by SAM2?</p>
+<p><em>Built with WebRTC, OpenAI’s Realtime API, and a conviction that the best interfaces disappear into the experience.</em></p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[There’s something text interfaces miss: the way someone pauses before answering, the enthusiasm in their voice, the natural flow of conversation. When I set out to build an AI assessment tool, I kn...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">From SAM2 to YOLO: Bridging Segmentation and Detection</title>
+    <link href="http://localhost:4003/yolo-mask-conversion/" rel="alternate" type="text/html" title="From SAM2 to YOLO: Bridging Segmentation and Detection"/>
+    <published>2025-11-18T00:00:00+05:30</published>
+    <updated>2025-11-18T00:00:00+05:30</updated>
+    <id>http://localhost:4003/yolo-mask-conversion/</id>
+    <content type="html" xml:base="http://localhost:4003/yolo-mask-conversion/">
+      <![CDATA[<p>Object detection and instance segmentation solve related but different problems. Detection draws boxes; segmentation draws precise outlines. But what if you want to train YOLO using masks generated by SAM2?</p>
 
 <p>That requires a conversion pipeline.</p>
 
@@ -1040,4 +2771,178 @@ What would you like to know about my experience?"
 
 <hr />
 
-<p><em>Built with Ultralytics YOLO, Meta SAM2, and the belief that the best tool for a job often involves combining multiple specialized tools.</em></p>]]></content><author><name>Koushik Jaladi</name></author><summary type="html"><![CDATA[Object detection and instance segmentation solve related but different problems. Detection draws boxes; segmentation draws precise outlines. But what if you want to train YOLO using masks generated by SAM2?]]></summary></entry></feed>
+<p><em>Built with Ultralytics YOLO, Meta SAM2, and the belief that the best tool for a job often involves combining multiple specialized tools.</em></p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[Object detection and instance segmentation solve related but different problems. Detection draws boxes; segmentation draws precise outlines. But what if you want to train YOLO using masks generated...]]>
+    </summary>
+  </entry>
+  
+  <entry>
+    <title type="html">Clarity: Making Academic Papers Actually Readable</title>
+    <link href="http://localhost:4003/glenna-clarity/" rel="alternate" type="text/html" title="Clarity: Making Academic Papers Actually Readable"/>
+    <published>2025-11-18T00:00:00+05:30</published>
+    <updated>2025-11-18T00:00:00+05:30</updated>
+    <id>http://localhost:4003/glenna-clarity/</id>
+    <content type="html" xml:base="http://localhost:4003/glenna-clarity/">
+      <![CDATA[<p>Academic papers are dense. They’re written for experts, packed with jargon, and structured for peer review rather than comprehension. Every researcher knows the frustration of reading the same paragraph three times and still not quite getting it.</p>
+
+<p>I built Clarity to fix that.</p>
+
+<h2 id="the-problem-papers-are-hard">The Problem: Papers Are Hard</h2>
+
+<p>When you open an academic PDF, you’re on your own. No context, no explanation of terms, no way to ask “what does this actually mean?” You either already know the field or you’re in for a rough time.</p>
+
+<p>What if your PDF reader could actually help you understand what you’re reading?</p>
+
+<h2 id="the-solution-progressive-disclosure">The Solution: Progressive Disclosure</h2>
+
+<p>Clarity doesn’t just display papers—it analyzes them and presents information at three levels of depth:</p>
+
+<p><strong>Overview</strong>: Title, authors, abstract, key concepts, main findings. Everything you need to decide if this paper is worth your time. Two minutes, in and out.</p>
+
+<p><strong>Knowledge Map</strong>: An interactive graph showing how concepts relate to each other. Click on a node to see its connections. Understand the structure of ideas before diving into details.</p>
+
+<p><strong>Full Text</strong>: The complete paper with AI assistance. Highlight any passage and ask questions. Get explanations at your level.</p>
+
+<h2 id="the-technical-stack">The Technical Stack</h2>
+
+<p>The backend is straightforward Express.js with OpenAI’s GPT-4o:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">app</span><span class="p">.</span><span class="nf">post</span><span class="p">(</span><span class="dl">'</span><span class="s1">/analyze</span><span class="dl">'</span><span class="p">,</span> <span class="k">async </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">text</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">extractText</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">file</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">analysis</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">openai</span><span class="p">.</span><span class="nx">chat</span><span class="p">.</span><span class="nx">completions</span><span class="p">.</span><span class="nf">create</span><span class="p">({</span>
+        <span class="na">model</span><span class="p">:</span> <span class="dl">'</span><span class="s1">gpt-4o</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">messages</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="na">role</span><span class="p">:</span> <span class="dl">'</span><span class="s1">user</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">content</span><span class="p">:</span> <span class="s2">`Analyze this academic paper and extract:
+                - Title, authors, abstract
+                - Key concepts with definitions
+                - Methodology summary
+                - Main findings
+                - Section breakdown
+                Return as structured JSON.
+
+                Paper text: </span><span class="p">${</span><span class="nx">text</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">15000</span><span class="p">)}</span><span class="s2">`</span>
+        <span class="p">}]</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Notice the 15,000 character limit. Academic papers are long, and we don’t need every word to extract structure and key concepts. This keeps API costs reasonable while capturing enough context for quality analysis.</p>
+
+<h2 id="the-knowledge-graph">The Knowledge Graph</h2>
+
+<p>The most satisfying feature to build was the interactive knowledge graph using D3.js:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nf">buildGraph</span><span class="p">(</span><span class="nx">analysis</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">nodes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="na">id</span><span class="p">:</span> <span class="dl">'</span><span class="s1">paper</span><span class="dl">'</span><span class="p">,</span> <span class="na">label</span><span class="p">:</span> <span class="nx">analysis</span><span class="p">.</span><span class="nx">title</span><span class="p">,</span> <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">main</span><span class="dl">'</span> <span class="p">},</span>
+        <span class="p">...</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">concepts</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nx">c</span> <span class="o">=&gt;</span> <span class="p">({</span>
+            <span class="na">id</span><span class="p">:</span> <span class="nx">c</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="na">label</span><span class="p">:</span> <span class="nx">c</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">concept</span><span class="dl">'</span>
+        <span class="p">})),</span>
+        <span class="p">...</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">sections</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="p">({</span>
+            <span class="na">id</span><span class="p">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">title</span><span class="p">,</span> <span class="na">label</span><span class="p">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">title</span><span class="p">,</span> <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">section</span><span class="dl">'</span>
+        <span class="p">}))</span>
+    <span class="p">];</span>
+
+    <span class="kd">const</span> <span class="nx">links</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">...</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">concepts</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nx">c</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="na">source</span><span class="p">:</span> <span class="dl">'</span><span class="s1">paper</span><span class="dl">'</span><span class="p">,</span> <span class="na">target</span><span class="p">:</span> <span class="nx">c</span><span class="p">.</span><span class="nx">name</span> <span class="p">})),</span>
+        <span class="p">...</span><span class="nx">analysis</span><span class="p">.</span><span class="nx">sections</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nx">s</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="na">source</span><span class="p">:</span> <span class="dl">'</span><span class="s1">paper</span><span class="dl">'</span><span class="p">,</span> <span class="na">target</span><span class="p">:</span> <span class="nx">s</span><span class="p">.</span><span class="nx">title</span> <span class="p">}))</span>
+    <span class="p">];</span>
+
+    <span class="k">return</span> <span class="p">{</span> <span class="nx">nodes</span><span class="p">,</span> <span class="nx">links</span> <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Color coding is automatic—main paper node in blue, concepts in green, sections in orange. The visual pattern makes structure immediately apparent.</p>
+
+<h2 id="the-ai-chat-context-aware-qa">The AI Chat: Context-Aware Q&amp;A</h2>
+
+<p>When you ask a question, Clarity doesn’t just send it to GPT-4o blind. It includes context from the analyzed paper:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="kd">function</span> <span class="nf">askQuestion</span><span class="p">(</span><span class="nx">question</span><span class="p">,</span> <span class="nx">paperAnalysis</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">context</span> <span class="o">=</span> <span class="s2">`
+        Paper: </span><span class="p">${</span><span class="nx">paperAnalysis</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span><span class="s2">
+        Key concepts: </span><span class="p">${</span><span class="nx">paperAnalysis</span><span class="p">.</span><span class="nx">concepts</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nx">c</span> <span class="o">=&gt;</span> <span class="nx">c</span><span class="p">.</span><span class="nx">name</span><span class="p">).</span><span class="nf">join</span><span class="p">(</span><span class="dl">'</span><span class="s1">, </span><span class="dl">'</span><span class="p">)}</span><span class="s2">
+        Findings: </span><span class="p">${</span><span class="nx">paperAnalysis</span><span class="p">.</span><span class="nx">findings</span><span class="p">}</span><span class="s2">
+    `</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">openai</span><span class="p">.</span><span class="nx">chat</span><span class="p">.</span><span class="nx">completions</span><span class="p">.</span><span class="nf">create</span><span class="p">({</span>
+        <span class="na">model</span><span class="p">:</span> <span class="dl">'</span><span class="s1">gpt-4o</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">messages</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span> <span class="na">role</span><span class="p">:</span> <span class="dl">'</span><span class="s1">system</span><span class="dl">'</span><span class="p">,</span> <span class="na">content</span><span class="p">:</span> <span class="s2">`You are a research assistant helping explain this paper: </span><span class="p">${</span><span class="nx">context</span><span class="p">}</span><span class="s2">`</span> <span class="p">},</span>
+            <span class="p">{</span> <span class="na">role</span><span class="p">:</span> <span class="dl">'</span><span class="s1">user</span><span class="dl">'</span><span class="p">,</span> <span class="na">content</span><span class="p">:</span> <span class="nx">question</span> <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This context grounding means answers are specific to the paper you’re reading, not generic explanations pulled from training data.</p>
+
+<h2 id="demo-mode-no-api-key-required">Demo Mode: No API Key Required</h2>
+
+<p>One decision I’m proud of: Clarity works without an API key. In demo mode, it uses pre-analyzed data from “Attention Is All You Need” (the Transformer paper):</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">OPENAI_API_KEY</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">No API key found, running in demo mode</span><span class="dl">'</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">DEMO_ANALYSIS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This lets anyone explore the interface and features before committing to API costs. It also makes development and testing much smoother.</p>
+
+<h2 id="the-design-philosophy">The Design Philosophy</h2>
+
+<p>I spent more time on UI/UX than I expected. Academic tools are often ugly and clunky—I wanted Clarity to feel like a product, not a research prototype.</p>
+
+<p>Key principles:</p>
+<ul>
+  <li><strong>Minimalism</strong>: White space is a feature. Dense information needs breathing room.</li>
+  <li><strong>Progressive disclosure</strong>: Don’t overwhelm. Show overview first, details on demand.</li>
+  <li><strong>Responsive feedback</strong>: Animations acknowledge user actions. Loading states are informative.</li>
+</ul>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.concept-card</span> <span class="p">{</span>
+    <span class="py">backdrop-filter</span><span class="p">:</span> <span class="nf">blur</span><span class="p">(</span><span class="m">20px</span><span class="p">);</span>
+    <span class="nl">background</span><span class="p">:</span> <span class="nf">rgba</span><span class="p">(</span><span class="m">255</span><span class="p">,</span> <span class="m">255</span><span class="p">,</span> <span class="m">255</span><span class="p">,</span> <span class="m">0.8</span><span class="p">);</span>
+    <span class="nl">transition</span><span class="p">:</span> <span class="n">transform</span> <span class="m">0.2s</span> <span class="nb">ease</span><span class="p">,</span> <span class="n">box-shadow</span> <span class="m">0.2s</span> <span class="nb">ease</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.concept-card</span><span class="nd">:hover</span> <span class="p">{</span>
+    <span class="nl">transform</span><span class="p">:</span> <span class="nf">translateY</span><span class="p">(</span><span class="m">-2px</span><span class="p">);</span>
+    <span class="nl">box-shadow</span><span class="p">:</span> <span class="m">0</span> <span class="m">8px</span> <span class="m">25px</span> <span class="nf">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0.1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Small touches like hover states and subtle shadows make the interface feel alive.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Structure extraction is powerful.</strong> Once you have a paper’s concepts and sections in structured form, you can build all kinds of features on top—graphs, summaries, flashcards, citations.</p>
+
+<p><strong>Demo mode is worth the effort.</strong> The friction of API key setup kills exploration. Making the app work without configuration opened it up to casual users.</p>
+
+<p><strong>Academic tools need better design.</strong> Researchers deserve well-designed software. The bar is low, which means small investments in UX pay outsized dividends.</p>
+
+<hr />
+
+<p><em>Built with React, D3.js, and the conviction that understanding shouldn’t be a struggle.</em></p>
+]]>
+    </content>
+    <author>
+      <name>Koushik Jaladi</name>
+    </author>
+    <summary type="html">
+      <![CDATA[Academic papers are dense. They’re written for experts, packed with jargon, and structured for peer review rather than comprehension. Every researcher knows the frustration of reading the same para...]]>
+    </summary>
+  </entry>
+  
+</feed>

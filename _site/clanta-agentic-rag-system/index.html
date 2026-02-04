@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Clanta: Building a Production-Ready Agentic RAG System — Koushik Jaladi</title>
+  <meta name="description" content="RAG has become the default pattern for grounding LLMs in external knowledge. But vanilla RAG—retrieve, augment, generate—hits a ceiling quickly. Complex quer...">
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Clanta: Building a Production-Ready Agentic RAG System | Koushik Jaladi</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Clanta: Building a Production-Ready Agentic RAG System" />
+<meta name="author" content="Koushik Jaladi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="RAG has become the default pattern for grounding LLMs in external knowledge. But vanilla RAG—retrieve, augment, generate—hits a ceiling quickly. Complex queries need smarter strategies. Ambiguous questions need reformulation. Low-quality retrievals need filtering. This realization led me to build Clanta, an Agentic RAG system that thinks before it retrieves." />
+<meta property="og:description" content="RAG has become the default pattern for grounding LLMs in external knowledge. But vanilla RAG—retrieve, augment, generate—hits a ceiling quickly. Complex queries need smarter strategies. Ambiguous questions need reformulation. Low-quality retrievals need filtering. This realization led me to build Clanta, an Agentic RAG system that thinks before it retrieves." />
+<link rel="canonical" href="http://localhost:4003/clanta-agentic-rag-system/" />
+<meta property="og:url" content="http://localhost:4003/clanta-agentic-rag-system/" />
+<meta property="og:site_name" content="Koushik Jaladi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-01-25T00:00:00+05:30" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Clanta: Building a Production-Ready Agentic RAG System" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Koushik Jaladi"},"dateModified":"2026-01-25T00:00:00+05:30","datePublished":"2026-01-25T00:00:00+05:30","description":"RAG has become the default pattern for grounding LLMs in external knowledge. But vanilla RAG—retrieve, augment, generate—hits a ceiling quickly. Complex queries need smarter strategies. Ambiguous questions need reformulation. Low-quality retrievals need filtering. This realization led me to build Clanta, an Agentic RAG system that thinks before it retrieves.","headline":"Clanta: Building a Production-Ready Agentic RAG System","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4003/clanta-agentic-rag-system/"},"url":"http://localhost:4003/clanta-agentic-rag-system/"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4003/feed.xml" title="Koushik Jaladi" />
+
+  <!-- Theme: Apply before CSS loads to prevent flash -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Preload critical font -->
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body>
+
+  <div class="frame">
+    <header class="header">
+  <a href="/" class="header__logo">
+    Koushik Jaladi
+  </a>
+
+  <nav class="header__nav">
+    <a href="/demos" >Demos</a>
+    <a href="/writing" >Writing</a>
+    <a href="/about" >About</a>
+    <a href="/now" >Now</a>
+  </nav>
+</header>
+
+
+    <main class="main" role="main">
+      <!-- Enhanced Schema.org JSON-LD for AI/SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Clanta: Building a Production-Ready Agentic RAG System",
+  "description": "How I created an autonomous document Q&A system with query routing, HyDE transformation, hybrid retrieval, and self-correction loops",
+  "datePublished": "2026-01-25T00:00:00+05:30",
+  "dateModified": "2026-01-25T00:00:00+05:30",
+  "author": {
+    "@type": "Person",
+    "name": "Koushik Jaladi",
+    "url": "http://localhost:4003/about/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "",
+    "url": "http://localhost:4003"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4003/clanta-agentic-rag-system/"
+  },
+  "url": "http://localhost:4003/clanta-agentic-rag-system/",
+  "wordCount": 1638,
+  "inLanguage": "en-US"
+}
+</script>
+
+<!-- BreadcrumbList Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "http://localhost:4003"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Writing",
+      "item": "http://localhost:4003/writing/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Clanta: Building a Production-Ready Agentic RAG System",
+      "item": "http://localhost:4003/clanta-agentic-rag-system/"
+    }
+  ]
+}
+</script>
+
+<article class="article">
+  <header class="article__header">
+    <a href="/writing" class="article__back">← Writing</a>
+
+    <div class="article__meta">
+      <time datetime="2026-01-25T00:00:00+05:30">
+        January 25, 2026
+      </time>
+      <span class="article__reading-time">
+        9 min read
+      </span>
+    </div>
+
+    <h1 class="article__title">Clanta: Building a Production-Ready Agentic RAG System</h1>
+
+    
+    <p class="article__subtitle">How I created an autonomous document Q&A system with query routing, HyDE transformation, hybrid retrieval, and self-correction loops</p>
+    
+  </header>
+
+  <div class="article__content prose">
+    <p>RAG has become the default pattern for grounding LLMs in external knowledge. But vanilla RAG—retrieve, augment, generate—hits a ceiling quickly. Complex queries need smarter strategies. Ambiguous questions need reformulation. Low-quality retrievals need filtering. This realization led me to build Clanta, an Agentic RAG system that thinks before it retrieves.</p>
+
+<h2 id="the-limitation-of-linear-rag">The Limitation of Linear RAG</h2>
+
+<p>Traditional RAG follows a fixed pipeline. Query comes in, embeddings find similar documents, context gets stuffed into a prompt, LLM generates an answer. It works surprisingly well for straightforward factual questions. But it falls apart in predictable ways.</p>
+
+<p>Ask a complex analytical question, and it retrieves surface-level matches rather than the deep context you need. Use technical jargon that differs from your document vocabulary, and semantic search whiffs entirely. Get unlucky with your top-k retrievals, and even a capable LLM hallucinates confidently from thin context.</p>
+
+<p>Agentic RAG flips the paradigm. Instead of a pipeline, it’s a loop. Instead of fixed behavior, it’s adaptive. The system reasons about what kind of question you’re asking, transforms queries to bridge vocabulary gaps, grades retrieved documents for relevance, and self-corrects when its answers drift from the source material.</p>
+
+<h2 id="the-architecture-five-autonomous-agents">The Architecture: Five Autonomous Agents</h2>
+
+<p>Clanta orchestrates five specialized agents, each handling a distinct phase of the retrieval-generation cycle. Think of it as an assembly line where each station can call a halt and request do-overs.</p>
+
+<p><strong>Query Router</strong> examines incoming questions and classifies them into five categories: SIMPLE (general knowledge that might not need retrieval), FACTUAL (requires precise document lookup), ANALYTICAL (needs multi-step reasoning), COMPARISON (contrasting multiple items), and SUMMARY (condensing longer content). The routing decision shapes everything downstream—simple queries might skip retrieval entirely, while analytical ones trigger deeper search strategies.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">QueryRouter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">classify_query</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryType</span><span class="p">:</span>
+        <span class="n">classification_prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"""</span><span class="s">Classify the following query:
+- SIMPLE: General knowledge, no document lookup needed
+- FACTUAL: Requires specific facts from documents
+- ANALYTICAL: Requires reasoning over multiple facts
+- COMPARISON: Comparing two or more items
+- SUMMARY: Summarization requests
+
+Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s">
+Category:</span><span class="sh">"""</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">classification_prompt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">QueryType</span><span class="p">[</span><span class="n">response</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="nf">strip</span><span class="p">().</span><span class="nf">upper</span><span class="p">()]</span>
+</code></pre></div></div>
+
+<p><strong>Query Transformer</strong> bridges the vocabulary gap between how users ask questions and how documents express answers. The key technique here is HyDE—Hypothetical Document Embeddings. Instead of embedding the raw query, we ask the LLM to write a hypothetical paragraph that would answer the question, then embed that. The intuition: a made-up answer looks more like real answers than a question does.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">generate_hyde</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"""</span><span class="s">Write a short paragraph from an authoritative source
+that would answer this question. Don</span><span class="sh">'</span><span class="s">t mention this is hypothetical.
+
+Question: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s">
+Document paragraph:</span><span class="sh">"""</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="p">.</span><span class="n">text</span><span class="p">.</span><span class="nf">strip</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><strong>Hybrid Retriever</strong> combines dense semantic search with sparse BM25 matching. Dense retrieval excels at conceptual similarity—finding documents that mean the same thing in different words. Sparse retrieval excels at exact matches—finding that specific error code or product name. Fusing both through reciprocal rank merging captures the best of both worlds.</p>
+
+<p><strong>Document Grader</strong> evaluates each retrieved chunk for actual relevance, not just vector similarity. High cosine similarity doesn’t guarantee useful context. The grader uses the LLM to score each document 0-10 and filters out anything below threshold before generation begins.</p>
+
+<p><strong>Hallucination Detector</strong> verifies the final answer against source material using Vectara’s HHEM model. If the response contains claims unsupported by the retrieved context, the system triggers self-correction—regenerating with explicit instructions to only use stated facts.</p>
+
+<h2 id="m2-macbook-air-optimization">M2 MacBook Air Optimization</h2>
+
+<p>Running this stack locally required careful model selection. With 16GB unified RAM, I couldn’t afford the flagship models. But smaller variants still deliver impressive quality.</p>
+
+<p>The embedding model is BAAI/bge-base-en-v1.5—768 dimensions, ~500MB in memory, with strong MTEB benchmark scores. For reranking, BAAI/bge-reranker-base provides cross-encoder accuracy at half the size of larger variants. Hallucination detection uses HHEM-2.1-Open, a T5-based model that actually outperforms GPT-4 on factual consistency benchmarks.</p>
+
+<p>The total memory footprint stays around 2.2GB, leaving plenty of headroom for the operating system and the LlamaIndex orchestration layer:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Model</th>
+      <th>RAM Usage</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Embeddings</td>
+      <td>bge-base-en-v1.5</td>
+      <td>~500 MB</td>
+    </tr>
+    <tr>
+      <td>Reranker</td>
+      <td>bge-reranker-base</td>
+      <td>~500 MB</td>
+    </tr>
+    <tr>
+      <td>Hallucination</td>
+      <td>HHEM-2.1-Open</td>
+      <td>~600 MB</td>
+    </tr>
+    <tr>
+      <td>BM25</td>
+      <td>bm25s</td>
+      <td>~100 MB</td>
+    </tr>
+    <tr>
+      <td>Vector Store</td>
+      <td>Qdrant (local)</td>
+      <td>~500 MB</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Metal Performance Shaders (MPS) acceleration means embeddings and reranking run on the M2’s GPU cores. The difference is dramatic—batch embedding 100 documents takes 5-10 seconds instead of minutes.</p>
+
+<h2 id="the-self-correction-loop">The Self-Correction Loop</h2>
+
+<p>The hallucination check isn’t just a yes/no gate. When it detects unsupported claims, Clanta regenerates with additional constraints:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_self_correct</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NodeWithScore</span><span class="p">],</span>
+                   <span class="n">original_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="sh">"</span><span class="se">\n\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">([</span><span class="n">n</span><span class="p">.</span><span class="n">node</span><span class="p">.</span><span class="nf">get_content</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">])</span>
+
+    <span class="n">correction_prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"""</span><span class="s">The following answer may contain information
+not supported by the sources. Rewrite to ONLY include information
+directly stated in the sources. If sources don</span><span class="sh">'</span><span class="s">t have enough
+information, acknowledge that.
+
+Sources:
+</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s">
+
+Original answer: </span><span class="si">{</span><span class="n">original_answer</span><span class="si">}</span><span class="s">
+Question: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s">
+
+Corrected answer (only use information from sources):</span><span class="sh">"""</span>
+
+    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">llm</span><span class="p">.</span><span class="nf">complete</span><span class="p">(</span><span class="n">correction_prompt</span><span class="p">).</span><span class="n">text</span><span class="p">.</span><span class="nf">strip</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>The key phrase is “acknowledge that.” Rather than hallucinating plausible-sounding details, a well-corrected response admits uncertainty. In my testing, this dramatically improved user trust—people prefer honest “I don’t know” answers over confident fabrications.</p>
+
+<h2 id="the-zen-terminal-interface">The Zen Terminal Interface</h2>
+
+<p>I spent an unreasonable amount of time on the CLI aesthetics. Clanta uses Rich for terminal rendering, with a Japanese-inspired minimalist theme. The color palette draws from traditional colors—Aka red for accents, Kinari cream for backgrounds, Hai gray for secondary text.</p>
+
+<p>The confidence indicator uses three states: a filled circle (●) for high confidence above 70%, a half-moon (◐) for medium confidence 50-70%, and an empty circle (○) for low confidence. Users immediately understand the system’s certainty without reading numbers.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ZEN</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sh">"</span><span class="s">red</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">#C53D43</span><span class="sh">"</span><span class="p">,</span>      <span class="c1"># Aka (赤) - Traditional red
+</span>    <span class="sh">"</span><span class="s">white</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">#F5F5F5</span><span class="sh">"</span><span class="p">,</span>    <span class="c1"># Shiro (白)
+</span>    <span class="sh">"</span><span class="s">gold</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">#C9A86C</span><span class="sh">"</span><span class="p">,</span>     <span class="c1"># Kin (金)
+</span>    <span class="sh">"</span><span class="s">gray</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">#4A4A4A</span><span class="sh">"</span><span class="p">,</span>     <span class="c1"># Hai (灰)
+</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>The ASCII art banner, the spinners, the panel borders—everything follows this restrained palette. It sounds trivial, but a beautiful interface makes the tool a joy to use during long research sessions.</p>
+
+<h2 id="evaluation-against-research-papers">Evaluation Against Research Papers</h2>
+
+<p>I tested Clanta against three arXiv papers: the original RAG paper by Lewis et al., and two reinforcement learning papers. With 142 chunks indexed across 52 pages, here’s how the evaluation matrix looked:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Query</th>
+      <th>Type Detected</th>
+      <th>Confidence</th>
+      <th>Assessment</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>“What is RAG?”</td>
+      <td>simple</td>
+      <td>67%</td>
+      <td>Excellent—DPR, BART, MIPS explained</td>
+    </tr>
+    <tr>
+      <td>“RAG-Sequence vs RAG-Token”</td>
+      <td>comparison</td>
+      <td>78%</td>
+      <td>Clear mathematical differences</td>
+    </tr>
+    <tr>
+      <td>“How does DPR work?”</td>
+      <td>simple</td>
+      <td>66%</td>
+      <td>Bi-encoder architecture described</td>
+    </tr>
+    <tr>
+      <td>“What datasets evaluated RAG?”</td>
+      <td>factual</td>
+      <td>73%</td>
+      <td>Listed NQ, TriviaQA, FEVER, MS-MARCO</td>
+    </tr>
+    <tr>
+      <td>“Limitations of RAG?”</td>
+      <td>simple</td>
+      <td>50%</td>
+      <td>Partial—retrieval collapse mentioned</td>
+    </tr>
+    <tr>
+      <td>“What is contrastive RL?”</td>
+      <td>simple</td>
+      <td>57%</td>
+      <td>Cross-paper retrieval worked</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The cross-paper retrieval result surprised me—Clanta correctly retrieved content from the RL papers when asked about reinforcement learning, despite the query being classified as “simple” and primarily associated with the RAG domain.</p>
+
+<h2 id="the-hard-won-lessons">The Hard-Won Lessons</h2>
+
+<p><strong>LlamaIndex wrappers can be brittle.</strong> I spent hours debugging version conflicts between LlamaIndex’s HuggingFaceEmbedding wrapper and sentence-transformers. The solution was writing a custom embedding class that bypasses the wrapper entirely, using Pydantic’s <code class="language-plaintext highlighter-rouge">Field()</code> and <code class="language-plaintext highlighter-rouge">PrivateAttr()</code> for proper attribute handling.</p>
+
+<p><strong>Package version alignment is critical.</strong> A single <code class="language-plaintext highlighter-rouge">pip install --force-reinstall</code> broke my torch/torchvision pairing and caused cryptic “operator does not exist” errors. Now I pin versions explicitly and test the full stack after any dependency change.</p>
+
+<p><strong>Feature toggles enable debugging.</strong> Every agentic component—routing, HyDE, reranking, grading, hallucination checking—can be individually disabled. This made isolating problems trivial. When confidence dropped unexpectedly, I could toggle features until I found the culprit.</p>
+
+<p><strong>Grading is expensive.</strong> LLM-based document grading adds a Claude call per retrieved chunk. For 20 chunks, that’s 20 API calls before generation even starts. I disabled it by default and only enable for high-stakes queries where false positives are costly.</p>
+
+<h2 id="whats-next">What’s Next</h2>
+
+<p>The obvious improvement is conversation memory. Right now, each query is independent. Adding chat history would enable follow-up questions and clarifications without re-stating context.</p>
+
+<p>Caching is another win. HyDE documents and embeddings for repeated queries should be memoized. The same question within a session shouldn’t trigger fresh API calls.</p>
+
+<p>Finally, streaming. The current implementation blocks until the full answer is ready. Progressive generation would improve perceived latency, especially for longer responses.</p>
+
+<p>Clanta started as a learning project to understand agentic patterns. It became a genuinely useful tool for researching papers and documentation. The core insight holds: LLMs are better when they reason about how to retrieve, not just what to retrieve. The extra API calls and latency pay dividends in answer quality.</p>
+
+  </div>
+
+  <footer class="article__footer">
+    <div class="article__author">
+      <p>Written by <strong>Koushik Jaladi</strong></p>
+      <p class="article__author-links">
+        <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+        <span>·</span>
+        <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+</article>
+
+
+
+<section class="related">
+  <p class="section__label">Continue Reading</p>
+  <div class="posts">
+    
+    <article class="post-item post-item--compact">
+      <a href="/podscribe-podcast-notes-generator/" class="post-item__link">
+        <h3 class="post-item__title">PodScribe: Building a Local-First Podcast Notes Generator</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/research-swarm-multi-agent/" class="post-item__link">
+        <h3 class="post-item__title">Research Swarm: A Production-Grade Multi-Agent Research System</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/isaac-groot/" class="post-item__link">
+        <h3 class="post-item__title">GR00T: One Foundation Model for All Robots</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/anthropic-skills-framework/" class="post-item__link">
+        <h3 class="post-item__title">The Anthropic Skills Framework: Extending Claude with Domain Expertise</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mcp-learning-journey/" class="post-item__link">
+        <h3 class="post-item__title">Learning MCP: The Protocol That's Becoming AI's USB-C</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/bently-audio-ai/" class="post-item__link">
+        <h3 class="post-item__title">Bently: Local-First Audio AI for Podcasters and Meeting Teams</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mosley-rlm-runner/" class="post-item__link">
+        <h3 class="post-item__title">Mosley: A Minimal Recursive Language Model Runner</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mently-pulsenote/" class="post-item__link">
+        <h3 class="post-item__title">Mently: YouTube Video Summarization That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/askly-zappybot/" class="post-item__link">
+        <h3 class="post-item__title">Askly: Turn Any Website Into an AI Chatbot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mcp-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">Teaching MCP Through an RPG: Metacon2</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon-mcp-quest/" class="post-item__link">
+        <h3 class="post-item__title">MCP Quest: Teaching Protocols Through Pokemon-Style RPGs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/atlas-intelligence-dashboard/" class="post-item__link">
+        <h3 class="post-item__title">3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/1000-layer-networks-rl/" class="post-item__link">
+        <h3 class="post-item__title">1000 Layers Deep: Scaling Networks for Self-Supervised RL</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">When 100-Year-Old Math Beats Modern AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/bandit-ramanujan/" class="post-item__link">
+        <h3 class="post-item__title">Ramanujan's Math Meets the Multi-Armed Bandit</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gpt-researcher/" class="post-item__link">
+        <h3 class="post-item__title">GPT Researcher: Autonomous Multi-Agent Research at Scale</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid/" class="post-item__link">
+        <h3 class="post-item__title">Cloid: A Voice-First Interview Bot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/yolo-mask-conversion/" class="post-item__link">
+        <h3 class="post-item__title">From SAM2 to YOLO: Bridging Segmentation and Detection</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/glenna-clarity/" class="post-item__link">
+        <h3 class="post-item__title">Clarity: Making Academic Papers Actually Readable</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gps-denied-navigation/" class="post-item__link">
+        <h3 class="post-item__title">Navigating Without GPS: Visual Odometry from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/echo-sanctuary/" class="post-item__link">
+        <h3 class="post-item__title">Echo Sanctuary: Where AI Companions Have Real Conversations</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/prism-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Prism: From One Blog Post to Six Platform Posts in Five Minutes</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">CODEC Quest: Gamifying Prompt Engineering Education</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-design/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Supermemory: Design Philosophy in Practice</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-ai-education/" class="post-item__link">
+        <h3 class="post-item__title">CODEC QUEST: Teaching AI Literacy Through an 8-bit RPG</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/deepseek-ocr/" class="post-item__link">
+        <h3 class="post-item__title">DeepSeek-OCR: Compressing Documents for the Age of Context Windows</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/dew-breathing-app/" class="post-item__link">
+        <h3 class="post-item__title">Dew: Neo-Brutalist Breathing Meditation for iOS</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/chimera-ace-architecture/" class="post-item__link">
+        <h3 class="post-item__title">Chimera: Building Agents That Actually Think</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whitestellar-agents-sdk/" class="post-item__link">
+        <h3 class="post-item__title">WhiteStellar: Learning the OpenAI Agents SDK from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tiny-recursive-models/" class="post-item__link">
+        <h3 class="post-item__title">Less is More: Why Tiny Recursive Networks Beat Giant LLMs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maxion/" class="post-item__link">
+        <h3 class="post-item__title">Project Maxion: The Self-Healing Agentic Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Product Design: Supermemory Landing Pages</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whatsapp-copilot/" class="post-item__link">
+        <h3 class="post-item__title">Building a WhatsApp Sales Copilot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon3-neon-prompt-builder/" class="post-item__link">
+        <h3 class="post-item__title">NEON: A Gamified CLI for Prompt Engineering</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sakana-model-merging/" class="post-item__link">
+        <h3 class="post-item__title">Merging Intelligence: Combining Qwen and DeepSeek with SLERP</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-research-hub/" class="post-item__link">
+        <h3 class="post-item__title">Interactive Research Hub: Visualizing the AI Agent Landscape</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-2025-hub/" class="post-item__link">
+        <h3 class="post-item__title">Agentic AI 2025: An Interactive Research Visualization</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/geon-interview-ai/" class="post-item__link">
+        <h3 class="post-item__title">Geon: Building an AI Interviewer That Actually Cares</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/breezeblow-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Testio: Multi-Theme Landing Page Exploration</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/zorever-chatbot/" class="post-item__link">
+        <h3 class="post-item__title">Building a Real Estate Chatbot That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-enhanced-pdf-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Seriously Smart PDF Analyzer</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/repour-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Repour: Multi-Agent Content Repurposing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/awesome-claude-code-subagents/" class="post-item__link">
+        <h3 class="post-item__title">116 Specialized Agents for Claude Code</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/magentic-ui/" class="post-item__link">
+        <h3 class="post-item__title">Human-Centered Web Automation with Magentic-UI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/godfather-ai-news/" class="post-item__link">
+        <h3 class="post-item__title">Godfather: AI-Powered News Aggregation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vibe-decode/" class="post-item__link">
+        <h3 class="post-item__title">VibeDecode: Understanding Your Instagram Aesthetic with AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agent-zx/" class="post-item__link">
+        <h3 class="post-item__title">Agent ZX: Building an Autonomous Web Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maverick/" class="post-item__link">
+        <h3 class="post-item__title">Project Maverick: From Prompt to Production App in Days</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/pdf-intelligence/" class="post-item__link">
+        <h3 class="post-item__title">PDF Intelligence: Extracting Meaning from Documents</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doc-ai-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Production-Ready Document Analysis Platform</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr-demo/" class="post-item__link">
+        <h3 class="post-item__title">CompressChatOCR: 10x Token Reduction for Document AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-doc-pro/" class="post-item__link">
+        <h3 class="post-item__title">AI Doc Pro: Minimal Document Analysis</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr/" class="post-item__link">
+        <h3 class="post-item__title">10x Token Compression: Vision-Based Document Processing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/calorie-tracker-ios/" class="post-item__link">
+        <h3 class="post-item__title">Starting an iOS Project: CalorieTracker Foundation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-dis-document-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Two Paths to Document Analysis: Local vs Cloud</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-delta-landing-generator/" class="post-item__link">
+        <h3 class="post-item__title">AI Landing Page Generator: From Prompt to Preview</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/uniq-ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">Uniq: When Ramanujan's Math Meets Game AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/frijan-voice-assistant/" class="post-item__link">
+        <h3 class="post-item__title">FRIJAN: Voice-First AI Assistant Architecture</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vortex-deep-research/" class="post-item__link">
+        <h3 class="post-item__title">Vortex: Deep Research with Iterative Refinement</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/rl-adventure-learning/" class="post-item__link">
+        <h3 class="post-item__title">Learning Reinforcement Learning Through Play</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/research-swarm/" class="post-item__link">
+        <h3 class="post-item__title">Research Swarm: Multi-Agent Research That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-agents/" class="post-item__link">
+        <h3 class="post-item__title">DAMAC Finance AI: Enterprise Multi-Agent Automation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid-clean-voice-bot/" class="post-item__link">
+        <h3 class="post-item__title">The Siri-Style Voice Bot: Real-Time Conversations with OpenAI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-ai/" class="post-item__link">
+        <h3 class="post-item__title">Building Enterprise-Grade Multi-Agent Finance AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/seecal-ai/" class="post-item__link">
+        <h3 class="post-item__title">SeeCal AI: Point, Shoot, Know What You're Eating</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/lumina-ai-chat/" class="post-item__link">
+        <h3 class="post-item__title">Lumina: A Clean Slate for AI Chat Interfaces</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/phantomcore-shell/" class="post-item__link">
+        <h3 class="post-item__title">PhantomCore Shell: AI Meets the Desktop</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/personaforge/" class="post-item__link">
+        <h3 class="post-item__title">PersonaForge: A Backend for AI Characters</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/xelora/" class="post-item__link">
+        <h3 class="post-item__title">Xelora: A Local-First Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sentinel-ai/" class="post-item__link">
+        <h3 class="post-item__title">Sentinel AI: Building an Autonomous Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doppel-agent/" class="post-item__link">
+        <h3 class="post-item__title">DoppelAgent: When Two AIs Are Better Than One</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gemini-agentic-research-assistant/" class="post-item__link">
+        <h3 class="post-item__title">Building a Multi-Model Research Assistant</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/aetherdraft/" class="post-item__link">
+        <h3 class="post-item__title">Aetherdraft: Teaching AI to Write Better Emails</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/openai-agents-sdk-intro/" class="post-item__link">
+        <h3 class="post-item__title">Getting Started with OpenAI's Agents SDK</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/grid-world-agents/" class="post-item__link">
+        <h3 class="post-item__title">Grid World Agents: Multi-Agent Simulation Basics</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/less-but-better/" class="post-item__link">
+        <h3 class="post-item__title">Less, But Better</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/the-reliability-gap/" class="post-item__link">
+        <h3 class="post-item__title">The Reliability Gap</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/thinking-in-systems/" class="post-item__link">
+        <h3 class="post-item__title">Thinking in Systems</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/on-simplicity/" class="post-item__link">
+        <h3 class="post-item__title">On Simplicity</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tools-and-thought/" class="post-item__link">
+        <h3 class="post-item__title">Tools and Thought</h3>
+      </a>
+    </article>
+    
+  </div>
+</section>
+
+
+    </main>
+
+    <footer class="footer">
+  <div class="footer__content">
+    <p class="footer__colophon">
+      <span class="footer__year">2026</span>
+      <span class="footer__sep">·</span>
+      <span class="footer__name">Koushik Jaladi</span>
+    </p>
+    <div class="footer__links">
+      <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener" aria-label="Twitter">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a href="https://github.com/Koushik1161" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      </a>
+      <a href="https://medium.com/@koushikcruz" target="_blank" rel="noopener" aria-label="Medium">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/koushikjaladi/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="/feed.xml" aria-label="RSS">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
+      </a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-toggle__icon theme-toggle__icon--moon">◐</span>
+        <span class="theme-toggle__icon theme-toggle__icon--sun">◑</span>
+      </button>
+    </div>
+  </div>
+</footer>
+
+  </div>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+# Koushik Jaladi
+
+> Building machines that think
+
+Personal blog of Koushik Jaladi - AI/ML engineer exploring machine learning, deep learning, and software engineering.
+
+## Quick Links
+
+- Homepage: http://localhost:4003
+- Blog: http://localhost:4003/writing/
+- Projects: http://localhost:4003/projects/
+- About: http://localhost:4003/about/
+- RSS Feed: http://localhost:4003/feed.xml
+- Full Content: http://localhost:4003/llms-full.txt
+
+## Blog Posts (81 articles)
+
+- [Clanta: Building a Production-Ready Agentic RAG System](http://localhost:4003/clanta-agentic-rag-system/) - How I created an autonomous document Q&A system with query routing, HyDE transformation, hybrid retrieval, and self-correction loops
+- [PodScribe: Building a Local-First Podcast Notes Generator](http://localhost:4003/podscribe-podcast-notes-generator/) - How I combined Parakeet MLX transcription with GPT-4o-mini to create a privacy-respecting podcast processing pipeline
+- [Research Swarm: A Production-Grade Multi-Agent Research System](http://localhost:4003/research-swarm-multi-agent/) - Building and evaluating a five-agent pipeline that produces professional research reports
+- [GR00T: One Foundation Model for All Robots](http://localhost:4003/isaac-groot/) - Exploring NVIDIA's approach to cross-embodiment robot learning
+- [The Anthropic Skills Framework: Extending Claude with Domain Expertise](http://localhost:4003/anthropic-skills-framework/) - Building modular capabilities for document processing and specialized tasks
+- [Learning MCP: The Protocol That's Becoming AI's USB-C](http://localhost:4003/mcp-learning-journey/) - From hello world servers to understanding the 2026 agentic AI landscape
+- [Bently: Local-First Audio AI for Podcasters and Meeting Teams](http://localhost:4003/bently-audio-ai/) - Building PodScribe and darkbee with Parakeet MLX for 30x faster transcription
+- [Mosley: A Minimal Recursive Language Model Runner](http://localhost:4003/mosley-rlm-runner/) - Building agentic AI with nothing but Python's standard library
+- [Mently: YouTube Video Summarization That Actually Works](http://localhost:4003/mently-pulsenote/) - Building PulseNote with graceful caption fallbacks and cost-optimized AI
+- [Askly: Turn Any Website Into an AI Chatbot](http://localhost:4003/askly-zappybot/) - Building a complete RAG pipeline with neubrutalist design
+- [Teaching MCP Through an RPG: Metacon2](http://localhost:4003/mcp-quest-v2/) - Building an educational game where players learn protocol concepts by exploring a virtual village
+- [MCP Quest: Teaching Protocols Through Pokemon-Style RPGs](http://localhost:4003/metacon-mcp-quest/) - How I turned a technical spec into an adventure game
+- [3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring](http://localhost:4003/atlas-intelligence-dashboard/) - Building a Palantir-grade dashboard for an interstellar comet
+- [1000 Layers Deep: Scaling Networks for Self-Supervised RL](http://localhost:4003/1000-layer-networks-rl/) - When depth unlocks emergent capabilities in reinforcement learning
+- [When 100-Year-Old Math Beats Modern AI](http://localhost:4003/ramanujan-ucb/) - Using Ramanujan's q-series to improve exploration in Monte Carlo Tree Search
+- [Ramanujan's Math Meets the Multi-Armed Bandit](http://localhost:4003/bandit-ramanujan/) - Exploring whether number theory can improve exploration in reinforcement learning
+- [GPT Researcher: Autonomous Multi-Agent Research at Scale](http://localhost:4003/gpt-researcher/) - Exploring an open-source system that produces cited research reports through coordinated AI agents
+- [Cloid: A Voice-First Interview Bot](http://localhost:4003/cloid/) - Building real-time voice AI with WebRTC and OpenAI's Realtime API
+- [From SAM2 to YOLO: Bridging Segmentation and Detection](http://localhost:4003/yolo-mask-conversion/) - Building a pipeline to convert mask annotations into YOLO format
+- [Clarity: Making Academic Papers Actually Readable](http://localhost:4003/glenna-clarity/) - Building an AI-powered paper reader with progressive disclosure and knowledge graphs
+- [Navigating Without GPS: Visual Odometry from First Principles](http://localhost:4003/gps-denied-navigation/) - Building a computer vision system for when satellites aren't an option
+- [Echo Sanctuary: Where AI Companions Have Real Conversations](http://localhost:4003/echo-sanctuary/) - Building a Pokemon-style game with GPT-4 powered persistent personalities
+- [Prism: From One Blog Post to Six Platform Posts in Five Minutes](http://localhost:4003/prism-content-repurposing/) - Building a multi-agent content repurposing engine
+- [CODEC Quest: Gamifying Prompt Engineering Education](http://localhost:4003/codec-quest-v2/) - Teaching AI communication through Pokemon-style gameplay
+- [Two Faces of Supermemory: Design Philosophy in Practice](http://localhost:4003/supermemory-landing-design/) - Building aspirational and educational landing pages for the same product
+- [CODEC QUEST: Teaching AI Literacy Through an 8-bit RPG](http://localhost:4003/codec-quest-ai-education/) - Gamifying prompt engineering education in the age of AI agents
+- [DeepSeek-OCR: Compressing Documents for the Age of Context Windows](http://localhost:4003/deepseek-ocr/) - When I realized OCR isn't about text extraction—it's about compression
+- [Dew: Neo-Brutalist Breathing Meditation for iOS](http://localhost:4003/dew-breathing-app/) - Building a 60-second wellness app with SwiftUI, Combine, and intentional design
+- [Chimera: Building Agents That Actually Think](http://localhost:4003/chimera-ace-architecture/) - Implementing the ACE cognitive architecture with persistent memory and learning
+- [WhiteStellar: Learning the OpenAI Agents SDK from First Principles](http://localhost:4003/whitestellar-agents-sdk/) - A structured curriculum for mastering AI agent development
+- [Less is More: Why Tiny Recursive Networks Beat Giant LLMs](http://localhost:4003/tiny-recursive-models/) - Exploring a research paper that challenges our assumptions about model scale
+- [Project Maxion: The Self-Healing Agentic Browser](http://localhost:4003/project-maxion/) - Building a multi-agent system that browses the web autonomously and adapts when websites change
+- [Two Faces of Product Design: Supermemory Landing Pages](http://localhost:4003/supermemory-landing-pages/) - Creating both a Jony Ive-inspired showcase and a practical developer onboarding experience
+- [Building a WhatsApp Sales Copilot](http://localhost:4003/whatsapp-copilot/) - How I combined intent classification with RAG to automate sales workflows
+- [NEON: A Gamified CLI for Prompt Engineering](http://localhost:4003/metacon3-neon-prompt-builder/) - Making developer workflows feel like quests
+- [Merging Intelligence: Combining Qwen and DeepSeek with SLERP](http://localhost:4003/sakana-model-merging/) - Experimenting with model merging to create a reasoning-enhanced instruction model
+- [Interactive Research Hub: Visualizing the AI Agent Landscape](http://localhost:4003/agentic-ai-research-hub/) - Building a canvas-based exploration platform for understanding agentic AI frameworks
+- [Agentic AI 2025: An Interactive Research Visualization](http://localhost:4003/agentic-ai-2025-hub/) - Building a data-driven exploration of the AI agent framework landscape
+- [Geon: Building an AI Interviewer That Actually Cares](http://localhost:4003/geon-interview-ai/) - Real-time voice AI with emotional intelligence for anxiety-free interviews
+- [Testio: Multi-Theme Landing Page Exploration](http://localhost:4003/breezeblow-landing-pages/) - Designing four complete visual systems for a voice-to-text AI product
+- [Building a Real Estate Chatbot That Actually Works](http://localhost:4003/zorever-chatbot/) - Combining FAQ automation, property search, and booking flows
+- [Building a Seriously Smart PDF Analyzer](http://localhost:4003/ai-enhanced-pdf-analyzer/) - From text extraction to multimodal understanding in one modular system
+- [Repour: Multi-Agent Content Repurposing](http://localhost:4003/repour-content-repurposing/) - Transforming one piece of content into six platform-optimized versions
+- [116 Specialized Agents for Claude Code](http://localhost:4003/awesome-claude-code-subagents/) - A curated collection of AI assistants for every development task
+- [Human-Centered Web Automation with Magentic-UI](http://localhost:4003/magentic-ui/) - Building a multi-agent browser automation platform with approval gates and visual grounding
+- [Godfather: AI-Powered News Aggregation](http://localhost:4003/godfather-ai-news/) - Using Claude to curate and score the AI industry's daily developments
+- [VibeDecode: Understanding Your Instagram Aesthetic with AI](http://localhost:4003/vibe-decode/) - Building a brand analysis tool with GPT-4 Vision
+- [Agent ZX: Building an Autonomous Web Browser](http://localhost:4003/agent-zx/) - How I combined planning, execution, and reflection to create a self-correcting agent
+- [Project Maverick: From Prompt to Production App in Days](http://localhost:4003/project-maverick/) - Building an AI-powered platform that generates full-stack applications
+- [PDF Intelligence: Extracting Meaning from Documents](http://localhost:4003/pdf-intelligence/) - Combining OCR, NLP, and LLMs for comprehensive document analysis
+- [Building a Production-Ready Document Analysis Platform](http://localhost:4003/doc-ai-analyzer/) - Full-stack AI document processing with real-time WebSocket updates and dual NLP strategies
+- [CompressChatOCR: 10x Token Reduction for Document AI](http://localhost:4003/compress-chat-ocr-demo/) - Using optical compression to make 100-page PDF analysis economically viable
+- [AI Doc Pro: Minimal Document Analysis](http://localhost:4003/ai-doc-pro/) - A focused PDF analyzer with GPT-4 summarization and entity extraction
+- [10x Token Compression: Vision-Based Document Processing](http://localhost:4003/compress-chat-ocr/) - How optical compression achieves 97% accuracy at 10% of the cost
+- [Starting an iOS Project: CalorieTracker Foundation](http://localhost:4003/calorie-tracker-ios/) - Setting up a SwiftUI project with proper testing infrastructure from day one
+- [Two Paths to Document Analysis: Local vs Cloud](http://localhost:4003/project-dis-document-analyzer/) - Building a dual-mode PDF analyzer with spaCy, BART, and OpenAI
+- [AI Landing Page Generator: From Prompt to Preview](http://localhost:4003/project-delta-landing-generator/) - Building a full-stack app that converts natural language to live HTML
+- [Uniq: When Ramanujan's Math Meets Game AI](http://localhost:4003/uniq-ramanujan-ucb/) - Exploring q-series exploration bonuses in Monte Carlo Tree Search
+- [FRIJAN: Voice-First AI Assistant Architecture](http://localhost:4003/frijan-voice-assistant/) - Designing for speech as the primary interface
+- [Vortex: Deep Research with Iterative Refinement](http://localhost:4003/vortex-deep-research/) - Building an agent that knows when it doesn't know enough
+- [Learning Reinforcement Learning Through Play](http://localhost:4003/rl-adventure-learning/) - Building interactive simulations that teach RL concepts experientially
+- [Research Swarm: Multi-Agent Research That Actually Works](http://localhost:4003/research-swarm/) - Building a parallel research system that decomposes queries, investigates autonomously, and produces cited reports
+- [DAMAC Finance AI: Enterprise Multi-Agent Automation](http://localhost:4003/damac-finance-agents/) - Building production-grade AI agents for luxury real estate finance operations
+- [The Siri-Style Voice Bot: Real-Time Conversations with OpenAI](http://localhost:4003/cloid-clean-voice-bot/) - Building a voice interview chatbot with WebRTC, animated orb UI, and ephemeral authentication
+- [Building Enterprise-Grade Multi-Agent Finance AI](http://localhost:4003/damac-finance-ai/) - How I architected a production-ready system for automating DAMAC Properties' financial workflows
+- [SeeCal AI: Point, Shoot, Know What You're Eating](http://localhost:4003/seecal-ai/) - Building an iOS app that turns food photos into nutritional insights
+- [Lumina: A Clean Slate for AI Chat Interfaces](http://localhost:4003/lumina-ai-chat/) - Building a modern conversational frontend with React and Tailwind
+- [PhantomCore Shell: AI Meets the Desktop](http://localhost:4003/phantomcore-shell/) - Building an OS-integrated AI assistant with streaming responses
+- [PersonaForge: A Backend for AI Characters](http://localhost:4003/personaforge/) - Building the infrastructure for persistent, reusable AI personalities
+- [Xelora: A Local-First Research Agent](http://localhost:4003/xelora/) - Building composable AI tools that stay on your machine
+- [Sentinel AI: Building an Autonomous Research Agent](http://localhost:4003/sentinel-ai/) - How I used Google ADK and MCP servers to create a self-directed web research system
+- [DoppelAgent: When Two AIs Are Better Than One](http://localhost:4003/doppel-agent/) - Building a dual-model system for bias detection and response validation
+- [Building a Multi-Model Research Assistant](http://localhost:4003/gemini-agentic-research-assistant/) - How I orchestrated Perplexity, Grok, and Gemini to create a smarter research pipeline
+- [Aetherdraft: Teaching AI to Write Better Emails](http://localhost:4003/aetherdraft/) - Building a self-improving email generation system with multi-model orchestration
+- [Getting Started with OpenAI's Agents SDK](http://localhost:4003/openai-agents-sdk-intro/) - The simplest possible AI agent in 8 lines of code
+- [Grid World Agents: Multi-Agent Simulation Basics](http://localhost:4003/grid-world-agents/) - Building the foundation for emergent behavior studies
+- [Less, But Better](http://localhost:4003/less-but-better/) - What Dieter Rams taught me about building AI systems
+- [The Reliability Gap](http://localhost:4003/the-reliability-gap/) - Why AI demos work but AI products don't
+- [Thinking in Systems](http://localhost:4003/thinking-in-systems/) - Why individual components matter less than their connections
+- [On Simplicity](http://localhost:4003/on-simplicity/) - The hardest thing to achieve and the easiest to lose
+- [Tools and Thought](http://localhost:4003/tools-and-thought/) - How the instruments we use shape what we create
+
+
+## Topics Covered
+
+- Machine Learning & Deep Learning
+- Natural Language Processing
+- Computer Vision
+- MLOps & Production ML
+- Software Engineering
+- AI Tools & Frameworks
+
+## Contact
+
+- Twitter: https://twitter.com/koushikjaladi
+- GitHub: https://github.com/Koushik1161
+- LinkedIn: https://linkedin.com/in/koushikjaladi

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Bently: Local-First Audio AI for Podcasters and Meeting Teams — Koushik Jaladi</title>
+  <meta name="description" content="Cloud transcription services have a problem: they’re slow, they’re expensive, and they see everything you say. For podcasters discussing upcoming product lau...">
+
+  <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bently: Local-First Audio AI for Podcasters and Meeting Teams | Koushik Jaladi</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Bently: Local-First Audio AI for Podcasters and Meeting Teams" />
+<meta name="author" content="Koushik Jaladi" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Cloud transcription services have a problem: they’re slow, they’re expensive, and they see everything you say. For podcasters discussing upcoming product launches or legal teams recording sensitive depositions, uploading audio to external servers isn’t acceptable." />
+<meta property="og:description" content="Cloud transcription services have a problem: they’re slow, they’re expensive, and they see everything you say. For podcasters discussing upcoming product launches or legal teams recording sensitive depositions, uploading audio to external servers isn’t acceptable." />
+<link rel="canonical" href="http://localhost:4003/bently-audio-ai/" />
+<meta property="og:url" content="http://localhost:4003/bently-audio-ai/" />
+<meta property="og:site_name" content="Koushik Jaladi" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-01-18T00:00:00+05:30" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bently: Local-First Audio AI for Podcasters and Meeting Teams" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Koushik Jaladi"},"dateModified":"2026-01-18T00:00:00+05:30","datePublished":"2026-01-18T00:00:00+05:30","description":"Cloud transcription services have a problem: they’re slow, they’re expensive, and they see everything you say. For podcasters discussing upcoming product launches or legal teams recording sensitive depositions, uploading audio to external servers isn’t acceptable.","headline":"Bently: Local-First Audio AI for Podcasters and Meeting Teams","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4003/bently-audio-ai/"},"url":"http://localhost:4003/bently-audio-ai/"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4003/feed.xml" title="Koushik Jaladi" />
+
+  <!-- Theme: Apply before CSS loads to prevent flash -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- Preload critical font -->
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body>
+
+  <div class="frame">
+    <header class="header">
+  <a href="/" class="header__logo">
+    Koushik Jaladi
+  </a>
+
+  <nav class="header__nav">
+    <a href="/demos" >Demos</a>
+    <a href="/writing" >Writing</a>
+    <a href="/about" >About</a>
+    <a href="/now" >Now</a>
+  </nav>
+</header>
+
+
+    <main class="main" role="main">
+      <!-- Enhanced Schema.org JSON-LD for AI/SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Bently: Local-First Audio AI for Podcasters and Meeting Teams",
+  "description": "Building PodScribe and darkbee with Parakeet MLX for 30x faster transcription",
+  "datePublished": "2026-01-18T00:00:00+05:30",
+  "dateModified": "2026-01-18T00:00:00+05:30",
+  "author": {
+    "@type": "Person",
+    "name": "Koushik Jaladi",
+    "url": "http://localhost:4003/about/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "",
+    "url": "http://localhost:4003"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4003/bently-audio-ai/"
+  },
+  "url": "http://localhost:4003/bently-audio-ai/",
+  "wordCount": 863,
+  "inLanguage": "en-US"
+}
+</script>
+
+<!-- BreadcrumbList Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "http://localhost:4003"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Writing",
+      "item": "http://localhost:4003/writing/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Bently: Local-First Audio AI for Podcasters and Meeting Teams",
+      "item": "http://localhost:4003/bently-audio-ai/"
+    }
+  ]
+}
+</script>
+
+<article class="article">
+  <header class="article__header">
+    <a href="/writing" class="article__back">← Writing</a>
+
+    <div class="article__meta">
+      <time datetime="2026-01-18T00:00:00+05:30">
+        January 18, 2026
+      </time>
+      <span class="article__reading-time">
+        5 min read
+      </span>
+    </div>
+
+    <h1 class="article__title">Bently: Local-First Audio AI for Podcasters and Meeting Teams</h1>
+
+    
+    <p class="article__subtitle">Building PodScribe and darkbee with Parakeet MLX for 30x faster transcription</p>
+    
+  </header>
+
+  <div class="article__content prose">
+    <p>Cloud transcription services have a problem: they’re slow, they’re expensive, and they see everything you say. For podcasters discussing upcoming product launches or legal teams recording sensitive depositions, uploading audio to external servers isn’t acceptable.</p>
+
+<p>Bently is my exploration of local-first audio AI—two products (PodScribe for podcasters, darkbee for meeting teams) that keep audio on your Mac while delivering professional-quality transcription and AI-powered content generation.</p>
+
+<h2 id="the-speed-breakthrough">The Speed Breakthrough</h2>
+
+<p>The secret is Parakeet MLX, a speech-to-text model optimized for Apple Silicon. Benchmarks tell the story:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Audio Length</th>
+      <th>Parakeet MLX</th>
+      <th>Whisper Large V3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>10 minutes</td>
+      <td>~15 seconds</td>
+      <td>~2 minutes</td>
+    </tr>
+    <tr>
+      <td>30 minutes</td>
+      <td>~40 seconds</td>
+      <td>~6 minutes</td>
+    </tr>
+    <tr>
+      <td>60 minutes</td>
+      <td>~80 seconds</td>
+      <td>~12 minutes</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>That’s 30x faster. A one-hour podcast episode transcribed while you grab coffee, not while you attend another meeting.</p>
+
+<p>The speed comes from MLX, Apple’s framework for machine learning on Metal. Parakeet’s 600MB model (versus Whisper’s 3GB+) loads faster and processes efficiently through the Neural Engine. Real-time factor of 3380x means it processes audio thousands of times faster than playback speed.</p>
+
+<h2 id="podscribe-complete-podcast-content-suite">PodScribe: Complete Podcast Content Suite</h2>
+
+<p>Transcription is just the beginning. PodScribe generates everything a podcast episode needs:</p>
+
+<p><strong>Show Notes</strong>: Bullet-pointed summaries with timestamps, ready for your podcast host.</p>
+
+<p><strong>Blog Post Draft</strong>: 300-400 word SEO-ready article, suitable for embedding on your website.</p>
+
+<p><strong>Social Media Quotes</strong>: Five tweetable extracts under 280 characters, pulled from the episode’s most compelling moments.</p>
+
+<p><strong>Episode Summary</strong>: 2-3 sentence hook for podcast directories.</p>
+
+<p><strong>Title Suggestions</strong>: Three alternatives for A/B testing.</p>
+
+<p><strong>SEO Tags</strong>: 8-10 keywords for discoverability.</p>
+
+<p>All generated by GPT-4o-mini after analyzing the transcript. The AI focuses on the first 15,000 characters to manage token costs while capturing the episode’s key content.</p>
+
+<h2 id="the-chunking-algorithm">The Chunking Algorithm</h2>
+
+<p>Long podcasts require careful memory management. PodScribe automatically chunks audio files longer than 10 minutes into 5-minute segments:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">CHUNK_DURATION_SECONDS</span> <span class="o">=</span> <span class="mi">300</span>  <span class="c1"># 5 minutes
+# Process each chunk separately
+# Merge results with adjusted timestamps
+# Clean up temp files
+</span></code></pre></div></div>
+
+<p>The sophisticated part: timestamps are recalculated so a phrase at 15:30 in the merged output reflects its actual position, not its position within its chunk. Users never see the chunking; they just see a coherent transcript.</p>
+
+<h2 id="darkbee-meeting-intelligence">darkbee: Meeting Intelligence</h2>
+
+<p>While PodScribe targets podcasters, darkbee targets the Fireflies.ai market—meeting transcription with action item extraction.</p>
+
+<p>The architecture splits real-time and post-processing:</p>
+
+<p><strong>During meetings</strong>: Recall.ai provides meeting bots for Zoom, Teams, Meet, and Webex. Deepgram Nova-3 powers live captions streamed via WebSocket.</p>
+
+<p><strong>After meetings</strong>: WhisperX with Pyannote handles speaker diarization—identifying who said what. Claude or GPT-4o generates summaries, extracts action items, and identifies key decisions.</p>
+
+<p>The two-phase approach optimizes for different needs. Real-time captions prioritize speed. Post-processing prioritizes accuracy and insight.</p>
+
+<h2 id="the-business-model-gap">The Business Model Gap</h2>
+
+<p>Cloud services charge $8-40/month indefinitely. PodScribe offers $49 one-time pricing. The math is simple: buy once, own forever.</p>
+
+<p>This works because local processing has near-zero marginal cost. After the initial purchase, users run the software on their own hardware. No server costs scale with usage.</p>
+
+<p>For darkbee, the model shifts to $10-19/month SaaS—necessary because meeting bots and real-time APIs have ongoing costs. But unit economics still favor local processing: estimated $0.40-0.60 per meeting versus $2-5 for fully cloud-based competitors.</p>
+
+<h2 id="privacy-as-feature">Privacy as Feature</h2>
+
+<p>Neither product sends audio to external transcription APIs during processing. The flow:</p>
+
+<ol>
+  <li>Audio stays on your Mac</li>
+  <li>Parakeet MLX transcribes locally</li>
+  <li>Only the transcript text (optionally) goes to OpenAI for content generation</li>
+</ol>
+
+<p>For users who want complete privacy, the AI features are optional. You can transcribe without any cloud calls.</p>
+
+<p>This isn’t paranoia—it’s compliance. HIPAA for healthcare, legal privilege for attorneys, NDA protection for business development. Local processing makes the products usable where cloud services can’t go.</p>
+
+<h2 id="dual-model-fallback">Dual Model Fallback</h2>
+
+<p>Robustness matters for production software. If Parakeet isn’t installed:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span><span class="p">:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="nf">parakeet_load</span><span class="p">(</span><span class="sh">"</span><span class="s">mlx-community/parakeet-tdt-0.6b-v2</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">transcribe</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+<span class="k">except</span> <span class="nb">ImportError</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mlx_whisper</span><span class="p">.</span><span class="nf">transcribe</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Users don’t see error messages; they see slightly slower transcription. Graceful degradation over failure.</p>
+
+<h2 id="what-i-learned">What I Learned</h2>
+
+<p><strong>Local AI is genuinely competitive</strong>. The quality gap between cloud and local has closed dramatically. Apple Silicon with MLX-optimized models delivers professional-grade results.</p>
+
+<p><strong>Speed is a feature</strong>. The difference between 80 seconds and 12 minutes isn’t just convenience—it changes how people work. Fast enough for iterative workflows versus too slow to integrate.</p>
+
+<p><strong>Privacy sells itself</strong>. In regulated industries, local processing isn’t a nice-to-have; it’s a requirement. Products that respect this unlock markets that cloud-only competitors can’t enter.</p>
+
+<p><strong>One-time pricing works for local software</strong>. Without ongoing server costs, perpetual licenses become viable. This positioning undercuts subscription competitors while delivering sustainable margins.</p>
+
+<p><strong>The content generation bundle adds value</strong>. Transcription is table stakes. Show notes, social quotes, and blog drafts are the features that save hours of manual work. The bundle justifies the price.</p>
+
+<p>Bently proves that the future of audio AI isn’t necessarily in the cloud. For users who care about speed, privacy, or economics, local-first processing offers compelling advantages.</p>
+
+  </div>
+
+  <footer class="article__footer">
+    <div class="article__author">
+      <p>Written by <strong>Koushik Jaladi</strong></p>
+      <p class="article__author-links">
+        <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener">Twitter</a>
+        <span>·</span>
+        <a href="https://github.com/Koushik1161" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </div>
+  </footer>
+</article>
+
+
+
+<section class="related">
+  <p class="section__label">Continue Reading</p>
+  <div class="posts">
+    
+    <article class="post-item post-item--compact">
+      <a href="/clanta-agentic-rag-system/" class="post-item__link">
+        <h3 class="post-item__title">Clanta: Building a Production-Ready Agentic RAG System</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/podscribe-podcast-notes-generator/" class="post-item__link">
+        <h3 class="post-item__title">PodScribe: Building a Local-First Podcast Notes Generator</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/research-swarm-multi-agent/" class="post-item__link">
+        <h3 class="post-item__title">Research Swarm: A Production-Grade Multi-Agent Research System</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/isaac-groot/" class="post-item__link">
+        <h3 class="post-item__title">GR00T: One Foundation Model for All Robots</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/anthropic-skills-framework/" class="post-item__link">
+        <h3 class="post-item__title">The Anthropic Skills Framework: Extending Claude with Domain Expertise</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mcp-learning-journey/" class="post-item__link">
+        <h3 class="post-item__title">Learning MCP: The Protocol That's Becoming AI's USB-C</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mosley-rlm-runner/" class="post-item__link">
+        <h3 class="post-item__title">Mosley: A Minimal Recursive Language Model Runner</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mently-pulsenote/" class="post-item__link">
+        <h3 class="post-item__title">Mently: YouTube Video Summarization That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/askly-zappybot/" class="post-item__link">
+        <h3 class="post-item__title">Askly: Turn Any Website Into an AI Chatbot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/mcp-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">Teaching MCP Through an RPG: Metacon2</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon-mcp-quest/" class="post-item__link">
+        <h3 class="post-item__title">MCP Quest: Teaching Protocols Through Pokemon-Style RPGs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/atlas-intelligence-dashboard/" class="post-item__link">
+        <h3 class="post-item__title">3I/ATLAS Intelligence: Multi-Agent Astronomical Monitoring</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/1000-layer-networks-rl/" class="post-item__link">
+        <h3 class="post-item__title">1000 Layers Deep: Scaling Networks for Self-Supervised RL</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">When 100-Year-Old Math Beats Modern AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/bandit-ramanujan/" class="post-item__link">
+        <h3 class="post-item__title">Ramanujan's Math Meets the Multi-Armed Bandit</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gpt-researcher/" class="post-item__link">
+        <h3 class="post-item__title">GPT Researcher: Autonomous Multi-Agent Research at Scale</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid/" class="post-item__link">
+        <h3 class="post-item__title">Cloid: A Voice-First Interview Bot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/yolo-mask-conversion/" class="post-item__link">
+        <h3 class="post-item__title">From SAM2 to YOLO: Bridging Segmentation and Detection</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/glenna-clarity/" class="post-item__link">
+        <h3 class="post-item__title">Clarity: Making Academic Papers Actually Readable</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gps-denied-navigation/" class="post-item__link">
+        <h3 class="post-item__title">Navigating Without GPS: Visual Odometry from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/echo-sanctuary/" class="post-item__link">
+        <h3 class="post-item__title">Echo Sanctuary: Where AI Companions Have Real Conversations</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/prism-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Prism: From One Blog Post to Six Platform Posts in Five Minutes</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-v2/" class="post-item__link">
+        <h3 class="post-item__title">CODEC Quest: Gamifying Prompt Engineering Education</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-design/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Supermemory: Design Philosophy in Practice</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/codec-quest-ai-education/" class="post-item__link">
+        <h3 class="post-item__title">CODEC QUEST: Teaching AI Literacy Through an 8-bit RPG</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/deepseek-ocr/" class="post-item__link">
+        <h3 class="post-item__title">DeepSeek-OCR: Compressing Documents for the Age of Context Windows</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/dew-breathing-app/" class="post-item__link">
+        <h3 class="post-item__title">Dew: Neo-Brutalist Breathing Meditation for iOS</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/chimera-ace-architecture/" class="post-item__link">
+        <h3 class="post-item__title">Chimera: Building Agents That Actually Think</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whitestellar-agents-sdk/" class="post-item__link">
+        <h3 class="post-item__title">WhiteStellar: Learning the OpenAI Agents SDK from First Principles</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tiny-recursive-models/" class="post-item__link">
+        <h3 class="post-item__title">Less is More: Why Tiny Recursive Networks Beat Giant LLMs</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maxion/" class="post-item__link">
+        <h3 class="post-item__title">Project Maxion: The Self-Healing Agentic Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/supermemory-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Two Faces of Product Design: Supermemory Landing Pages</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/whatsapp-copilot/" class="post-item__link">
+        <h3 class="post-item__title">Building a WhatsApp Sales Copilot</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/metacon3-neon-prompt-builder/" class="post-item__link">
+        <h3 class="post-item__title">NEON: A Gamified CLI for Prompt Engineering</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sakana-model-merging/" class="post-item__link">
+        <h3 class="post-item__title">Merging Intelligence: Combining Qwen and DeepSeek with SLERP</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-research-hub/" class="post-item__link">
+        <h3 class="post-item__title">Interactive Research Hub: Visualizing the AI Agent Landscape</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agentic-ai-2025-hub/" class="post-item__link">
+        <h3 class="post-item__title">Agentic AI 2025: An Interactive Research Visualization</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/geon-interview-ai/" class="post-item__link">
+        <h3 class="post-item__title">Geon: Building an AI Interviewer That Actually Cares</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/breezeblow-landing-pages/" class="post-item__link">
+        <h3 class="post-item__title">Testio: Multi-Theme Landing Page Exploration</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/zorever-chatbot/" class="post-item__link">
+        <h3 class="post-item__title">Building a Real Estate Chatbot That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-enhanced-pdf-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Seriously Smart PDF Analyzer</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/repour-content-repurposing/" class="post-item__link">
+        <h3 class="post-item__title">Repour: Multi-Agent Content Repurposing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/awesome-claude-code-subagents/" class="post-item__link">
+        <h3 class="post-item__title">116 Specialized Agents for Claude Code</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/magentic-ui/" class="post-item__link">
+        <h3 class="post-item__title">Human-Centered Web Automation with Magentic-UI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/godfather-ai-news/" class="post-item__link">
+        <h3 class="post-item__title">Godfather: AI-Powered News Aggregation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vibe-decode/" class="post-item__link">
+        <h3 class="post-item__title">VibeDecode: Understanding Your Instagram Aesthetic with AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/agent-zx/" class="post-item__link">
+        <h3 class="post-item__title">Agent ZX: Building an Autonomous Web Browser</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-maverick/" class="post-item__link">
+        <h3 class="post-item__title">Project Maverick: From Prompt to Production App in Days</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/pdf-intelligence/" class="post-item__link">
+        <h3 class="post-item__title">PDF Intelligence: Extracting Meaning from Documents</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doc-ai-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Building a Production-Ready Document Analysis Platform</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr-demo/" class="post-item__link">
+        <h3 class="post-item__title">CompressChatOCR: 10x Token Reduction for Document AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/ai-doc-pro/" class="post-item__link">
+        <h3 class="post-item__title">AI Doc Pro: Minimal Document Analysis</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/compress-chat-ocr/" class="post-item__link">
+        <h3 class="post-item__title">10x Token Compression: Vision-Based Document Processing</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/calorie-tracker-ios/" class="post-item__link">
+        <h3 class="post-item__title">Starting an iOS Project: CalorieTracker Foundation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-dis-document-analyzer/" class="post-item__link">
+        <h3 class="post-item__title">Two Paths to Document Analysis: Local vs Cloud</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/project-delta-landing-generator/" class="post-item__link">
+        <h3 class="post-item__title">AI Landing Page Generator: From Prompt to Preview</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/uniq-ramanujan-ucb/" class="post-item__link">
+        <h3 class="post-item__title">Uniq: When Ramanujan's Math Meets Game AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/frijan-voice-assistant/" class="post-item__link">
+        <h3 class="post-item__title">FRIJAN: Voice-First AI Assistant Architecture</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/vortex-deep-research/" class="post-item__link">
+        <h3 class="post-item__title">Vortex: Deep Research with Iterative Refinement</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/rl-adventure-learning/" class="post-item__link">
+        <h3 class="post-item__title">Learning Reinforcement Learning Through Play</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/research-swarm/" class="post-item__link">
+        <h3 class="post-item__title">Research Swarm: Multi-Agent Research That Actually Works</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-agents/" class="post-item__link">
+        <h3 class="post-item__title">DAMAC Finance AI: Enterprise Multi-Agent Automation</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/cloid-clean-voice-bot/" class="post-item__link">
+        <h3 class="post-item__title">The Siri-Style Voice Bot: Real-Time Conversations with OpenAI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/damac-finance-ai/" class="post-item__link">
+        <h3 class="post-item__title">Building Enterprise-Grade Multi-Agent Finance AI</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/seecal-ai/" class="post-item__link">
+        <h3 class="post-item__title">SeeCal AI: Point, Shoot, Know What You're Eating</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/lumina-ai-chat/" class="post-item__link">
+        <h3 class="post-item__title">Lumina: A Clean Slate for AI Chat Interfaces</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/phantomcore-shell/" class="post-item__link">
+        <h3 class="post-item__title">PhantomCore Shell: AI Meets the Desktop</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/personaforge/" class="post-item__link">
+        <h3 class="post-item__title">PersonaForge: A Backend for AI Characters</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/xelora/" class="post-item__link">
+        <h3 class="post-item__title">Xelora: A Local-First Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/sentinel-ai/" class="post-item__link">
+        <h3 class="post-item__title">Sentinel AI: Building an Autonomous Research Agent</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/doppel-agent/" class="post-item__link">
+        <h3 class="post-item__title">DoppelAgent: When Two AIs Are Better Than One</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/gemini-agentic-research-assistant/" class="post-item__link">
+        <h3 class="post-item__title">Building a Multi-Model Research Assistant</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/aetherdraft/" class="post-item__link">
+        <h3 class="post-item__title">Aetherdraft: Teaching AI to Write Better Emails</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/openai-agents-sdk-intro/" class="post-item__link">
+        <h3 class="post-item__title">Getting Started with OpenAI's Agents SDK</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/grid-world-agents/" class="post-item__link">
+        <h3 class="post-item__title">Grid World Agents: Multi-Agent Simulation Basics</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/less-but-better/" class="post-item__link">
+        <h3 class="post-item__title">Less, But Better</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/the-reliability-gap/" class="post-item__link">
+        <h3 class="post-item__title">The Reliability Gap</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/thinking-in-systems/" class="post-item__link">
+        <h3 class="post-item__title">Thinking in Systems</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/on-simplicity/" class="post-item__link">
+        <h3 class="post-item__title">On Simplicity</h3>
+      </a>
+    </article>
+    
+    <article class="post-item post-item--compact">
+      <a href="/tools-and-thought/" class="post-item__link">
+        <h3 class="post-item__title">Tools and Thought</h3>
+      </a>
+    </article>
+    
+  </div>
+</section>
+
+
+    </main>
+
+    <footer class="footer">
+  <div class="footer__content">
+    <p class="footer__colophon">
+      <span class="footer__year">2026</span>
+      <span class="footer__sep">·</span>
+      <span class="footer__name">Koushik Jaladi</span>
+    </p>
+    <div class="footer__links">
+      <a href="https://twitter.com/koushikjaladi" target="_blank" rel="noopener" aria-label="Twitter">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a href="https://github.com/Koushik1161" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      </a>
+      <a href="https://medium.com/@koushikcruz" target="_blank" rel="noopener" aria-label="Medium">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/koushikjaladi/" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="/feed.xml" aria-label="RSS">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg>
+      </a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <span class="theme-toggle__icon theme-toggle__icon--moon">◐</span>
+        <span class="theme-toggle__icon theme-toggle__icon--sun">◑</span>
+      </button>
+    </div>
+  </div>
+</footer>
+
+  </div>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>

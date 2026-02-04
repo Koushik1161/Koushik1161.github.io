@@ -44,8 +44,24 @@
 
   <script src="{{ '/assets/js/main.js' | relative_url }}" defer></script>
 
-  <!-- GoatCounter Analytics -->
-  <script data-goatcounter="https://koushikcruz.goatcounter.com/count"
-          async src="//gc.zgo.at/count.js"></script>
+  <!-- Custom Analytics -->
+  <script>
+    (function() {
+      const endpoint = 'https://analytics-api.koushikcruz.workers.dev/track';
+      const data = {
+        path: window.location.pathname,
+        referrer: document.referrer,
+        device: /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        browser: navigator.userAgent.match(/(Chrome|Firefox|Safari|Edge|Opera)/i)?.[1] || 'Other',
+        os: navigator.userAgent.match(/(Windows|Mac|Linux|Android|iOS)/i)?.[1] || 'Other',
+        screen_width: window.innerWidth
+      };
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).catch(() => {});
+    })();
+  </script>
 </body>
 </html>
